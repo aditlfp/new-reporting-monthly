@@ -27,4 +27,13 @@ class CoverRequest extends FormRequest
             'img_src_2' => 'required|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'clients_id.required' => 'Mitra Wajib Diisi.',
+            'img_src_1.required' => 'Logo 1 Wajib Diisi.',
+            'img_src_2.required' => 'Logo 2 Wajib Diisi.'
+        ];
+    }
 }

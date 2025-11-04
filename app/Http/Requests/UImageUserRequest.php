@@ -31,4 +31,15 @@ class UImageUserRequest extends FormRequest
             "max_data" => 'nullable',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            "user_id.required" => 'User wajib diisi.',
+            "clients_id.required" => 'Mitra wajib diisi.',
+            "img_before.required" => 'Foto Before wajib diisi.',
+            "img_final.required" => 'Foto After wajib diisi.',
+            "note.required" => 'Keterangan wajib diisi.',
+        ];
+    }
 }

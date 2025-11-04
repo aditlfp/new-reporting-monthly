@@ -30,4 +30,14 @@ class LattersRequest extends FormRequest
             'signature' => 'nullable|string|max:255',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'cover_id.required' => 'Cover wajib diisi.',
+            'latter_numbers.required' => 'No Surat Wajib diisi.',
+            'latter_matters.required' => 'Hal Surat wajib diisi.',
+            'period.required' => 'Periode wajib diisi.',
+        ];
+    }
 }
