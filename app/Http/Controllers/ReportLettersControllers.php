@@ -5,22 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Latter;
 use App\Models\Cover;
 use App\Http\Requests\LatterRequest;
+use App\Http\Requests\LattersRequest;
+use App\Models\Latters;
 use Illuminate\Http\Request;
 
 class ReportLettersControllers extends Controller
 {
     public function index(Request $request)
     {
-        $latters = Latter::with('cover')->latest()->paginate(10);
+        $letters = Latters::with('cover')->latest()->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'data' => $latters,
+                'data' => $letters,
             ]);
         }
 
-        return view('latters.index', compact('latters'));
+        return view('pages.admin.letters.index', compact('letters'));
     }
 
     public function create()
@@ -29,9 +31,9 @@ class ReportLettersControllers extends Controller
         return view('latters.create', compact('covers'));
     }
 
-    public function store(LatterRequest $request)
+    public function store(LattersRequest $request)
     {
-        $latter = Latter::create($request->validated());
+        $latter = Latters::create($request->validated());
 
         if ($request->ajax()) {
             return response()->json([
@@ -44,15 +46,15 @@ class ReportLettersControllers extends Controller
         return to_route('latters.index')->with('success', 'Latter created successfully.');
     }
 
-    public function edit(Latter $latter)
+    public function edit(Latters $latters)
     {
         $covers = Cover::pluck('id', 'id');
         return view('latters.edit', compact('latter', 'covers'));
     }
 
-    public function update(LatterRequest $request, Latter $latter)
+    public function update(LattersRequest $request, Latters $latters)
     {
-        $latter->update($request->validated());
+        $latters->update($request->validated());
 
         if ($request->ajax()) {
             return response()->json([
@@ -65,9 +67,9 @@ class ReportLettersControllers extends Controller
         return to_route('latters.index')->with('success', 'Latter updated successfully.');
     }
 
-    public function destroy(Request $request, Latter $latter)
+    public function destroy(Request $request, Latters $latters)
     {
-        $latter->delete();
+        $latters->delete();
 
         if ($request->ajax()) {
             return response()->json([

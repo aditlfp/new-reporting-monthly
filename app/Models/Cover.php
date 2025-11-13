@@ -12,12 +12,13 @@ class Cover extends Model
 
     protected $fillable = [
         'clients_id',
+        'jenis_rekap',
         'img_src_1',
         'img_src_2',
     ];
 
     public function client()
     {
-        return $this->belongsTo(Clients::class);
+        return $this->belongsTo(Clients::class, 'clients_id', 'id');
     }
 }
