@@ -3,6 +3,18 @@
     themes: silk --default, light;
 }
 
+#notifications {
+  cursor:pointer;
+  position:fixed;
+  right:0px;
+  z-index:9999;
+  top:0px;
+  margin-top:22px;
+  margin-right:15px;
+  max-width:400px;  
+}
+
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';

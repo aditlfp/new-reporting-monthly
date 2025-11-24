@@ -3,8 +3,8 @@
     <div class="flex w-full items-center justify-between">
       <!-- Center section -->
       <div class="flex-1 flex justify-center items-center gap-x-2">
-        <span>Develop and Design By @anjay</span>
-        <span>V 0.1-alpha</span>
+        <span>Develop and Design By @aditlfp & @syafi-M</span>
+        <span>Current Version 0.1-alpha</span>
       </div>
 
       <!-- Right section -->

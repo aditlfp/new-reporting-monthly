@@ -3,26 +3,24 @@
 
     <!-- Navigation -->
     <nav class="flex-1 p-4 space-y-1">
-      <a href="#" class="flex items-center px-4 py-3 space-x-3 text-white transition-all rounded-lg bg-slate-900">
+      <a href="{{ route('dashboard')}}" class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('dashboard') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }} ">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
         <span class="font-medium">Dashboard</span>
       </a>
       
-      <a href="#" id="openUserModal" class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
-        <span class="font-medium">Users</span>
+      <a href="{{ route('check.upload')}}" class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('check.upload') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3V1H9V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V9H20V5H17V7H15V5H9V7H7V5H4V19H10V21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7ZM17 12C14.7909 12 13 13.7909 13 16C13 18.2091 14.7909 20 17 20C19.2091 20 21 18.2091 21 16C21 13.7909 19.2091 12 17 12ZM11 16C11 12.6863 13.6863 10 17 10C20.3137 10 23 12.6863 23 16C23 19.3137 20.3137 22 17 22C13.6863 22 11 19.3137 11 16ZM16 13V16.4142L18.2929 18.7071L19.7071 17.2929L18 15.5858V13H16Z"></path></svg>
+        <span class="font-medium">Check Status Upload</span>
       </a>
 
-      <a href="{{ route('admin-covers.index') }}" id="openUserModal" class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+      <a href="{{ route('admin-covers.index') }}" class="flex items-center px-4 py-3 space-x-3 rounded-lg transition-all {{ request()->routeIs('admin-covers.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 2C19.5523 2 20 2.44772 20 3V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19ZM18 4H6V20H18V4ZM12 7C14.7614 7 17 9.23858 17 12C17 13.7973 16.0517 15.3731 14.6282 16.2544L12.5 12H15C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15L12.9552 16.9089C12.646 16.9687 12.3267 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7Z"></path></svg>
         <span class="font-medium">Covers</span>
       </a>
 
-      <a href="{{ route('admin-latters.index') }}" id="openUserModal" class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+      <a href="{{ route('admin-latters.index') }}" class="flex items-center px-4 py-3 space-x-3 rounded-lg transition-all {{ request()->routeIs('admin-latters.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H7C5.89543 4 5 4.89543 5 6C5 7.10457 5.89543 8 7 8H21V21C21 21.5523 20.5523 22 20 22H7C4.79086 22 3 20.2091 3 18V6C3 3.79086 4.79086 2 7 2H20C20.5523 2 21 2.44772 21 3V4ZM5 18C5 19.1046 5.89543 20 7 20H19V10H7C6.27143 10 5.58835 9.80521 5 9.46487V18ZM20 7H7C6.44772 7 6 6.55228 6 6C6 5.44772 6.44772 5 7 5H20V7Z"></path></svg>
         <span class="font-medium">Letters</span>
       </a>
@@ -48,10 +46,10 @@
       <form action="{{ route('logout') }}" method="POST" class="w-full">
         @csrf
         <button type="submit" class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="red" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
-          <span class="font-medium">Logout</span>
+          <span class="font-medium text-red-500">Logout</span>
         </button>
       </form>
     </div>

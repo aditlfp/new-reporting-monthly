@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class UploadImage extends Model
 {
@@ -26,4 +27,16 @@ class UploadImage extends Model
     {
         return $this->belongsTo(Clients::class);
     }
+
+    public function scopeSearchFilters($query, $filters)
+    {
+        return $query
+            ->when($filters['month'] ?? null, function ($q, $month) {
+                $q->whereMonth('created_at', $month);
+            })
+            ->when($filters['client_id'] ?? null, function ($q, $client_id) {
+                $q->where('clients_id', $client_id);
+            });
+    }
+
 }

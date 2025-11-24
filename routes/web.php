@@ -3,7 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportLettersControllers;
+use App\Http\Controllers\SendImageStatus;
 use App\Http\Controllers\UploadImageController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
@@ -14,18 +16,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    if (Auth::user()->role_id == 2) {
-        return view('dashboard');
-    } else {
-        $uploadDraft = UploadImage::where('user_id', Auth::user()->id)
-            ->where('status', 0)
-            ->latest()
-            ->first();
-        return view('pages.user.dashboard', compact('uploadDraft'));
-    }
-    
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,6 +28,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-covers', CoverReportControllers::class);
     Route::resource('/admin-latters', ReportLettersControllers::class);
+    Route::get('/admin-check-status', [SendImageStatus::class, 'index'])->name('check.upload');
 });
 
 

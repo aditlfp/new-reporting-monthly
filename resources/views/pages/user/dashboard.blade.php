@@ -92,7 +92,7 @@
                         @csrf
                         <button type="submit"
                             class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-red-50">
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="red"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
@@ -716,7 +716,8 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            alert('Laporan berhasil dikirim!');
+                            Notify(response.message,null,null,'success');
+
 
                             // Reset form
                             reportForm[0].reset();
@@ -746,7 +747,7 @@
                                 const errors = Object.values(xhr.responseJSON.errors).flat();
                                 errorMessage = errors.join('\n');
                             }
-                            alert(errorMessage);
+                            Notify(errorMessage,null,null,'error');
                         }
                     });
                 });

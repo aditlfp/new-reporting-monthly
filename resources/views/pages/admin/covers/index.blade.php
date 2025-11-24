@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Data Cover" subtitle="Menampilkan Data Cover Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
         <div class="flex-1 p-6 overflow-y-auto">
@@ -26,7 +26,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($covers as $cover)
-                            <tr class="transition-colors hover:bg-gray-50">
+                            <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $loop->iteration }}.</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ ucwords(strtolower($cover->client->name)) }}
                                 </td>
@@ -34,9 +34,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex space-x-2">
                                         <button data-cover-id="{{ $cover->id }}"
-                                            class="text-blue-600 edit-cover-btn hover:text-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-500">Edit</button>
+                                           class="btn btn-sm bg-amber-500/20 text-amber-500 border-none rounded-sm py-1 hover:bg-amber-500 hover:text-white transition-all ease-in-out duration-200"><i class="ri-settings-3-line text-xl"></i></button>
                                         <button data-cover-id="{{ $cover->id }}"
-                                            class="text-red-600 delete-cover-btn hover:text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500">Delete</button>
+                                            class="btn btn-sm bg-red-500/20 text-red-500 border-none rounded-sm py-1 hover:bg-red-500 hover:text-white transition-all ease-in-out duration-200"><i class="ri-delete-bin-2-line text-xl"></i></button>
                                     </div>
                                 </td>
                             </tr>

@@ -14,7 +14,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>   
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>  
+
+        <script src="/js/Notify.js"></script> 
 
         {{-- Stack To Push Styles --}}
         <style>
@@ -23,8 +25,13 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
+            <div id="notifications"></div>
+            @props(['title' => 'Default Title', 'subtitle' => 'Default Subtitle'])
             @if(Auth::user()->role_id == 2)
-                @include('layouts.navigation')
+                <x-navigation 
+                    :title="$title ?? 'Dashboard Overview'"
+                    :subtitle="$subtitle ?? 'Welcome back!'"
+                />
             @endif
             <!-- Page Content -->
             <main class="{{ Auth::user()->role_id == 2 ? 'pt-24' : 'pt-0' }}">

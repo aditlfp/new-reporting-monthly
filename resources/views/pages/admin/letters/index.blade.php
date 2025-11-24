@@ -199,6 +199,7 @@
 
     @push('scripts')
         <script>
+
             // Use an IIFE to avoid polluting the global namespace
             (function($) {
                 'use strict';
@@ -259,6 +260,7 @@
                     // Form submission
                     elements.letterForm.on('submit', handleFormSubmit);
                 }
+
 
                 // Modal functions
                 function openCreateModal() {
@@ -495,8 +497,7 @@
                     submitButton.html('<span class="loading loading-spinner loading-sm"></span> Saving...');
                     submitButton.prop('disabled', true);
 
-                    const url = isEditMode ? `/letters/${letterId}` : '/letters';
-
+                    const url = isEditMode ? `/admin-latters/${letterId}` : 'admin-latters';
                     $.ajax({
                         url: url,
                         type: 'POST',
@@ -504,7 +505,8 @@
                         processData: false,
                         contentType: false,
                         success: function(data) {
-                            if (data.success) {
+                            console.log(data)
+                            if (data && data.status) {
                                 // Update the table dynamically instead of reloading
                                 if (isEditMode) {
                                     updateTableRow(data.data);
@@ -513,10 +515,9 @@
                                 }
 
                                 closeModal();
-                                showNotification(isEditMode ? 'Letter updated successfully!' :
-                                    'Letter created successfully!', 'success');
+                                Notify(data.message,null,null,'success');
                             } else {
-                                showNotification('Error: ' + (data.message || 'Something went wrong'), 'error');
+                                Notify(data.message,null,null,'error');
                             }
                         },
                         error: function(xhr) {
@@ -556,22 +557,22 @@
 
                     // Create new row HTML
                     const newRow = `
-            <tr class="transition-colors hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_numbers}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.client_name}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.jenis_rekap}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_matters}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.period}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.report_content || ''}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${letterData.signature || ''}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex space-x-2">
-                        <button data-letter-id="${letterData.id}" class="text-blue-600 edit-letter-btn hover:text-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-500">Edit</button>
-                        <button data-letter-id="${letterData.id}" class="text-red-600 delete-letter-btn hover:text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500">Delete</button>
-                    </div>
-                </td>
-            </tr>
-        `;
+                        <tr class="transition-colors hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_numbers}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.client_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.jenis_rekap}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_matters}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.period}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.report_content || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${letterData.signature || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex space-x-2">
+                                    <button data-letter-id="${letterData.id}" class="text-blue-600 edit-letter-btn hover:text-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-500">Edit</button>
+                                    <button data-letter-id="${letterData.id}" class="text-red-600 delete-letter-btn hover:text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
 
                     // Append the new row to the table
                     tbody.append(newRow);
@@ -606,51 +607,10 @@
                             errorMessage += (response.message || defaultMessage);
                         }
 
-                        showNotification(errorMessage, 'error');
+                        Notify(errorMessage,null,null,'error');
                     } catch (e) {
-                        showNotification(defaultMessage, 'error');
+                        Notify(defaultMessage,null,null,'error');
                     }
-                }
-
-                function showNotification(message, type) {
-                    // Create a more user-friendly notification instead of alert
-                    const notification = $(`
-            <div class="fixed top-4 right-4 p-4 rounded-md shadow-lg ${type === 'error' ? 'bg-red-500' : 'bg-green-500'} text-white z-50">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        ${type === 'error' 
-                            ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>'
-                            : '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>'}
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium">${message}</p>
-                    </div>
-                    <div class="pl-3 ml-auto">
-                        <div class="-mx-1.5 -my-1.5">
-                            <button class="close-notification inline-flex rounded-md p-1.5 hover:bg-white/20 focus:outline-none">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `);
-
-                    $('body').append(notification);
-
-                    // Auto-remove after timeout
-                    setTimeout(function() {
-                        notification.fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }, NOTIFICATION_TIMEOUT);
-
-                    // Remove when close button is clicked
-                    notification.find('.close-notification').on('click', function() {
-                        notification.fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    });
                 }
 
                 // Initialize when DOM is ready

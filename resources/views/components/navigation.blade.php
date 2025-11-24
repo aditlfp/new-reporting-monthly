@@ -1,4 +1,7 @@
-<nav class="flex w-full fixed">
+@props(['title' => 'Dashboard Overview', 
+        'subtitle' => "Welcome back! Here's what's happening today."
+      ])
+<nav class="flex w-full fixed z-20">
  <!-- Logo/Brand -->
     <div class="p-6 pr-7 border-b border-slate-200 bg-white">
       <div class="flex items-center space-x-3">
@@ -18,8 +21,8 @@
     <header class="bg-white border-b border-l border-slate-200 sticky top-0 z-10 w-full">
       <div class="px-8 py-5 flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
-          <p class="text-sm text-slate-500 mt-1">Welcome back! Here's what's happening today.</p>
+          <h1 class="text-2xl font-bold text-slate-900">{{ $title }}</h1>
+          <p class="text-sm text-slate-500 mt-1">{{ $subtitle }}</p>
         </div>
         <div class="flex items-center space-x-4">
           <button class="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">

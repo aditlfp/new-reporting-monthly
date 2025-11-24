@@ -7,6 +7,7 @@ use App\Http\Requests\UImageUserRequest;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class UploadImageController extends Controller
 {
@@ -152,9 +153,9 @@ class UploadImageController extends Controller
                 : abort(403, $message);
         }
 
-        if ($uploadImage->img_before) \Storage::disk('public')->delete($uploadImage->img_before);
-        if ($uploadImage->img_proccess) \Storage::disk('public')->delete($$uploadImage->img_proccess);
-        if ($uploadImage->img_final) \Storage::disk('public')->delete($uploadImage->img_final);
+        if ($uploadImage->img_before) Storage::disk('public')->delete($uploadImage->img_before);
+        if ($uploadImage->img_proccess) Storage::disk('public')->delete($$uploadImage->img_proccess);
+        if ($uploadImage->img_final) Storage::disk('public')->delete($uploadImage->img_final);
 
         $uploadImage->delete();
 
