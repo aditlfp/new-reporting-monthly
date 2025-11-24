@@ -5,13 +5,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\UploadImageController;
+use App\Models\Clients;
+use App\Models\Kerjasama;
+use App\Models\UploadImage;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (Auth::user()->role_id == 2) {
+        return view('dashboard');
+    } else {
+        $uploadDraft = UploadImage::where('user_id', Auth::user()->id)
+            ->where('status', 0)
+            ->latest()
+            ->first();
+        return view('pages.user.dashboard', compact('uploadDraft'));
+    }
+    
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -29,6 +29,7 @@ class UImageUserRequest extends FormRequest
             "img_final" => 'required',
             "note" => 'required',
             "max_data" => 'nullable',
+            "status" => 'nullable',
         ];
     }
 

@@ -53,13 +53,14 @@ class UploadImageController extends Controller
         $img_final    = FileHelper::uploadImage($request->file('img_final'), 'upload_images/final');
 
         $upload = UploadImage::create([
-            'user_id'      => $user->id,
-            'clients_id'   => $user->clients_id,
+            'user_id'      => $request->user_id,
+            'clients_id'   => $request->clients_id,
             'img_before'   => $img_before,
             'img_proccess' => $img_proccess,
             'img_final'    => $img_final,
             'note'         => $request->note,
             'max_data'     => 14,
+            'status'       => $request->status,
         ]);
 
         if ($request->ajax()) {

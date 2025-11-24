@@ -14,6 +14,7 @@ class ReportLettersControllers extends Controller
     public function index(Request $request)
     {
         $letters = Latters::with('cover')->latest()->paginate(10);
+        $covers = Cover::get();
 
         if ($request->ajax()) {
             return response()->json([
@@ -22,7 +23,7 @@ class ReportLettersControllers extends Controller
             ]);
         }
 
-        return view('pages.admin.letters.index', compact('letters'));
+        return view('pages.admin.letters.index', compact('letters', 'covers'));
     }
 
     public function create()

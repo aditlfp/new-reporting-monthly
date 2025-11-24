@@ -14,6 +14,7 @@ class UploadImage extends Model
         "img_final",
         "note",
         "max_data",
+        "status",
     ];
 
     public function user()

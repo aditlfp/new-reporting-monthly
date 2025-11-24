@@ -23,10 +23,11 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
-
+            @if(Auth::user()->role_id == 2)
+                @include('layouts.navigation')
+            @endif
             <!-- Page Content -->
-            <main class="pt-24">
+            <main class="{{ Auth::user()->role_id == 2 ? 'pt-24' : 'pt-0' }}">
                 {{ $slot }}
             </main>
             
