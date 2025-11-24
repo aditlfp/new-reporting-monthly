@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('covers', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Clients::class);
+            $table->string('jenis_rekap');
             $table->string('img_src_1');
             $table->string('img_src_2');
             $table->timestamps();

@@ -3,32 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Request\CoverRequest;
+use App\Http\Requests\CoverRequest;
 use App\Helpers\FileHelper;
+use App\Models\Clients;
 use App\Models\Cover;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class CoverReportControllers extends Controller
 {
     public function index(Request $request)
     {
         $covers = Cover::with('client')->latest()->paginate(10);
+        $client = Clients::all();
 
         // If AJAX → return JSON data
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'data' => $covers
+                'data' => $covers,
+                'client' => $client
             ]);
         }
 
         // normal view
-        return view('covers.index', compact('covers'));
+        return view('pages.admin.covers.index', compact('covers', 'client'));
     }
 
     public function show(Request $request, $id)
     {
         try {
-            $covers = Cover::with('client')->first($id);
+            $covers = Cover::with('client')->findOrFail($id);
 
             // If AJAX → return JSON data
             if ($request->ajax()) {
@@ -49,63 +54,127 @@ class CoverReportControllers extends Controller
 
     public function store(CoverRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        // Handle Image Upload With Helper
-        $validate['img_src_1'] = FileHelper::uploadImage($request->file('img_src_1'), 'sac-banner');
+            // Handle Image Upload
+            $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', null);
+            $validated['img_src_2'] = $this->handleImageUpload($request, 'img_src_2', null);
 
-        $validate['img_src_2'] = FileHelper::uploadImage($request->file('img_src_2'), 'mitra-banner');
+            $cover = Cover::create($validated);
 
-        Cover::create($validate);
-
-        // Return JSON if AJAX
-        if ($request->ajax()) {
+            // Load client relationship
+            $cover->load('client');
+            
             return response()->json([
-                'status' => true,
-                'message' => 'Cover created successfully.',
-                'data' => $cover
-            ], 201);
+                'success' => true,
+                'data' => [
+                    'id' => $cover->id,
+                    'client_name' => ucwords(strtolower($cover->client->name)),
+                    'jenis_rekap' => $cover->jenis_rekap,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->getErrorResponse($e, 'Failed to create cover.');
         }
-
-        // Normal redirect
-        return to_route('covers.index')->with('success', 'Cover created successfully.');
-
     }
 
-    public function update(CoverRequest $request, Cover $cover)
+    public function update(CoverRequest $request, $id)
     {
-        $data = $request->validated();
+        try {
+            $cover = Cover::findOrFail($id);
+            $validated = $request->validated();
 
-        $data['img_src_1'] = FileHelper::uploadImage($request->file('img_src_1'), 'covers', $cover->img_src_1);
-        $data['img_src_2'] = FileHelper::uploadImage($request->file('img_src_2'), 'covers', $cover->img_src_2);
+            // Handle Image Upload only if changed
+            if ($request->hasFile('img_src_1') && $request->img1_changed) {
+                $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', $cover->img_src_1);
+            }
+            if ($request->hasFile('img_src_2') && $request->img2_changed) {
+                $validated['img_src_2'] = $this->handleImageUpload($request, 'img_src_2', $cover->img_src_2);
+            }
 
-        $cover->update($data);
+            $cover->update($validated);
 
-        if ($request->ajax()) {
+            // Load client relationship
+            $cover->load('client');
+
             return response()->json([
-                'status' => true,
-                'message' => 'Cover updated successfully.',
-                'data' => $cover
+                'success' => true,
+                'data' => [
+                    'id' => $cover->id,
+                    'client_name' => ucwords(strtolower($cover->client->name)),
+                    'jenis_rekap' => $cover->jenis_rekap,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->getErrorResponse($e, 'Failed to update cover.');
+        }
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        try {
+            $cover = Cover::findOrFail($id);
+            
+            // Delete images
+            if ($cover->img_src_1) {
+                FileHelper::deleteImage($cover->img_src_1);
+            }
+            if ($cover->img_src_2) {
+                FileHelper::deleteImage($cover->img_src_2);
+            }
+            
+            $cover->delete();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Cover deleted successfully'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete cover'
+            ], 500);
+        }
+    }
+
+    private function handleImageUpload(Request $request, $fieldName, $oldImagePath = null)
+    {
+        if ($request->hasFile($fieldName)) {
+            // Delete old image if exists
+            if ($oldImagePath) {
+                FileHelper::deleteImage($oldImagePath);
+            }
+            return FileHelper::uploadImage($request->file($fieldName), 'covers');
+        }
+        return $oldImagePath;
+    }
+
+    private function getSuccessResponse($data, $message)
+    {
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => $data
             ]);
         }
 
-        return to_route('covers.index')->with('success', 'Cover updated successfully.');
+        // return to_route('admin-covers.index')->with('success', $message);
     }
 
-    public function destroy(Request $request, Cover $cover)
+    private function getErrorResponse(\Exception $e, $message)
     {
-        if ($cover->img_src_1) \Storage::disk('public')->delete($cover->img_src_1);
-        if ($cover->img_src_2) \Storage::disk('public')->delete($cover->img_src_2);
-        $cover->delete();
+        \Log::error($message . ': ' . $e->getMessage());
 
-        if ($request->ajax()) {
+        if (request()->ajax() || request()->wantsJson()) {
             return response()->json([
-                'status' => true,
-                'message' => 'Cover deleted successfully.'
-            ]);
+                'success' => false,
+                'message' => $message . ': ' . $e->getMessage()
+            ], 500);
         }
 
-        return to_route('covers.index')->with('success', 'Cover deleted successfully.');
+        return back()->withInput()->withErrors(['error' => $message . ': ' . $e->getMessage()]);
     }
     
 }
