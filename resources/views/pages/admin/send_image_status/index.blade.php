@@ -89,6 +89,29 @@
 		                    </div>
 		                </div>
 		            </form>
+		            {{-- Start Note --}}
+		            <div class="flex gap-x-4">
+		            	<div class="flex gap-x-2 items-center">
+		            		<div class="bg-blue-500 w-4 h-4 rounded-full"></div>
+		            		<span class="text-xs">Info / Jabatan</span>
+		            	</div>
+
+		            	<div class="flex gap-x-2 items-center">
+		            		<div class="bg-amber-500 w-4 h-4 rounded-full"></div>
+		            		<span class="text-xs">Progress / Hitungan Upload 1 Bulan Masih Kurang</span>
+		            	</div>
+
+		            	<div class="flex gap-x-2 items-center">
+		            		<div class="bg-green-500 w-4 h-4 rounded-full"></div>
+		            		<span class="text-xs">Selesai 14 Data / 33 Foto satu bulan</span>
+		            	</div>
+
+		            	<div class="flex gap-x-2 items-center">
+		            		<div class="bg-red-500 w-4 h-4 rounded-full"></div>
+		            		<span class="text-xs">Belum Selesai</span>
+		            	</div>
+		            </div>
+		        	{{-- End Note --}}
 		        </div>
 		    </div>
 
@@ -100,12 +123,12 @@
 		                    <thead>
 		                        <tr class="bg-slate-950 text-white">
 		                            <th class="text-center">#</th>
-		                            <th>User</th>
+		                            <th>User / Nama</th>
+		                            <th>Divisi</th>
 		                            <th>Client</th>
 		                            <th>Upload Month</th>
 		                            <th class="text-center">Monthly Count</th>
 		                            <th class="text-center">Status</th>
-		                            <th class="text-center">Actions</th>
 		                        </tr>
 		                    </thead>
 		                    <tbody>
@@ -116,14 +139,17 @@
 		                                <div class="flex items-center gap-3">
 		                                    <div class="avatar placeholder">
 		                                        <div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
-		                                            <span class="text-xs">{{ strtoupper(substr($upload->user->name, 0, 2)) }}</span>
+		                                            <img src={{ "https://absensi-sac.sac-po.com/storage/images/" . $upload->user->image }}>
 		                                        </div>
 		                                    </div>
 		                                    <div>
-		                                        <div class="font-bold text-sm">{{ $upload->user->name }}</div>
+		                                        <div class="font-bold text-xs">{{ $upload->user->nama_lengkap }}</div>
 		                                        <div class="text-xs opacity-50">{{ $upload->user->email }}</div>
 		                                    </div>
 		                                </div>
+		                            </td>
+		                            <td>
+		                            	<span class="uppercase badge badge-info badge-sm w-fit h-fit">{{$upload->user->divisi->jabatan->name_jabatan}}</span>
 		                            </td>
 		                            <td>
 		                                <div class="font-semibold text-sm">{{ $upload->clients->name }}</div>
@@ -131,42 +157,41 @@
 		                            </td>
 		                            <td>
 		                               <div class="text-sm">
-										    {{ \Carbon\Carbon::parse($upload->created_at)->locale('id')->isoFormat('MMMM') }}
+		                               	@forelse($months as $month)
+		                               		@if($month['value'] == $upload->month)
+		                               			{{ $month['label'] . ' '. $upload->year }}
+		                               		@endif
+		                               	@empty
+		                               		 --
+		                               	@endforelse
 										</div>
 		                            </td>
 
 		                            {{-- START LOGIC COUNTING TEMP --}}
 		                            @php
-	                                    $count = 0;
-	                                    foreach ($dataCount as $counting) {
-	                                    	if($counting->clients_id == $upload->clients_id)
-	                                    	{
-	                                    		$count = $counting->total;
-	                                    	}
-	                                    }
-	                                    $badgeClass = $count == 14 ? 'badge-success' : ($count <= 7 ? 'badge-warning' : 'badge-error');
+	                                    $badgeClass = $upload->total_count == 14 ? 'badge-success badge-sm' : ($upload->total_count <= 7 ? 'badge-warning badge-sm' : 'badge-error badge-sm');
 	                                @endphp
 		                            {{-- END LOGIC COUNTING TEMP --}}
 
 		                            <td class="text-center">
-		                                <div class="badge {{ $badgeClass }} badge-lg font-bold">
-		                                    {{ $count }}/14
+		                                <div class="badge {{ $badgeClass }} badge-sm font-bold">
+		                                    {{ $upload->total_count }}/14
 		                                </div>
 		                            </td>
 		                            <td class="text-center">
-		                                @if($count == 14)
-		                                    <span class="badge badge-success gap-1">
+		                                @if($upload->total_count == 14)
+		                                    <span class="badge badge-sm badge-success gap-1">
 		                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 		                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 		                                        </svg>
 		                                        Completed
 		                                    </span>
-		                                @elseif($count < 14)
-		                                    <span class="badge badge-error gap-1">
+		                                @elseif($upload->total_count < 14)
+		                                    <span class="badge badge-sm badge-error gap-1 w-fit h-fit">
 		                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 		                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 		                                        </svg>
-		                                        Not Finished Yet
+		                                        Not Finished
 		                                    </span>
 		                                @endif
 		                            </td>

@@ -21,4 +21,32 @@ class Cover extends Model
     {
         return $this->belongsTo(Clients::class, 'clients_id', 'id');
     }
+
+    protected static function booted()
+    {
+        static::created(function ($cover) {
+            ActivityLogs::create([
+                'type' => 'upload',
+                'title' => 'New cover upload from ' . (auth()->check() ? auth()->user()->nama_lengkap : 'System'),
+                'description' => $cover->client?->name . ' added a new cover',
+            ]);
+        });
+
+        static::updated(function ($cover) {
+            ActivityLogs::create([
+                'type' => 'update',
+                'title' => 'Cover updated by ' . (auth()->check() ? auth()->user()->nama_lengkap : 'System'),
+                'description' => $cover->client?->name . ' cover has been updated',
+            ]);
+        });
+
+        static::deleted(function ($cover) {
+            ActivityLogs::create([
+                'type' => 'delete',
+                'title' => 'Cover deleted by ' . (auth()->check() ? auth()->user()->nama_lengkap : 'System'),
+                'description' => $cover->client?->name . ' cover has been removed',
+            ]);
+        });
+    }
+
 }

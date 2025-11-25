@@ -39,4 +39,25 @@ class UploadImage extends Model
             });
     }
 
+    protected static function booted()
+    {
+        static::created(function ($upload) {
+            ActivityLogs::create([
+                'type' => 'upload',
+                'title' => 'New Image Laporan added from ' . $upload->user->nama_lengkap,
+                'description' => $upload->clients->name . ' added a new file',
+                'created_at' => now(),
+            ]);
+        });
+
+        static::deleted(function ($upload) {
+            ActivityLogs::create([
+                'type' => 'delete',
+                'title' => 'Image Laporan deleted by ' . auth()->user()->nama_lengkap,
+                'description' => $upload->clients->name . ' file has been removed',
+                'created_at' => now(),
+            ]);
+        });
+
+    }
 }

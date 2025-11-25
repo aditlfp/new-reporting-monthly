@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Kerjasama::class);
     }
+
+    public function divisi()
+    {
+        return $this->belongsTo(Divisi::class, 'devisi_id', 'id');
+    }
 }

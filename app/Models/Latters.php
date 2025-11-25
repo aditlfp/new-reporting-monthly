@@ -22,4 +22,34 @@ class Latters extends Model
     public function cover(){
         return $this->belongsTo(Cover::class);
     }
+
+    protected static function booted()
+    {
+        static::created(function ($upload) {
+            ActivityLogs::create([
+                'type' => 'upload',
+                'title' => 'New letter upload from ' . auth()->user()->nama_lengkap,
+                'description' => 'Added a new letter with number : ' . $upload->latter_numbers,
+                'created_at' => now(),
+            ]);
+        });
+
+        static::updated(function ($upload) {
+            ActivityLogs::create([
+                'type' => 'update',
+                'title' => 'Letter update from ' . auth()->user()->nama_lengkap,
+                'description' => 'Updated letter with number : ' . $upload->latter_numbers,
+                'created_at' => now(),
+            ]);
+        });
+
+        static::deleted(function ($upload) {
+            ActivityLogs::create([
+                'type' => 'delete',
+                'title' => 'Data letter deleted by ' . auth()->user()->nama_lengkap,
+                'description' => $upload->latter_numbers . ' this number of letter has been removed',
+                'created_at' => now(),
+            ]);
+        });
+    }
 }

@@ -70,7 +70,6 @@ class CoverReportControllers extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $cover->id,
-                    'client_name' => ucwords(strtolower($cover->client->name)),
                     'jenis_rekap' => $cover->jenis_rekap,
                 ]
             ]);
