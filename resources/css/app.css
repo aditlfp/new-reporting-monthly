@@ -14,6 +14,11 @@
   max-width:400px;  
 }
 
+.required::after {
+  content: ' *';
+  color: red;
+}
+
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

@@ -47,15 +47,23 @@ class ReportLettersControllers extends Controller
         return to_route('latters.index')->with('success', 'Latter created successfully.');
     }
 
-    public function edit(Latters $latters)
+    public function edit(Request $request, $id)
     {
+        $latter = Latters::findOrFail($id);
         $covers = Cover::pluck('id', 'id');
-        return view('latters.edit', compact('latter', 'covers'));
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Get Data Latter By Id.',
+                'data' => $latter,
+            ], 201);
+        }
     }
 
-    public function update(LattersRequest $request, Latters $latters)
+    public function update(LattersRequest $request, $id)
     {
-        $latters->update($request->validated());
+        $latter = Latters::findOrFail($id);
+        $latter->update($request->validated());
 
         if ($request->ajax()) {
             return response()->json([

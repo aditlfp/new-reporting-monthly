@@ -92,7 +92,7 @@
                         <input type="hidden" id="existing_img_src_2" name="existing_img_src_2" value="">
                         <div class="grid grid-cols-1 col-span-2 gap-4 md:grid-cols-5 md:gap-6">
                             <div class="md:col-span-3">
-                                <label class="block mb-2 text-xs font-medium text-slate-600"
+                                <label class="block mb-2 text-xs font-medium text-slate-600 required"
                                     for="client">Client</label>
                                 <select id="client" name="clients_id"
                                     class="w-full bg-white select select-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -108,7 +108,7 @@
                                     client</span>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block mb-2 text-xs font-medium text-slate-600" for="client">Jenis
+                                <label class="block mb-2 text-xs font-medium text-slate-600 required" for="client">Jenis
                                     rekap</label>
                                 <div class="flex flex-col space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
                                     <label class="flex items-center space-x-2 cursor-pointer">
@@ -127,7 +127,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="img_src_1">Image 1
+                            <label class="block mb-2 text-xs font-medium text-slate-600 required" for="img_src_1">Image 1
                                 (Kiri)</label>
                             <input type="file" id="img_src_1" name="img_src_1"
                                 class="w-full bg-white file-input file-input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -141,7 +141,7 @@
                             <span class="hidden text-xs text-red-500" id="image1-error">Please select an image</span>
                         </div>
                         <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="img_src_2">Image 2
+                            <label class="block mb-2 text-xs font-medium text-slate-600 required" for="img_src_2">Image 2
                                 (Kanan)</label>
                             <input type="file" id="img_src_2" name="img_src_2"
                                 class="w-full bg-white file-input file-input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -668,7 +668,6 @@
                                 }
 
                                 closeModal();
-                                console.log(isEditMode);
 
                                 showNotification(isEditMode ? 'Cover updated successfully!' :
                                     'Cover created successfully!', 'success');

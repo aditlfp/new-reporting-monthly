@@ -279,7 +279,7 @@
                     elements.letterId.val(id);
 
                     $.ajax({
-                        url: `/letters/${id}/edit`,
+                        url: `{{ route('admin-latters.edit', ':id') }}`.replace(':id', id),
                         type: 'GET',
                         dataType: 'json',
                         success: function(response) {
@@ -312,7 +312,7 @@
                 function deleteLetter(id) {
                     if (confirm('Are you sure you want to delete this letter?')) {
                         $.ajax({
-                            url: `/letters/${id}`,
+                            url: `{{ route('admin-latters.destroy', ':id') }}`.replace(':id', id),
                             type: 'DELETE',
                             data: {
                                 _token: $('meta[name="csrf-token"]').attr('content')
@@ -491,7 +491,7 @@
                     submitButton.html('<span class="loading loading-spinner loading-sm"></span> Saving...');
                     submitButton.prop('disabled', true);
 
-                    const url = isEditMode ? `/admin-latters/${letterId}` : 'admin-latters';
+                    const url = isEditMode ? `{{ route('admin-latters.update', ':id') }}`.replace(':id', letterId) : 'admin-latters';
                     $.ajax({
                         url: url,
                         type: 'POST',
@@ -499,7 +499,6 @@
                         processData: false,
                         contentType: false,
                         success: function(data) {
-                            console.log(data)
                             if (data && data.status) {
                                 // Update the table dynamically instead of reloading
                                 if (isEditMode) {

@@ -6,6 +6,7 @@ use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UploadImageController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
@@ -29,6 +30,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-covers', CoverReportControllers::class);
     Route::resource('/admin-latters', ReportLettersControllers::class);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
+    Route::get('/admin-settings', [SettingsController::class, 'index'])->name('admin.settings');
+    Route::post('/admin-settings', [SettingsController::class, 'store'])->name('admin.set.settings');
 });
 
 
