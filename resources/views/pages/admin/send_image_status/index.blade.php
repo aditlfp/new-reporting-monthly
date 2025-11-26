@@ -25,7 +25,7 @@
 		                	<fieldset class="fieldset">
 							  <legend class="fieldset-legend">Mitra</legend>
 							  <select name="client_id" class="select select-sm">
-							    <option disabled selected>Pick a Month</option>
+							    <option disabled selected>Pick a Mitra</option>
 							    <option value="">All Mitra</option>
 							    @foreach($clients as $client)
 		                            <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>

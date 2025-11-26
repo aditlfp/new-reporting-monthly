@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="flex flex-col h-screen w-64 bg-white border-r border-slate-200">
+<aside class="flex flex-col min-h-screen w-64 bg-white border-r border-slate-200">
 
   <!-- Navigation -->
   <div class="flex-1 overflow-y-auto p-4">

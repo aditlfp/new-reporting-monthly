@@ -1,5 +1,5 @@
 <x-app-layout title="Dashboard" subtitle="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod">
-<div class="flex h-screen bg-slate-50">
+<div class="flex min-h-screen bg-slate-50">
   @include('components.sidebar-component')
 
   <!-- Main Content -->
@@ -63,7 +63,7 @@
         </div>
 
       <!-- Recent Activity -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="bg-white rounded-xl border border-slate-200 overflow-y-auto">
           <div class="px-6 py-5 border-b border-slate-200">
               <h2 class="text-lg font-semibold text-slate-900">Recent Activity</h2>
           </div>
