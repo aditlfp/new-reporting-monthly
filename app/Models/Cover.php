@@ -22,6 +22,16 @@ class Cover extends Model
         return $this->belongsTo(Clients::class, 'clients_id', 'id');
     }
 
+    public function getClientNameFormattedAttribute()
+    {
+        return ucwords(strtolower($this->client->name));
+    }
+
+    public function getJenisRekapFormattedAttribute()
+    {
+        return ucwords(strtolower($this->jenis_rekap));
+    }
+
     protected static function booted()
     {
         static::created(function ($cover) {

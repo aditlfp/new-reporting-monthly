@@ -1,614 +1,428 @@
-<x-app-layout title="Data Surat" subtitle="Berisi Data Surat Jenis Rekap Dan Hal maupun Isi surat">
+<x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-6 overflow-y-auto">
-            <div class="flex items-center justify-end mb-6">
-                <button id="openLetterModal"
-                    class="btn btn-sm rounded-sm bg-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white transition-all ease-in-out duration-200 border-none uppercase">
-                    + Add New Letters
-                </button>
-            </div>
+        <div class="container mx-auto px-4 py-8">
+            <div class="card bg-white shadow-xl m-5">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="card-title text-2xl">Letters Management</h2>
+                        <button class="btn btn-info" id="btnCreate">
+                            <i class="ri-add-line"></i> Create New Letter
+                        </button>
+                    </div>
 
-                 <div class="card bg-white shadow-lg">
-                    <div class="card-body p-0">
-                        <div class="overflow-x-auto">
-                            <table class="table table-zebra w-full">
-                                <thead>
-                                    <tr class="bg-slate-950 text-white">
-                                        <th>No. Surat</th>
-                                        <th>Mitra</th>
-                                        <th>Jenis Rekap</th>
-                                        <th>Matters</th>
-                                        <th>Periode</th>
-                                        <th>Content</th>
-                                        <th>TTD</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse ($letters as $letter)
-                                    <tr class="transition-colors hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $letter->latter_numbers }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ ucwords(strtolower($letter->cover->client->name)) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ ucwords(strtolower($letter->cover->jenis_rekap)) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $letter->latter_matters }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $letter->period }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $letter->report_content }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $letter->signature }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex space-x-2">
-                                                <button data-letter-id="{{ $letter->id }}"
-                                                   class="edit-letter-btn btn btn-sm bg-amber-500/20 text-amber-500 border-none rounded-sm py-1 hover:bg-amber-500 hover:text-white transition-all ease-in-out duration-200"><i class="ri-settings-3-line text-xl"></i></button>
-                                                <button data-letter-id="{{ $letter->id }}"
-                                                    class="delete-letter-btn btn btn-sm bg-red-500/20 text-red-500 border-none rounded-sm py-1 hover:bg-red-500 hover:text-white transition-all ease-in-out duration-200"><i class="ri-delete-bin-2-line text-xl"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                                            No letters found
-                                        </td>
-                                    </tr>
-                                @endforelse
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cover Mitra</th>
+                                    <th>No Number</th>
+                                    <th>Hal Surat</th>
+                                    <th>Period</th>
+                                    <th>Signature</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <span class="loading loading-spinner loading-lg"></span>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
-
-                        @if ($letters->hasPages())
-                            <div class="flex justify-center mt-4">
-                                {{ $letters->links() }}
-                            </div>
-                        @endif
                     </div>
+
+                    <div id="pagination" class="flex justify-center mt-6"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Letter create/edit modal --}}
-    <div id="letterModal" class="modal">
-        <div class="max-w-4xl bg-white modal-box max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between px-4 mb-6 md:px-6">
-                <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Add New Letter</h3>
-                <button id="closeModalBtn"
-                    class="transition-colors btn btn-sm btn-circle btn-ghost hover:bg-gray-200">✕</button>
+<!-- Modal -->
+<dialog id="letterModal" class="modal">
+    <div class="modal-box w-11/12 max-w-3xl">
+        <h3 class="font-bold text-lg mb-4" id="modalTitle">Create Letter</h3>
+        
+        <form id="letterForm" method="dialog">
+            <input type="hidden" id="letterId" name="id">
+            <input type="hidden" id="formMethod" value="POST">
+
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Cover ID <span class="text-error">*</span></span>
+                </label>
+                <select class="select select-bordered w-full" id="cover_id" name="cover_id" required>
+                    <option value="" disabled selected>Select Cover</option>
+                    @foreach($covers as $cover)
+                    <option value="{{ $cover->id }}">{{ $cover->client->name }}</option>
+                    @endforeach
+                </select>
+                <label class="label hidden" id="error-cover_id">
+                    <span class="label-text-alt text-error"></span>
+                </label>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 px-4 md:px-6">
-                <!-- Letter Form -->
-                <div class="p-4 border rounded-lg md:p-6 bg-slate-50 border-slate-200">
-                    <h4 class="mb-4 text-sm font-semibold text-slate-700">Letter Information</h4>
-                    <form id="letterForm" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        @csrf
-                        <!-- Hidden field for letter ID (used for edit) -->
-                        <input type="hidden" id="letterId" name="letter_id" value="">
-                        <!-- Hidden field to track if file has changed -->
-                        <input type="hidden" id="file_changed" name="file_changed" value="0">
-                        <!-- Hidden field to store existing file path -->
-                        <input type="hidden" id="existing_file_path" name="existing_file_path" value="">
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Letter Number <span class="text-error">*</span></span>
+                </label>
+                <input type="text" class="input input-bordered w-full" id="latter_numbers" name="latter_numbers" required maxlength="255">
+                <label class="label hidden" id="error-latter_numbers">
+                    <span class="label-text-alt text-error"></span>
+                </label>
+            </div>
 
-                        <!-- Cover Selection -->
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="cover_id">Cover</label>
-                            <select id="cover_id" name="cover_id"
-                                class="w-full bg-white select select-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                required>
-                                <option value="" disabled selected>Select a cover</option>
-                                @foreach ($covers as $cover)
-                                    <option value="{{ $cover->id }}">
-                                        {{ $cover->latter_numbers }} - {{ ucwords(strtolower($cover->client->name)) }}
-                                        ({{ $cover->jenis_rekap }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            <span class="hidden text-xs text-red-500" id="cover-error">Please select a cover</span>
-                        </div>
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Letter Matter <span class="text-error">*</span></span>
+                </label>
+                <textarea class="textarea textarea-bordered w-full h-24" id="latter_matters" name="latter_matters" required></textarea>
+                <label class="label hidden" id="error-latter_matters">
+                    <span class="label-text-alt text-error"></span>
+                </label>
+            </div>
 
-                        <!-- File input for letter -->
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="letter_file">Letter
-                                File</label>
-                            <input type="file" id="letter_file" name="letter_file"
-                                class="w-full bg-white file-input file-input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                accept=".pdf,.doc,.docx">
-                            <div id="filePreview" class="mt-2 text-sm text-slate-500">
-                                <span>No file selected</span>
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Period <span class="text-error">*</span></span>
+                </label>
+                <input type="text" class="input input-bordered w-full" id="period" name="period" required maxlength="255">
+                <label class="label hidden" id="error-period">
+                    <span class="label-text-alt text-error"></span>
+                </label>
+            </div>
+
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Report Content</span>
+                </label>
+                <textarea class="textarea textarea-bordered w-full h-32" id="report_content" name="report_content"></textarea>
+                <label class="label hidden" id="error-report_content">
+                    <span class="label-text-alt text-error"></span>
+                </label>
+            </div>
+
+            <div class="form-control w-full mb-4">
+                <label class="label">
+                    <span class="label-text">Signature</span>
+                </label>
+                <input type="text" class="input input-bordered w-full" id="signature" name="signature" maxlength="255">
+                <label class="label hidden" id="error-signature">
+                    <span class="label-text-alt text-error"></span>
+                </label>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" id="btnClose">Close</button>
+                <button type="submit" class="btn btn-primary" id="btnSave">
+                    <span class="loading loading-spinner loading-sm hidden" id="btnSpinner"></span>
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Toast Container -->
+<div class="toast toast-top toast-end z-50" id="toastContainer"></div>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    let currentPage = 1;
+    const modal = document.getElementById('letterModal');
+
+    // Load data
+    function loadData(page = 1) {
+        $.ajax({
+            url: '{{ route("admin-latters.index") }}',
+            type: 'GET',
+            data: { page: page },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    renderTable(response.data.data);
+                    renderPagination(response.data);
+                    currentPage = page;
+                }
+            },
+            error: function(xhr) {
+                showToast('Error loading data', 'error');
+            }
+        });
+    }
+
+    // Render table
+    function renderTable(data) {
+        let html = '';
+        if (data.length === 0) {
+            html = '<tr><td colspan="7" class="text-center py-8 text-base-content/60">No data available</td></tr>';
+        } else {
+            data.forEach(function(item) {
+                html += `
+                    <tr class="hover">
+                        <td>${item.id}</td>
+                        <td>${item.cover?.client.name}</td>
+                        <td>${item.latter_numbers}</td>
+                        <td>
+                            <div class="max-w-xs truncate" title="${item.latter_matters}">
+                                ${item.latter_matters}
                             </div>
-                            <span class="hidden text-xs text-red-500" id="file-error">Please select a letter file</span>
-                        </div>
+                        </td>
+                        <td>${item.period}</td>
+                        <td>${item.signature || '-'}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="btn btn-sm btn-warning btn-edit" data-id="${item.id}">
+                                    <i class="ri-edit-line"></i>
+                                </button>
+                                <button class="btn btn-sm btn-error btn-delete" data-id="${item.id}">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        $('#tableBody').html(html);
+    }
 
-                        <!-- Letter Number -->
-                        <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="latter_numbers">No.
-                                Surat</label>
-                            <input type="text" id="latter_numbers" name="latter_numbers"
-                                class="w-full bg-white input input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter letter number" required>
-                            <span class="hidden text-xs text-red-500" id="number-error">Please enter a letter
-                                number</span>
-                        </div>
+    // Render pagination
+    function renderPagination(data) {
+        if (data.last_page <= 1) {
+            $('#pagination').html('');
+            return;
+        }
 
-                        <!-- Matters -->
-                        <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600"
-                                for="latter_matters">Matters</label>
-                            <input type="text" id="latter_matters" name="latter_matters"
-                                class="w-full bg-white input input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter matters" required>
-                            <span class="hidden text-xs text-red-500" id="matters-error">Please enter matters</span>
-                        </div>
+        let html = '<div class="join">';
+        
+        // Previous
+        html += `<button class="join-item btn btn-sm ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
+            <i class="ri-arrow-left-s-line"></i>
+        </button>`;
+        
+        // Pages
+        for (let i = 1; i <= data.last_page; i++) {
+            if (i === 1 || i === data.last_page || (i >= data.current_page - 2 && i <= data.current_page + 2)) {
+                html += `<button class="join-item btn btn-sm ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
+            } else if (i === data.current_page - 3 || i === data.current_page + 3) {
+                html += '<button class="join-item btn btn-sm btn-disabled">...</button>';
+            }
+        }
+        
+        // Next
+        html += `<button class="join-item btn btn-sm ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
+            <i class="ri-arrow-right-s-line"></i>
+        </button>`;
+        
+        html += '</div>';
+        $('#pagination').html(html);
+    }
 
-                        <!-- Period -->
-                        <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600"
-                                for="period">Periode</label>
-                            <input type="text" id="period" name="period"
-                                class="w-full bg-white input input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter period" required>
-                            <span class="hidden text-xs text-red-500" id="period-error">Please enter period</span>
-                        </div>
+    // Pagination click
+    $(document).on('click', '#pagination button', function(e) {
+        e.preventDefault();
+        if (!$(this).hasClass('btn-disabled') && !$(this).hasClass('btn-active')) {
+            loadData($(this).data('page'));
+        }
+    });
 
-                        <!-- Signature -->
-                        <div>
-                            <label class="block mb-2 text-xs font-medium text-slate-600" for="signature">TTD</label>
-                            <input type="text" id="signature" name="signature"
-                                class="w-full bg-white input input-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter signature">
-                            <span class="hidden text-xs text-red-500" id="signature-error">Please enter
-                                signature</span>
-                        </div>
+    // Create button
+    $('#btnCreate').click(function() {
+        resetForm();
+        $('#modalTitle').text('Create Letter');
+        $('#formMethod').val('POST');
+        modal.showModal();
+    });
 
-                        <!-- Content -->
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 text-xs font-medium text-slate-600"
-                                for="report_content">Content</label>
-                            <textarea id="report_content" name="report_content" rows="3"
-                                class="w-full bg-white textarea textarea-bordered focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                placeholder="Enter content"></textarea>
-                            <span class="hidden text-xs text-red-500" id="content-error">Please enter content</span>
-                        </div>
+    // Close button
+    $('#btnClose').click(function() {
+        modal.close();
+    });
 
-                        <!-- Form Actions -->
-                        <div class="flex flex-col gap-2 sm:flex-row md:col-span-2">
-                            <button type="submit"
-                                class="text-white transition-colors border-none btn bg-slate-900 hover:bg-slate-800 focus:ring-2 focus:ring-slate-500 focus:outline-none">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span id="submitButtonText">Save Letter</span>
-                            </button>
-                            <button type="button" id="cancelButton"
-                                class="transition-colors btn btn-ghost hover:bg-gray-200">Cancel</button>
-                        </div>
-                    </form>
+    // Edit button
+    $(document).on('click', '.btn-edit', function() {
+        const id = $(this).data('id');
+        $.ajax({
+            url: `{{ url('admin/admin-latters') }}/${id}/edit`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    console.log(response)
+                    $('#modalTitle').text('Edit Letter');
+                    $('#formMethod').val('PUT');
+                    $('#letterId').val(response.data.id);
+                    $('#cover_id').val(response.data.cover_id);
+                    $('#latter_numbers').val(response.data.latter_numbers);
+                    $('#latter_matters').val(response.data.latter_matters);
+                    $('#period').val(response.data.period);
+                    $('#report_content').val(response.data.report_content || '');
+                    $('#signature').val(response.data.signature || '');
+                    modal.showModal();
+                }
+            },
+            error: function(xhr) {
+                showToast('Error loading data', 'error');
+            }
+        });
+    });
+
+    // Submit form
+    $('#letterForm').submit(function(e) {
+        e.preventDefault();
+        clearErrors();
+        
+        const method = $('#formMethod').val();
+        const id = $('#letterId').val();
+        const url = method === 'POST' 
+            ? '{{ route("admin-latters.store") }}'
+            : `{{ url('admin-latters') }}/${id}`;
+        
+        const formData = {
+            cover_id: $('#cover_id').val(),
+            latter_numbers: $('#latter_numbers').val(),
+            latter_matters: $('#latter_matters').val(),
+            period: $('#period').val(),
+            report_content: $('#report_content').val(),
+            signature: $('#signature').val(),
+            _token: '{{ csrf_token() }}'
+        };
+
+        if (method === 'PUT') {
+            formData._method = 'PUT';
+        }
+
+        $('#btnSave').prop('disabled', true);
+        $('#btnSpinner').removeClass('hidden');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status) {
+                    modal.close();
+                    loadData(currentPage);
+                    showToast(response.message, 'success');
+                    resetForm();
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    displayErrors(errors);
+                } else {
+                    showToast('An error occurred', 'error');
+                }
+            },
+            complete: function() {
+                $('#btnSave').prop('disabled', false);
+                $('#btnSpinner').addClass('hidden');
+            }
+        });
+    });
+
+    // Delete button
+    $(document).on('click', '.btn-delete', function() {
+        const id = $(this).data('id');
+        
+        if (confirm('Are you sure you want to delete this letter?')) {
+            $.ajax({
+                url: `{{ url('admin/admin-latters') }}/${id}`,
+                type: 'POST',
+                data: {
+                    _method: 'DELETE',
+                    _token: '{{ csrf_token() }}'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        loadData(currentPage);
+                        showToast(response.message, 'success');
+                    }
+                },
+                error: function(xhr) {
+                    showToast('Error deleting data', 'error');
+                }
+            });
+        }
+    });
+
+    // Helper functions
+    function resetForm() {
+        $('#letterForm')[0].reset();
+        $('#letterId').val('');
+        clearErrors();
+    }
+
+    function clearErrors() {
+        $('select, input, textarea').removeClass('input-error select-error textarea-error');
+        $('.label[id^="error-"]').addClass('hidden').find('span').text('');
+    }
+
+    function displayErrors(errors) {
+        $.each(errors, function(key, value) {
+            const $field = $(`#${key}`);
+            $field.addClass($field.is('select') ? 'select-error' : ($field.is('textarea') ? 'textarea-error' : 'input-error'));
+            $(`#error-${key}`).removeClass('hidden').find('span').text(value[0]);
+        });
+    }
+
+    function showToast(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
+        
+        const toast = `
+            <div class="alert ${alertClass} shadow-lg mb-2 animate-fade-in">
+                <div>
+                    <i class="${icon} text-lg"></i>
+                    <span>${message}</span>
                 </div>
             </div>
-        </div>
-    </div>
+        `;
+        
+        const $toast = $(toast);
+        $('#toastContainer').append($toast);
+        
+        setTimeout(function() {
+            $toast.addClass('animate-fade-out');
+            setTimeout(function() {
+                $toast.remove();
+            }, 300);
+        }, 3000);
+    }
 
-    @push('scripts')
-        <script>
+    // Initial load
+    loadData();
+});
+</script>
 
-            // Use an IIFE to avoid polluting the global namespace
-            (function($) {
-                'use strict';
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
 
-                // Constants
-                const ASSET_URL = "{{ asset('storage') }}";
-                const DEBOUNCE_DELAY = 250;
-                const NOTIFICATION_TIMEOUT = 5000;
+@keyframes fade-out {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(20px); }
+}
 
-                // Cache DOM elements
-                const elements = {
-                    letterModal: $('#letterModal'),
-                    letterForm: $('#letterForm'),
-                    modalTitle: $('#modalTitle'),
-                    submitButtonText: $('#submitButtonText'),
-                    letterId: $('#letterId'),
-                    letterFileInput: $('#letter_file'),
-                    filePreview: $('#filePreview'),
-                    fileChanged: $('#file_changed'),
-                    existingFilePath: $('#existing_file_path'),
-                    coverSelect: $('#cover_id'),
-                    latterNumbersInput: $('#latter_numbers'),
-                    latterMattersInput: $('#latter_matters'),
-                    periodInput: $('#period'),
-                    reportContentTextarea: $('#report_content'),
-                    signatureInput: $('#signature')
-                };
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
 
-                // State variables
-                const state = {
-                    isEditMode: false,
-                    fileData: null
-                };
-
-                // Initialize event listeners
-                function init() {
-                    // Open modal for create
-                    $('#openLetterModal').on('click', openCreateModal);
-
-                    // Close modal
-                    $('#closeModalBtn, #cancelButton').on('click', closeModal);
-
-                    // Edit letter buttons
-                    $('.edit-letter-btn').on('click', function() {
-                        const letterId = $(this).data('letter-id');
-                        editLetter(letterId);
-                    });
-
-                    // Delete letter buttons
-                    $('.delete-letter-btn').on('click', function() {
-                        const letterId = $(this).data('letter-id');
-                        deleteLetter(letterId);
-                    });
-
-                    // File change handler
-                    elements.letterFileInput.on('change', handleFileChange);
-
-                    // Form submission
-                    elements.letterForm.on('submit', handleFormSubmit);
-                }
-
-
-                // Modal functions
-                function openCreateModal() {
-                    resetForm();
-                    state.isEditMode = false;
-                    elements.modalTitle.text('Add New Letter');
-                    elements.submitButtonText.text('Save Letter');
-                    elements.letterModal.addClass('modal-open');
-                }
-
-                function closeModal() {
-                    elements.letterModal.removeClass('modal-open');
-                    resetForm();
-                }
-
-                // Edit letter function
-                function editLetter(id) {
-                    resetFormFields();
-                    state.isEditMode = true;
-                    elements.modalTitle.text('Edit Letter');
-                    elements.submitButtonText.text('Update Letter');
-                    elements.letterId.val(id);
-
-                    $.ajax({
-                        url: `{{ route('admin-latters.edit', ':id') }}`.replace(':id', id),
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(response) {
-                            const data = response.data;
-
-                            // Set form fields
-                            elements.coverSelect.val(data.cover_id);
-                            elements.latterNumbersInput.val(data.latter_numbers);
-                            elements.latterMattersInput.val(data.latter_matters);
-                            elements.periodInput.val(data.period);
-                            elements.reportContentTextarea.val(data.report_content || '');
-                            elements.signatureInput.val(data.signature || '');
-
-                            // Store existing file path
-                            if (data.file_path) {
-                                elements.existingFilePath.val(data.file_path);
-                                elements.filePreview.html(`<span>${data.file_name}</span>`);
-                                state.fileData = data.file_path;
-                            }
-
-                            elements.letterModal.addClass('modal-open');
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr, 'Failed to load letter data.');
-                        }
-                    });
-                }
-
-                // Delete letter function
-                function deleteLetter(id) {
-                    if (confirm('Are you sure you want to delete this letter?')) {
-                        $.ajax({
-                            url: `{{ route('admin-latters.destroy', ':id') }}`.replace(':id', id),
-                            type: 'DELETE',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    // Remove the row from the table
-                                    $(`tr:has(button[data-letter-id="${id}"])`).fadeOut(300, function() {
-                                        $(this).remove();
-
-                                        // Show "No letters found" if table is empty
-                                        if ($('tbody tr').length === 0) {
-                                            $('tbody').html(`
-                                    <tr>
-                                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                                            No letters found
-                                        </td>
-                                    </tr>
-                                `);
-                                        }
-                                    });
-
-                                    showNotification('Letter deleted successfully!', 'success');
-                                } else {
-                                    showNotification('Error: ' + (response.message || 'Something went wrong'),
-                                        'error');
-                                }
-                            },
-                            error: function(xhr) {
-                                handleAjaxError(xhr, 'An error occurred while deleting the letter.');
-                            }
-                        });
-                    }
-                }
-
-                // File handling functions
-                function handleFileChange(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        // Display file name
-                        elements.filePreview.html(`<span>${file.name}</span>`);
-
-                        // Mark file as changed
-                        elements.fileChanged.val('1');
-
-                        // Store file data
-                        state.fileData = file;
-                    } else if (state.isEditMode) {
-                        // If in edit mode and no new file, keep existing
-                        const existingPath = elements.existingFilePath.val();
-                        if (existingPath) {
-                            elements.filePreview.html(`<span>${existingPath.split('/').pop()}</span>`);
-                            state.fileData = existingPath;
-                        }
-                        elements.fileChanged.val('0');
-                    } else {
-                        // Clear preview
-                        elements.filePreview.html('<span>No file selected</span>');
-                        state.fileData = null;
-                        elements.fileChanged.val('0');
-                    }
-                }
-
-                // Form handling functions
-                function resetFormFields() {
-                    elements.letterForm[0].reset();
-                    elements.letterId.val('');
-                    elements.fileChanged.val('0');
-                    elements.existingFilePath.val('');
-                    elements.filePreview.html('<span>No file selected</span>');
-
-                    // Hide error messages
-                    $('.text-red-500').addClass('hidden');
-
-                    state.fileData = null;
-                }
-
-                function resetForm() {
-                    resetFormFields();
-                    state.isEditMode = false;
-                }
-
-                function validateForm() {
-                    let isValid = true;
-
-                    // Validate cover selection
-                    if (!elements.coverSelect.val()) {
-                        $('#cover-error').removeClass('hidden');
-                        isValid = false;
-                    } else {
-                        $('#cover-error').addClass('hidden');
-                    }
-
-                    // Validate file input (only required for new letters)
-                    if (!state.isEditMode && !elements.letterFileInput[0].files[0]) {
-                        $('#file-error').removeClass('hidden');
-                        isValid = false;
-                    } else {
-                        $('#file-error').addClass('hidden');
-                    }
-
-                    // Validate required fields
-                    const requiredFields = [{
-                            id: 'latter_numbers',
-                            errorId: 'number-error'
-                        },
-                        {
-                            id: 'latter_matters',
-                            errorId: 'matters-error'
-                        },
-                        {
-                            id: 'period',
-                            errorId: 'period-error'
-                        }
-                    ];
-
-                    requiredFields.forEach(field => {
-                        const input = $(`#${field.id}`);
-                        if (!input.val().trim()) {
-                            $(`#${field.errorId}`).removeClass('hidden');
-                            isValid = false;
-                        } else {
-                            $(`#${field.errorId}`).addClass('hidden');
-                        }
-                    });
-
-                    return isValid;
-                }
-
-                function handleFormSubmit(e) {
-                    e.preventDefault();
-
-                    if (!validateForm()) {
-                        return;
-                    }
-
-                    // Capture the current edit mode state before it gets reset
-                    const isEditMode = state.isEditMode;
-
-                    // Create a new FormData object
-                    const formData = new FormData();
-                    const letterId = elements.letterId.val();
-
-                    // Add CSRF token
-                    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-
-                    // Add letter ID if in edit mode
-                    if (isEditMode) {
-                        formData.append('letter_id', letterId);
-                        formData.append('_method', 'PUT');
-                    }
-
-                    // Add all form fields explicitly
-                    formData.append('cover_id', elements.coverSelect.val());
-                    formData.append('latter_numbers', elements.latterNumbersInput.val());
-                    formData.append('latter_matters', elements.latterMattersInput.val());
-                    formData.append('period', elements.periodInput.val());
-                    formData.append('report_content', elements.reportContentTextarea.val() || '');
-                    formData.append('signature', elements.signatureInput.val() || '');
-
-                    // Add existing file path
-                    formData.append('existing_file_path', elements.existingFilePath.val());
-
-                    // Add file change flag
-                    formData.append('file_changed', elements.fileChanged.val());
-
-                    // Handle file
-                    if (elements.fileChanged.val() === '1' && elements.letterFileInput[0].files[0]) {
-                        formData.append('letter_file', elements.letterFileInput[0].files[0]);
-                    } else if (isEditMode) {
-                        formData.append('letter_file', elements.existingFilePath.val());
-                    }
-
-                    const submitButton = elements.letterForm.find('button[type="submit"]');
-                    const originalText = submitButton.html();
-                    submitButton.html('<span class="loading loading-spinner loading-sm"></span> Saving...');
-                    submitButton.prop('disabled', true);
-
-                    const url = isEditMode ? `{{ route('admin-latters.update', ':id') }}`.replace(':id', letterId) : 'admin-latters';
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(data) {
-                            if (data && data.status) {
-                                // Update the table dynamically instead of reloading
-                                if (isEditMode) {
-                                    updateTableRow(data.data);
-                                } else {
-                                    addNewTableRow(data.data);
-                                }
-
-                                closeModal();
-                                Notify(data.message,null,null,'success');
-                            } else {
-                                Notify(data.message,null,null,'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            handleAjaxError(xhr, 'An error occurred while saving the letter.');
-                        },
-                        complete: function() {
-                            submitButton.html(originalText);
-                            submitButton.prop('disabled', false);
-                        }
-                    });
-                }
-
-                // Function to update an existing table row
-                function updateTableRow(letterData) {
-                    const row = $(`tr:has(button[data-letter-id="${letterData.id}"])`);
-                    if (row.length) {
-                        // Update all cells
-                        row.find('td:nth-child(1)').text(letterData.latter_numbers);
-                        row.find('td:nth-child(2)').text(letterData.client_name);
-                        row.find('td:nth-child(3)').text(letterData.jenis_rekap);
-                        row.find('td:nth-child(4)').text(letterData.latter_matters);
-                        row.find('td:nth-child(5)').text(letterData.period);
-                        row.find('td:nth-child(6)').text(letterData.report_content || '');
-                        row.find('td:nth-child(7)').text(letterData.signature || '');
-                    }
-                }
-
-                // Function to add a new table row
-                function addNewTableRow(letterData) {
-                    const tbody = $('tbody');
-                    const noDataRow = tbody.find('tr:contains("No letters found")');
-
-                    // Remove "No letters found" row if it exists
-                    if (noDataRow.length) {
-                        noDataRow.remove();
-                    }
-
-                    // Create new row HTML
-                    const newRow = `
-                        <tr class="transition-colors hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_numbers}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.client_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.jenis_rekap}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.latter_matters}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.period}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.report_content || ''}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${letterData.signature || ''}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex space-x-2">
-                                    <button data-letter-id="${letterData.id}" class="text-blue-600 edit-letter-btn hover:text-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-500">Edit</button>
-                                    <button data-letter-id="${letterData.id}" class="text-red-600 delete-letter-btn hover:text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500">Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-
-                    // Append the new row to the table
-                    tbody.append(newRow);
-
-                    // Re-attach event handlers to the new buttons
-                    $(`button[data-letter-id="${letterData.id}"]`).each(function() {
-                        const $button = $(this);
-                        if ($button.hasClass('edit-letter-btn')) {
-                            $button.on('click', function() {
-                                const letterId = $(this).data('letter-id');
-                                editLetter(letterId);
-                            });
-                        } else if ($button.hasClass('delete-letter-btn')) {
-                            $button.on('click', function() {
-                                const letterId = $(this).data('letter-id');
-                                deleteLetter(letterId);
-                            });
-                        }
-                    });
-                }
-
-                // Utility functions
-                function handleAjaxError(xhr, defaultMessage) {
-                    console.error('Error:', xhr);
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        let errorMessage = 'Error: ';
-
-                        if (response.errors) {
-                            errorMessage += Object.values(response.errors).join('<br>');
-                        } else {
-                            errorMessage += (response.message || defaultMessage);
-                        }
-
-                        Notify(errorMessage,null,null,'error');
-                    } catch (e) {
-                        Notify(defaultMessage,null,null,'error');
-                    }
-                }
-
-                // Initialize when DOM is ready
-                $(document).ready(init);
-            })(jQuery);
-        </script>
-    @endpush
+.animate-fade-out {
+    animation: fade-out 0.3s ease-out;
+}
+</style>
+@endpush
 </x-app-layout>
