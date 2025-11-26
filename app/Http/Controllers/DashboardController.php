@@ -131,7 +131,35 @@ class DashboardController extends Controller
                 ->where('status', 0)
                 ->latest()
                 ->first();
-            return view('pages.user.dashboard', compact('uploadDraft'));
+            $allImages = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
+                ->where('status', 1)
+                ->get();
+            $imageCount = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
+                ->where('status', 1);
+
+            // Count each image type separately
+            $totalBefore = (clone $imageCount)
+                ->whereNotNull('img_before')
+                ->where('img_before', '!=', '')
+                ->where('img_before', '!=', 'none')
+                ->count();
+
+            $totalProccess = (clone $imageCount)
+                ->whereNotNull('img_proccess')
+                ->where('img_proccess', '!=', '')
+                ->where('img_proccess', '!=', 'none')
+                ->count();
+
+            $totalFinal = (clone $imageCount)
+                ->whereNotNull('img_final')
+                ->where('img_final', '!=', '')
+                ->where('img_final', '!=', 'none')
+                ->count();
+
+            // Calculate the total number of images
+            $totalImageCount = $totalBefore + $totalProccess + $totalFinal;
+
+            return view('pages.user.dashboard', compact('uploadDraft', 'totalImageCount', 'allImages'));
         }
     }
 }
