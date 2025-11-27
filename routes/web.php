@@ -31,7 +31,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-covers', CoverReportControllers::class);
     Route::resource('/admin-latters', ReportLettersControllers::class);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
-    Route::get('/admin-check-status/{admin_check_status}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
+    Route::get('/admin-check-status/{admin_check_status}/{month}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
     Route::get('/admin-settings', [SettingsController::class, 'index'])->name('admin.settings');
     Route::post('/admin-settings', [SettingsController::class, 'store'])->name('admin.set.settings');
 });

@@ -116,41 +116,12 @@ class SendImageStatusController extends Controller
         ));
     }
 
-    public function show($id)
+    public function show($id, $month)
     {
         try {
-            // 1) REKAP UPLOAD (fast & clean)
-            $uploads = UploadImage::select(
-                    'user_id',
-                    'clients_id',
-                    DB::raw('MONTH(created_at) as month'),
-                    DB::raw('YEAR(created_at) as year'),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->where('user_id', $id)
-                ->groupBy('user_id', 'clients_id', 'month', 'year')
-                ->orderBy('year', 'desc')
-                ->orderBy('month', 'desc')
-                ->get();
-
-
-            // ambil semua clients_id unik hasil rekap
-            $clientIds = $uploads->pluck('clients_id')->unique();
-
-            // 2) LOAD USER + CLIENTS SEKALI SAJA (no N+1)
-            $user = User::with('divisi.jabatan')->find($id);
-
-            $clients = Clients::whereIn('id', $clientIds)->get();
-
-
-            // OPTIONAL: gabungkan clients ke hasil
-            $uploads->each(function ($item) use ($clients, $user) {
-                $item->setRelation('user', $user);
-                $item->setRelation('clients', $clients->firstWhere('id', $item->clients_id));
-            });
-
             $UploadsAll = UploadImage::with('clients', 'user.divisi.jabatan')
                             ->where('user_id', $id)
+                            ->whereMonth('created_at', $month)
                             ->orderBy('created_at', 'desc')
                             ->get();
 
