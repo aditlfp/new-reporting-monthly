@@ -26,14 +26,11 @@ class CoverRequest extends FormRequest
             'jenis_rekap' => 'required|string',
         ];
 
-        // For create, images are required
         if ($this->isMethod('post')) {
             $rules['img_src_1'] = 'required|image|mimes:jpeg,png,jpg,svg|max:2048';
             $rules['img_src_2'] = 'required|image|mimes:jpeg,png,jpg,svg|max:2048';
         } 
-        // For update, images are required only if they are being changed
         elseif ($this->isMethod('put') || $this->isMethod('patch')) {
-            // If img1_changed is set to 1, then img_src_1 is required
             if ($this->input('img1_changed') == 1) {
                 $rules['img_src_1'] = 'required|image|mimes:jpeg,png,jpg,svg|max:2048';
             }

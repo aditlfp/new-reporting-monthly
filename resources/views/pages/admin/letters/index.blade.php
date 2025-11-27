@@ -42,7 +42,7 @@
 
 <!-- Modal -->
 <dialog id="letterModal" class="modal">
-    <div class="modal-box w-11/12 max-w-3xl">
+    <div class="modal-box w-10/11 max-w-2xl">
         <h3 class="font-bold text-lg mb-4" id="modalTitle">Create Letter</h3>
         
         <form id="letterForm" method="dialog">
@@ -106,9 +106,9 @@
 
             <div class="form-control w-full mb-4">
                 <label class="label">
-                    <span class="label-text">Signature</span>
+                    <span class="label-text">Add File Lanjutan Surat</span>
                 </label>
-                <input type="text" class="input input-bordered w-full" id="signature" name="signature" maxlength="255">
+                <input type="file" class="file-input file-input-bordered w-full" id="signature" name="signature">
                 <label class="label hidden" id="error-signature">
                     <span class="label-text-alt text-error"></span>
                 </label>

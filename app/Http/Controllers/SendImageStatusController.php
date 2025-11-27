@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Clients;
 use App\Models\UploadImage;
+use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SendImageStatusController extends Controller
 {
@@ -58,7 +61,6 @@ class SendImageStatusController extends Controller
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->paginate(10);
-
         $dataCount = UploadImage::searchFilters($filters)
             ->select(
                 'clients_id',
@@ -112,6 +114,50 @@ class SendImageStatusController extends Controller
             'months',
             'dataCount'
         ));
+    }
+
+    public function show($id)
+    {
+        try {
+            // 1) REKAP UPLOAD (fast & clean)
+            $uploads = UploadImage::select(
+                    'user_id',
+                    'clients_id',
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('user_id', $id)
+                ->groupBy('user_id', 'clients_id', 'month', 'year')
+                ->orderBy('year', 'desc')
+                ->orderBy('month', 'desc')
+                ->get();
+
+
+            // ambil semua clients_id unik hasil rekap
+            $clientIds = $uploads->pluck('clients_id')->unique();
+
+            // 2) LOAD USER + CLIENTS SEKALI SAJA (no N+1)
+            $user = User::with('divisi.jabatan')->find($id);
+
+            $clients = Clients::whereIn('id', $clientIds)->get();
+
+
+            // OPTIONAL: gabungkan clients ke hasil
+            $uploads->each(function ($item) use ($clients, $user) {
+                $item->setRelation('user', $user);
+                $item->setRelation('clients', $clients->firstWhere('id', $item->clients_id));
+            });
+
+            $UploadsAll = UploadImage::with('clients', 'user.divisi.jabatan')
+                            ->where('user_id', $id)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+            return view('pages.admin.send_image_status.show', compact('UploadsAll'));
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
 }

@@ -8,6 +8,7 @@ use App\Helpers\FileHelper;
 use App\Models\Clients;
 use App\Models\Cover;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CoverReportControllers extends Controller
@@ -17,7 +18,6 @@ class CoverReportControllers extends Controller
         $covers = Cover::with('client')->latest()->paginate(10);
         $client = Clients::all();
 
-        // If AJAX → return JSON data
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
@@ -26,7 +26,6 @@ class CoverReportControllers extends Controller
             ]);
         }
 
-        // normal view
         return view('pages.admin.covers.index', compact('covers', 'client'));
     }
 
@@ -57,13 +56,11 @@ class CoverReportControllers extends Controller
         try {
             $validated = $request->validated();
 
-            // Handle Image Upload
             $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', null);
             $validated['img_src_2'] = $this->handleImageUpload($request, 'img_src_2', null);
 
             $cover = Cover::create($validated);
 
-            // Load client relationship
             $cover->load('client');
             
             return response()->json([
@@ -84,7 +81,6 @@ class CoverReportControllers extends Controller
             $cover = Cover::findOrFail($id);
             $validated = $request->validated();
 
-            // Handle Image Upload only if changed
             if ($request->hasFile('img_src_1') && $request->img1_changed) {
                 $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', $cover->img_src_1);
             }
@@ -94,7 +90,6 @@ class CoverReportControllers extends Controller
 
             $cover->update($validated);
 
-            // Load client relationship
             $cover->load('client');
 
             return response()->json([
@@ -149,22 +144,9 @@ class CoverReportControllers extends Controller
         return $oldImagePath;
     }
 
-    private function getSuccessResponse($data, $message)
-    {
-        if (request()->ajax() || request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'data' => $data
-            ]);
-        }
-
-        // return to_route('admin-covers.index')->with('success', $message);
-    }
-
     private function getErrorResponse(\Exception $e, $message)
     {
-        \Log::error($message . ': ' . $e->getMessage());
+        Log::error($message . ': ' . $e->getMessage());
 
         if (request()->ajax() || request()->wantsJson()) {
             return response()->json([
