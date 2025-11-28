@@ -35,6 +35,7 @@ class ReportLettersControllers extends Controller
 
     public function store(LattersRequest $request)
     {
+        // dd($request->all());
         $latter = Latters::create($request->validated());
 
         if ($request->ajax()) {
@@ -52,6 +53,18 @@ class ReportLettersControllers extends Controller
     {
         $latter = Latters::with(['cover.client'])->findOrFail($id);
         $covers = Cover::pluck('id', 'id');
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Get Data Latter By Id.',
+                'data' => $latter,
+            ], 201);
+        }
+    }
+
+    public function show(Request $request, $id)
+    {
+        $latter = Latters::with(['cover.client'])->findOrFail($id);
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
