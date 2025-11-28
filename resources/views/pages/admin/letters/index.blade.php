@@ -1,18 +1,18 @@
 <x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="container mx-auto px-4 py-8">
-            <div class="card bg-white shadow-xl m-5">
+        <div class="container px-4 py-8 mx-auto">
+            <div class="m-5 bg-white shadow-xl card">
                 <div class="card-body">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="card-title text-2xl">Letters Management</h2>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl card-title">Letters Management</h2>
                         <button class="btn btn-info" id="btnCreate">
                             <i class="ri-add-line"></i> Create New Letter
                         </button>
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="table table-zebra w-full">
+                        <table class="table w-full table-zebra">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -42,74 +42,74 @@
 
 <!-- Modal -->
 <dialog id="letterModal" class="modal">
-    <div class="modal-box w-10/11 max-w-2xl">
-        <h3 class="font-bold text-lg mb-4" id="modalTitle">Create Letter</h3>
+    <div class="max-w-2xl modal-box w-10/11">
+        <h3 class="mb-4 text-lg font-bold" id="modalTitle">Create Letter</h3>
         
         <form id="letterForm" method="dialog">
             <input type="hidden" id="letterId" name="id">
             <input type="hidden" id="formMethod" value="POST">
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Cover ID <span class="text-error">*</span></span>
                 </label>
-                <select class="select select-bordered w-full" id="cover_id" name="cover_id" required>
+                <select class="w-full select select-bordered" id="cover_id" name="cover_id" required>
                     <option value="" disabled selected>Select Cover</option>
                     @foreach($covers as $cover)
                     <option value="{{ $cover->id }}">{{ $cover->client->name }}</option>
                     @endforeach
                 </select>
-                <label class="label hidden" id="error-cover_id">
+                <label class="hidden label" id="error-cover_id">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Letter Number <span class="text-error">*</span></span>
                 </label>
-                <input type="text" class="input input-bordered w-full" id="latter_numbers" name="latter_numbers" required maxlength="255">
-                <label class="label hidden" id="error-latter_numbers">
+                <input type="text" class="w-full input input-bordered" id="latter_numbers" name="latter_numbers" required maxlength="255">
+                <label class="hidden label" id="error-latter_numbers">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Letter Matter <span class="text-error">*</span></span>
                 </label>
-                <textarea class="textarea textarea-bordered w-full h-24" id="latter_matters" name="latter_matters" required></textarea>
-                <label class="label hidden" id="error-latter_matters">
+                <textarea class="w-full h-24 textarea textarea-bordered" id="latter_matters" name="latter_matters" required></textarea>
+                <label class="hidden label" id="error-latter_matters">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Period <span class="text-error">*</span></span>
                 </label>
-                <input type="text" class="input input-bordered w-full" id="period" name="period" required maxlength="255">
-                <label class="label hidden" id="error-period">
+                <input type="text" class="w-full input input-bordered" id="period" name="period" required maxlength="255">
+                <label class="hidden label" id="error-period">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Report Content</span>
                 </label>
-                <textarea class="textarea textarea-bordered w-full h-32" id="report_content" name="report_content"></textarea>
-                <label class="label hidden" id="error-report_content">
+                <textarea class="w-full h-32 textarea textarea-bordered" id="report_content" name="report_content"></textarea>
+                <label class="hidden label" id="error-report_content">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
 
-            <div class="form-control w-full mb-4">
+            <div class="w-full mb-4 form-control">
                 <label class="label">
                     <span class="label-text">Add File Lanjutan Surat</span>
                 </label>
-                <input type="file" class="file-input file-input-bordered w-full" id="signature" name="signature">
-                <label class="label hidden" id="error-signature">
+                <input type="file" class="w-full file-input file-input-bordered" id="signature" name="signature">
+                <label class="hidden label" id="error-signature">
                     <span class="label-text-alt text-error"></span>
                 </label>
             </div>
@@ -117,7 +117,7 @@
             <div class="modal-action">
                 <button type="button" class="btn btn-ghost" id="btnClose">Close</button>
                 <button type="submit" class="btn btn-primary" id="btnSave">
-                    <span class="loading loading-spinner loading-sm hidden" id="btnSpinner"></span>
+                    <span class="hidden loading loading-spinner loading-sm" id="btnSpinner"></span>
                     Save
                 </button>
             </div>
@@ -129,13 +129,34 @@
 </dialog>
 
 <!-- Toast Container -->
-<div class="toast toast-top toast-end z-50" id="toastContainer"></div>
+<div class="z-50 toast toast-top toast-end" id="toastContainer"></div>
 
 @push('scripts')
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js"></script>
+<script src="{{ asset('js/letterPages.js') }}"></script>
 <script>
 $(document).ready(function() {
     let currentPage = 1;
     const modal = document.getElementById('letterModal');
+
+    const $els = {
+        // ... existing elements ...
+        generatePdfBtn: $('.generate-pdf-btn'),
+    };
+
+    let state = { 
+        pdfGenerating: false
+    };
+
+    const ASSET_URL = "{{ asset('storage') }}";
+    const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+    function init() {
+        // Initial load
+        loadData();
+        $(document).on('click', '.generate-pdf-btn', function() { generateCoverPDF($(this).data('latter-id')); });
+    }
 
     // Load data
     function loadData(page = 1) {
@@ -161,7 +182,7 @@ $(document).ready(function() {
     function renderTable(data) {
         let html = '';
         if (data.length === 0) {
-            html = '<tr><td colspan="7" class="text-center py-8 text-base-content/60">No data available</td></tr>';
+            html = '<tr><td colspan="7" class="py-8 text-center text-base-content/60">No data available</td></tr>';
         } else {
             data.forEach(function(item) {
                 html += `
@@ -180,6 +201,9 @@ $(document).ready(function() {
                             <div class="flex gap-2">
                                 <button class="btn btn-sm btn-warning btn-edit" data-id="${item.id}">
                                     <i class="ri-edit-line"></i>
+                                </button>
+                                <button data-latter-id="${item.id}" class="generate-pdf-btn btn btn-sm btn-info">
+                                    <i class="ri-file-pdf-line"></i>
                                 </button>
                                 <button class="btn btn-sm btn-error btn-delete" data-id="${item.id}">
                                     <i class="ri-delete-bin-line"></i>
@@ -400,8 +424,173 @@ $(document).ready(function() {
         }, 3000);
     }
 
+    function generateCoverPDF(latterId) {
+        if (state.pdfGenerating) return;
+        
+        state.pdfGenerating = true;
+        showToast('Generating PDF...', 'info');
+        
+        // First get the cover data
+        $.get(`/admin/admin-latters/${latterId}`, function(res) {
+            const latterData = res.data;
+            
+            // Create a temporary div for rendering
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.width = '210mm'; // A4 width
+            tempDiv.style.backgroundColor = 'white';
+            tempDiv.style.padding = '0'; // Remove padding
+            tempDiv.style.margin = '0'; // Remove margin
+            tempDiv.style.boxSizing = 'border-box';
+            tempDiv.style.fontFamily = 'Arial, sans-serif';
+            tempDiv.style.overflow = 'hidden'; // Prevent any overflow
+            
+            // Build the HTML content using component functions
+            const coverPageHtml = getCoverPageHtml(latterData, ASSET_URL);
+            tempDiv.innerHTML = coverPageHtml;
+            document.body.appendChild(tempDiv);
+            
+            // Initialize PDF
+            let pdf;
+            try {
+                // Check if jsPDF is available through window.jspdf
+                if (window.jspdf && typeof window.jspdf === 'object') {
+                    // For UMD builds
+                    if (window.jspdf.jsPDF) {
+                        pdf = new window.jspdf.jsPDF({
+                            orientation: 'portrait',
+                            unit: 'mm',
+                            format: 'a4'
+                        });
+                    } else {
+                        // Alternative access pattern
+                        pdf = new window.jspdf.default({
+                            orientation: 'portrait',
+                            unit: 'mm',
+                            format: 'a4'
+                        });
+                    }
+                } 
+                // Check if jsPDF is available directly
+                else if (window.jsPDF && typeof window.jsPDF === 'function') {
+                    pdf = new window.jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+                }
+                // If none of the above work, try to access through module exports
+                else if (typeof jspdf !== 'undefined' && jspdf.jsPDF) {
+                    pdf = new jspdf.jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+                }
+                else {
+                    throw new Error('jsPDF library not loaded properly. Please check the console for details.');
+                }
+            } catch (error) {
+                console.error('Error initializing jsPDF:', error);
+                document.body.removeChild(tempDiv);
+                state.pdfGenerating = false;
+                showToast('Error initializing PDF generator: ' + error.message, 'error');
+                return;
+            }
+            
+            // Capture the cover page with html2canvas
+            html2canvas(tempDiv, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                width: tempDiv.offsetWidth,
+                height: tempDiv.offsetHeight,
+                windowWidth: tempDiv.scrollWidth,
+                windowHeight: tempDiv.scrollHeight,
+                backgroundColor: null,
+                removeContainer: false, // We'll remove the tempDiv at the end
+                onclone: function(clonedDoc) {
+                    const clonedElement = clonedDoc.querySelector('section');
+                    if (clonedElement) {
+                        // Force background image to load
+                        const bgImage = clonedElement.querySelector('img[alt="Background"]');
+                        if (bgImage) {
+                            bgImage.setAttribute('crossorigin', 'anonymous');
+                        }
+                        
+                        // Force other images to load
+                        const images = clonedElement.querySelectorAll('img:not([alt="Background"])');
+                        images.forEach(img => {
+                            img.setAttribute('crossorigin', 'anonymous');
+                        });
+                    }
+                }
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                // Remove temporary element
+                document.body.removeChild(tempDiv);
+                
+                // Convert to blob for sending to backend
+                const pdfBlob = pdf.output('blob');
+                
+                // Send PDF to backend
+                sendPDFToBackend(latterId, pdfBlob);
+                
+                state.pdfGenerating = false;
+                showToast('PDF saved successfully!', 'success');
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                document.body.removeChild(tempDiv);
+                state.pdfGenerating = false;
+                showToast('Error generating PDF: ' + error.message, 'error');
+            });
+            
+        }).fail(xhr => {
+            state.pdfGenerating = false;
+            handleError(xhr, 'Failed to load cover data for PDF generation');
+        });
+    }
+
+    // Function to send PDF to backend
+    function sendPDFToBackend(coverId, pdfBlob) {
+        const formData = new FormData();
+        formData.append('pdf', pdfBlob, `Cover_${coverId}.pdf`);
+        formData.append('_token', CSRF_TOKEN);
+        formData.append('cover_id', coverId);
+        
+        $.ajax({
+            url: '/admin/admin-covers/store-pdf',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                if (res.success) {
+                    console.log('PDF saved to server:', res.path);
+                    // Optionally show a more detailed success message
+                    showToast('PDF saved to server successfully!', 'success');
+                } else {
+                    console.error('Failed to save PDF to server:', res.message);
+                    showToast('Failed to save PDF to server: ' + res.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                console.error('Error saving PDF to server:', xhr);
+                showToast('Error saving PDF to server: ' + xhr.statusText, 'error');
+            }
+        });
+    }
+
     // Initial load
-    loadData();
+    $(document).ready(init);
 });
 </script>
 
