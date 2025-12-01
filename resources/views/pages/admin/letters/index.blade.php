@@ -45,7 +45,7 @@
     <div class="max-w-2xl modal-box w-10/11">
         <h3 class="mb-4 text-lg font-bold" id="modalTitle">Create Letter</h3>
         
-        <form id="letterForm" method="dialog">
+        <form id="letterForm" method="dialog" >
             <input type="hidden" id="letterId" name="id">
             <input type="hidden" id="formMethod" value="POST">
 

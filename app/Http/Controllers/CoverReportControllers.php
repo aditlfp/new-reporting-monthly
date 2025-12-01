@@ -7,6 +7,9 @@ use App\Http\Requests\CoverRequest;
 use App\Helpers\FileHelper;
 use App\Models\Clients;
 use App\Models\Cover;
+use App\Models\Latters;
+use App\Models\UploadImage;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -135,16 +138,20 @@ class CoverReportControllers extends Controller
 
     public function store_pdf(Request $request)
     {
-         $request->validate([
+        $request->validate([
             'pdf' => 'required|file|mimetypes:application/pdf|max:512000', // 500MB
-            'cover_id' => 'required'
+            'cover_id' => 'required',
+            'srt_id' => 'required'
         ]);
 
-        // Store PDF in storage/app/public/covers/
+        $dataSrt = Latters::with('cover')->find(1);
+        $dataImg = UploadImage::where('client_id', $dataSrt->cover->clients_id)->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)->get();
+
         $path = $request->file('pdf')->storeAs(
-            'covers',                                  // folder
-            $request->file('pdf')->getClientOriginalName(),        // filename
-            'public'                                   // disk
+            'covers_to_pdf',                                 
+            $request->file('pdf')->getClientOriginalName(),  
+            'public'                               
         );
 
         return response()->json([

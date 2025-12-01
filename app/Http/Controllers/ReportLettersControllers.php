@@ -35,8 +35,12 @@ class ReportLettersControllers extends Controller
 
     public function store(LattersRequest $request)
     {
-        // dd($request->all());
-        $latter = Latters::create($request->validated());
+        $data = $request->validated();
+        if($data['signature'])
+        {
+            $request->file('signature')->storeAs('report_pdf', $request->file('pdf')->getClientOriginalName(), 'public');
+        }
+        $latter = Latters::create($data);
 
         if ($request->ajax()) {
             return response()->json([
