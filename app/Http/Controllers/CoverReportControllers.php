@@ -132,6 +132,27 @@ class CoverReportControllers extends Controller
         }
     }
 
+
+    public function store_pdf(Request $request)
+    {
+         $request->validate([
+            'pdf' => 'required|file|mimetypes:application/pdf|max:512000', // 500MB
+            'cover_id' => 'required'
+        ]);
+
+        // Store PDF in storage/app/public/covers/
+        $path = $request->file('pdf')->storeAs(
+            'covers',                                  // folder
+            $request->file('pdf')->getClientOriginalName(),        // filename
+            'public'                                   // disk
+        );
+
+        return response()->json([
+            'success' => true,
+            'path' => $path
+        ]);
+    }
+
     private function handleImageUpload(Request $request, $fieldName, $oldImagePath = null)
     {
         if ($request->hasFile($fieldName)) {

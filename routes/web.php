@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-covers', CoverReportControllers::class);
+    Route::post('admin-covers/store-pdf', [CoverReportControllers::class, 'store_pdf']);
     Route::resource('/admin-latters', ReportLettersControllers::class);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
     Route::get('/admin-check-status/{admin_check_status}/{month}', [SendImageStatusController::class, 'show'])->name('check.upload.show');

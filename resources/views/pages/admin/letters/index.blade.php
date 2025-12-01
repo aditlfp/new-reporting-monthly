@@ -428,7 +428,7 @@ $(document).ready(function() {
         if (state.pdfGenerating) return;
         
         state.pdfGenerating = true;
-        showToast('Generating PDF...', 'info');
+        Notify('Generating PDF....', null, null, 'success')
         
         // First get the cover data
         $.get(`/admin/admin-latters/${latterId}`, function(res) {
@@ -472,7 +472,6 @@ $(document).ready(function() {
                         });
                     }
                 } 
-                // Check if jsPDF is available directly
                 else if (window.jsPDF && typeof window.jsPDF === 'function') {
                     pdf = new window.jsPDF({
                         orientation: 'portrait',
@@ -480,7 +479,6 @@ $(document).ready(function() {
                         format: 'a4'
                     });
                 }
-                // If none of the above work, try to access through module exports
                 else if (typeof jspdf !== 'undefined' && jspdf.jsPDF) {
                     pdf = new jspdf.jsPDF({
                         orientation: 'portrait',
@@ -495,7 +493,7 @@ $(document).ready(function() {
                 console.error('Error initializing jsPDF:', error);
                 document.body.removeChild(tempDiv);
                 state.pdfGenerating = false;
-                showToast('Error initializing PDF generator: ' + error.message, 'error');
+                Notify('Error initializing PDF generator: ' + error.message,null, null, 'error');
                 return;
             }
             
@@ -528,7 +526,7 @@ $(document).ready(function() {
                     }
                 }
             }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.70);
                 const imgProps = pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -545,12 +543,12 @@ $(document).ready(function() {
                 sendPDFToBackend(latterId, pdfBlob);
                 
                 state.pdfGenerating = false;
-                showToast('PDF saved successfully!', 'success');
+                Notify('PDF saved successfully!',null,null, 'success');
             }).catch(error => {
                 console.error('Error generating PDF:', error);
                 document.body.removeChild(tempDiv);
                 state.pdfGenerating = false;
-                showToast('Error generating PDF: ' + error.message, 'error');
+                Notify('Error generating PDF: ' + error.message,null,null, 'error');
             });
             
         }).fail(xhr => {
@@ -576,15 +574,15 @@ $(document).ready(function() {
                 if (res.success) {
                     console.log('PDF saved to server:', res.path);
                     // Optionally show a more detailed success message
-                    showToast('PDF saved to server successfully!', 'success');
+                    Notify('PDF saved to server successfully!',null,null, 'success');
                 } else {
                     console.error('Failed to save PDF to server:', res.message);
-                    showToast('Failed to save PDF to server: ' + res.message, 'error');
+                    Notify('Failed to save PDF to server: ' + res.message,null,null, 'error');
                 }
             },
             error: function(xhr) {
                 console.error('Error saving PDF to server:', xhr);
-                showToast('Error saving PDF to server: ' + xhr.statusText, 'error');
+                Notify('Error saving PDF to server: ' + xhr.statusText,null,null, 'error');
             }
         });
     }
