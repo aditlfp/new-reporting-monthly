@@ -133,6 +133,7 @@ class DashboardController extends Controller
                 ->first();
             $allImages = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
                 ->where('status', 1)
+                ->latest()
                 ->get();
             $imageCount = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
                 ->where('status', 1);

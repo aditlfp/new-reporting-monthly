@@ -1,57 +1,103 @@
-// In a separate file or at the top of your script
-function getCoverPageHtml(latterData, assetUrl) {
+function getLetterPageHtml(latterData, assetUrl) {
+  const date = new Date(latterData.created_at);
+  const formatted = date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  // Split the report_content by newlines to get individual items
+  const reportItems = latterData.report_content
+    ? latterData.report_content.split("\n")
+    : [];
+
+  // Generate list items with proper formatting
+  const listItems = reportItems
+    .map((item, index) => {
+      // Remove existing numbering pattern (e.g., "1. ", "2. ", etc.)
+      const cleanedItem = item.replace(/^\d+\.\s*/, "");
+
+      return `<li style="margin-bottom: 5px; padding-left: 0; text-indent: 0; display: flex;">
+                <span style="min-width: 1.5em; text-align: right; padding-right: 0.5em;">${
+                  index + 1
+                }.</span>
+              <span>${cleanedItem}</span>
+            </li>`;
+    })
+    .join("");
+
   return `
-        <section style="width: 210mm; height: 297mm; position: relative; margin: 0; padding: 0; overflow: hidden; page-break-after: always;">
-            <!-- Background image as absolute positioned element -->
-            <img src="/img/COVER.svg"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;"
-                alt="Background">
-
-            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 0; margin: 0; margin-top: 50mm;">
-                <div style="margin-top: 3mm; text-align: center;">
-                    <div style="display: inline-block; padding: 1mm 3mm; font-size: 30pt; font-weight: bold; color: #323C8B; text-transform: uppercase; white-space: nowrap;">
-                        ${latterData.cover.jenis_rekap}
-                    </div>
-                </div>
-
-                <div style="margin-top: -6mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: ultra-condensed; letter-spacing: -0.025em; padding: 1mm 3mm; font-size: 24pt; font-weight: bold; color: #323C8B; text-transform: uppercase; white-space: nowrap; max-width: 200mm; overflow: hidden;">
-                        (${
-                          latterData.cover.client
-                            ? latterData.cover.client.name
-                            : "Unknown Client"
-                        })
-                    </div>
-                </div>
-
-                <div style="display: flex; justify-content: center; flex-grow: 1; gap: 10mm; margin: 24mm auto 0;">
-                    <div style="width: 50%; padding-right: 1mm;">
-                        <div style="display: flex; align-items: center; justify-center; width: 100%; height: 65mm;">
-                            <img src="${assetUrl}/${latterData.cover.img_src_1.replace(
-    /^\/+/,
-    ""
-  )}"
-                                style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Cover Image 1">
-                        </div>
-                    </div>
-
-                    <div style="width: 50%; padding-left: 1mm;">
-                        <div style="display: flex; align-items: center; justify-center; width: 100%; height: 65mm;">
-                            <img src="${assetUrl}/${latterData.cover.img_src_2.replace(
-    /^\/+/,
-    ""
-  )}"
-                                style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Cover Image 2">
-                        </div>
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 70mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: ultra-condensed; letter-spacing: -0.025em; padding: 1mm 3mm; font-size: 24pt; color: oklch(17% 0 0); font-weight: bold; text-transform: uppercase; white-space: nowrap; max-width: 200mm; overflow: hidden;">
-                        PERIODE ${latterData.period}
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section
+        style="width: 210mm; height: 297mm; position: relative; margin: 0; padding: 0; overflow: hidden; page-break-after: always; background-color: white; font-family: Times New Roman, serif !important; font-size: 12pt; color: black;">
+        <img src="${
+          window.location.origin + "/img/header.png"
+        }" alt="header" srcset=""
+            style="width: 84%; margin: 0 8.5%; font-size: 12pt;">
+        <div style="margin-left: 30mm; line-height: 1; margin-top: 3mm;">
+            <table style="table-layout: fixed; border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <td style="padding-right: 2mm;">Nomor</td>
+                        <td>: ${latterData.latter_numbers}</td>
+                    </tr>
+                    <tr>
+                        <td>Lamp</td>
+                        <td>: Satu bendel</td>
+                    </tr>
+                    <tr>
+                        <td>Hal</td>
+                        <td>: ${latterData.latter_matters}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <p style="margin-left: 46mm; margin-top: 3mm; line-height: 1.5;">
+                Kepada Yth.<br>
+                <strong>Direktur Rumah Sakit Paru Mangunharjo Kota Madiun</strong><br>
+                Jl. Yos Sudarso No. 108-112, Kota Madiun
+            </p>
+        </div>
+        <div>
+            <p style="margin-left: 46mm; margin-top: 3mm; line-height: 1.5;">
+                <strong style="font-style: italic;">
+                    Assalamu'alaikumWarahmatullahiWabarakatuh
+                </strong>
+            </p>
+        </div>
+        <div style="margin-left: 46mm; margin-right: 22mm; margin-top: 3mm; line-height: 1.5;">
+            <p style="line-height: 1.25;">Puji syukur kita panjatkan kehadirat Allah SWT yang telah melimpahkan taufiq,
+                hidayah serta kesehatan kepada kita semua. Amin</p>
+            <p style="line-height: 1.25; margin-top: 3mm;">Bersama dengan ini kami sampaikan Laporan Pekerjaan Cleaning Service di Rumah
+                Sakit Paru Mangunharjo Kota Madiun untuk periode ${
+                  latterData.period
+                }. </p>
+            <p style="margin: 4mm 0;">Adapun isi laporan pekerjaan kami adalah sebagai berikut: </p>
+            <ol style="line-height: 1.25; margin: 0; padding-left: 4px; list-style-type: none; counter-reset: item;">
+                ${listItems}
+            </ol>
+            <p style="line-height: 1.25;">Besar harapan kami untuk selalu dapat bersama mendukung kemajuan Rumah Sakit
+                Paru Mangunharjo Kota Madiun serta memberikan <strong>“Pelayanan Dengan Lebih
+                    Baik”</strong> dalam pekerjaan Kritik dan saran sangatlah di harapkan demi terciptanya
+                peningkatan kinerja kami. </p>
+            <p style="line-height: 1.25; margin: 4mm 0;">Atas perhatian dan kerjasama Bapak/Ibu kami sampaikan terima kasih. </p>
+            <p><strong style="font-style: italic;">Wassalamu'alaikumWarahmatullahiWabarakatuh</strong></p>
+        </div>
+        <div style="position: relative; bottom: 0mm;">
+            <p style="margin-left: 134mm; margin-right: 22mm; margin-top: 10mm; line-height: 1.25;">
+                Ponorogo, ${formatted}<br>
+                Manager Cleaning Service<br><br><br><br><br><br>
+                <strong style="text-align: center; display: flex; justify-content: center; text-decoration-line: underline;">Suparno</strong>
+            </p>
+            <img src="${
+              window.location.origin + "/img/stampel.png"
+            }" alt="footer" srcset=""
+                style="width: 3.2cm; height: 3.2cm; font-size: 12pt; position: absolute; bottom: 4mm; rotate: 3deg; right: 50mm; opacity: 0.85;">
+            <img src="${
+              window.location.origin + "/img/ttdParno.png"
+            }" alt="footer" srcset=""
+                style="width: 3.4cm; font-size: 12pt; position: absolute; z-index: 2; bottom: 8mm; right: 36mm;">
+        </div>
+    </section>
     `;
 }

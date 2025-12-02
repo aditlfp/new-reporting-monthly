@@ -145,7 +145,7 @@ class CoverReportControllers extends Controller
         ]);
 
         $dataSrt = Latters::with('cover')->find(1);
-        $dataImg = UploadImage::where('client_id', $dataSrt->cover->clients_id)->whereMonth('created_at', Carbon::now()->month)
+        $dataImg = UploadImage::where('clients_id', $dataSrt->cover->clients_id)->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)->get();
 
         $path = $request->file('pdf')->storeAs(

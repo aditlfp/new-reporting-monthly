@@ -1,8 +1,8 @@
 <!-- Sidebar -->
-<aside class="flex flex-col min-h-screen w-64 bg-white border-r border-slate-200">
+<aside class="flex flex-col w-64 min-h-screen bg-white border-r min-w-64 border-slate-200">
 
   <!-- Navigation -->
-  <div class="flex-1 overflow-y-auto p-4">
+  <div class="flex-1 p-4 overflow-y-auto">
     <a href="{{ route('dashboard')}}" class="flex items-center my-2 px-3 py-2 space-x-2 transition-all rounded-lg {{ request()->routeIs('dashboard') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -13,18 +13,18 @@
     <div class="mb-2">
       <button 
         onclick="toggleDropdown('masterDataDropdown')" 
-        class="flex items-center justify-between w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg transition-all duration-200"
+        class="flex items-center justify-between w-full px-3 py-2 text-left transition-all duration-200 rounded-lg hover:bg-slate-100"
       >
         <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="text-base text-slate-700 w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M5 12.5C5 12.8134 5.46101 13.3584 6.53047 13.8931C7.91405 14.5849 9.87677 15 12 15C14.1232 15 16.0859 14.5849 17.4695 13.8931C18.539 13.3584 19 12.8134 19 12.5V10.3287C17.35 11.3482 14.8273 12 12 12C9.17273 12 6.64996 11.3482 5 10.3287V12.5ZM19 15.3287C17.35 16.3482 14.8273 17 12 17C9.17273 17 6.64996 16.3482 5 15.3287V17.5C5 17.8134 5.46101 18.3584 6.53047 18.8931C7.91405 19.5849 9.87677 20 12 20C14.1232 20 16.0859 19.5849 17.4695 18.8931C18.539 18.3584 19 17.8134 19 17.5V15.3287ZM3 17.5V7.5C3 5.01472 7.02944 3 12 3C16.9706 3 21 5.01472 21 7.5V17.5C21 19.9853 16.9706 22 12 22C7.02944 22 3 19.9853 3 17.5ZM12 10C14.1232 10 16.0859 9.58492 17.4695 8.89313C18.539 8.3584 19 7.81342 19 7.5C19 7.18658 18.539 6.6416 17.4695 6.10687C16.0859 5.41508 14.1232 5 12 5C9.87677 5 7.91405 5.41508 6.53047 6.10687C5.46101 6.6416 5 7.18658 5 7.5C5 7.81342 5.46101 8.3584 6.53047 8.89313C7.91405 9.58492 9.87677 10 12 10Z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-base text-slate-700" viewBox="0 0 24 24" fill="currentColor"><path d="M5 12.5C5 12.8134 5.46101 13.3584 6.53047 13.8931C7.91405 14.5849 9.87677 15 12 15C14.1232 15 16.0859 14.5849 17.4695 13.8931C18.539 13.3584 19 12.8134 19 12.5V10.3287C17.35 11.3482 14.8273 12 12 12C9.17273 12 6.64996 11.3482 5 10.3287V12.5ZM19 15.3287C17.35 16.3482 14.8273 17 12 17C9.17273 17 6.64996 16.3482 5 15.3287V17.5C5 17.8134 5.46101 18.3584 6.53047 18.8931C7.91405 19.5849 9.87677 20 12 20C14.1232 20 16.0859 19.5849 17.4695 18.8931C18.539 18.3584 19 17.8134 19 17.5V15.3287ZM3 17.5V7.5C3 5.01472 7.02944 3 12 3C16.9706 3 21 5.01472 21 7.5V17.5C21 19.9853 16.9706 22 12 22C7.02944 22 3 19.9853 3 17.5ZM12 10C14.1232 10 16.0859 9.58492 17.4695 8.89313C18.539 8.3584 19 7.81342 19 7.5C19 7.18658 18.539 6.6416 17.4695 6.10687C16.0859 5.41508 14.1232 5 12 5C9.87677 5 7.91405 5.41508 6.53047 6.10687C5.46101 6.6416 5 7.18658 5 7.5C5 7.81342 5.46101 8.3584 6.53047 8.89313C7.91405 9.58492 9.87677 10 12 10Z"></path></svg>
           <span class="text-sm font-medium text-slate-700">Master Data</span>
         </div>
-        <i id="masterDataIcon" class="ri-arrow-down-s-line text-base text-slate-700 transition-transform duration-300 rotate-180"></i>
+        <i id="masterDataIcon" class="text-base transition-transform duration-300 rotate-180 ri-arrow-down-s-line text-slate-700"></i>
       </button>
       
       {{-- Dropdown Menu --}}
       <div id="masterDataDropdown" class="overflow-hidden transition-all duration-300 max-h-96" style="max-height: 500px;">
-        <div class="ml-3 mt-1 border-l-2 border-slate-200">
+        <div class="mt-1 ml-3 border-l-2 border-slate-200">
           <a href="{{ route('check.upload')}}" class="flex items-center m-2 px-3 py-2 space-x-2 transition-all rounded-lg {{ request()->routeIs('check.upload*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3V1H9V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V9H20V5H17V7H15V5H9V7H7V5H4V19H10V21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7ZM17 12C14.7909 12 13 13.7909 13 16C13 18.2091 14.7909 20 17 20C19.2091 20 21 18.2091 21 16C21 13.7909 19.2091 12 17 12ZM11 16C11 12.6863 13.6863 10 17 10C20.3137 10 23 12.6863 23 16C23 19.3137 20.3137 22 17 22C13.6863 22 11 19.3137 11 16ZM16 13V16.4142L18.2929 18.7071L19.7071 17.2929L18 15.5858V13H16Z"></path></svg>
             <span class="text-sm">Check Status Upload</span>
@@ -54,10 +54,10 @@
   </div>
 
   <!-- User Profile - Fixed at Bottom -->
-  <div class="p-3 border-t border-slate-200 bg-white">
-    <div class="flex items-center px-3 py-2 space-x-2 rounded-lg hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-      <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0">
-        <span class="font-semibold text-white text-xs">{{strtoupper(substr(auth()->user()->name, 0, 1) . substr(auth()->user()->name, -1))}}</span>
+  <div class="p-3 bg-white border-t border-slate-200">
+    <div class="flex items-center px-3 py-2 space-x-2 transition-all duration-200 rounded-lg cursor-pointer hover:bg-slate-50">
+      <div class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+        <span class="text-xs font-semibold text-white">{{strtoupper(substr(auth()->user()->name, 0, 1) . substr(auth()->user()->name, -1))}}</span>
       </div>
       <div class="flex-1 min-w-0">
         <p class="text-xs font-medium truncate text-slate-900">{{ auth()->user()->name}}</p>
