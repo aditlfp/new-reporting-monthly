@@ -90,101 +90,57 @@
                                         <label class="block mb-2 text-sm font-medium text-slate-700">Gambar (maks
                                             3)</label>
                                         <div class="grid grid-cols-3 gap-2">
-                                            <!-- Image 1 -->
-                                            <div class="relative">
-                                                <input type="file" id="image1" name="img_before"
-                                                    accept=".gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg"
-                                                    class="hidden">
-                                                <label for="image1"
-                                                    class="flex flex-col items-center justify-center w-24 h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-slate-300 bg-slate-50 hover:bg-slate-100">
-                                                    <svg class="w-6 h-6 mb-1 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                        </path>
-                                                    </svg>
-                                                    <span class="text-xs text-slate-500">Tambah</span>
-                                                </label>
-                                                <div id="preview1"
-                                                    class="absolute inset-0 hidden overflow-hidden rounded-lg">
-                                                    <img src="" alt="Preview"
-                                                        class="object-contain object-center w-24 h-24 lazy-load">
-                                                    <button type="button"
-                                                        class="absolute p-1 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
-                                                        onclick="removeImage(1)">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                        </svg>
-                                                    </button>
+                                            @php
+                                                $imageConfig = [
+                                                    [
+                                                        'id' => 'image1',
+                                                        'name' => 'img_before',
+                                                        'label' => '+ Before'
+                                                    ],
+                                                    [
+                                                        'id' => 'image2',
+                                                        'name' => 'img_proccess',
+                                                        'label' => '+ Process'
+                                                    ],
+                                                    [
+                                                        'id' => 'image3',
+                                                        'name' => 'img_final',
+                                                        'label' => '+ After'
+                                                    ]
+                                                ];
+                                                
+                                                $acceptedTypes = '.gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg';
+                                                
+                                                $uploadIcon = '<svg class="w-6 h-6 mb-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>';
+                                                
+                                                $deleteIcon = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>';
+                                            @endphp
+                                            
+                                            @foreach ($imageConfig as $index => $config)
+                                                <div class="relative">
+                                                    <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}"
+                                                        accept="{{ $acceptedTypes }}" class="hidden">
+                                                    <label for="{{ $config['id'] }}"
+                                                        class="flex flex-col items-center justify-center w-24 h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-slate-300 bg-slate-50 hover:bg-slate-100">
+                                                        {!! $uploadIcon !!}
+                                                        <span class="text-xs text-slate-500">{{ $config['label'] }}</span>
+                                                    </label>
+                                                    <div id="preview{{ $index + 1 }}"
+                                                        class="absolute inset-0 hidden overflow-hidden rounded-lg">
+                                                        <img src="" alt="Preview"
+                                                            class="object-contain object-center w-24 h-24 lazy-load">
+                                                        <button type="button"
+                                                            class="absolute p-1 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
+                                                            onclick="removeImage({{ $index + 1 }})">
+                                                            {!! $deleteIcon !!}
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <!-- Image 2 -->
-                                            <div class="relative">
-                                                <input type="file" id="image2" name="img_proccess"
-                                                    accept=".gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg"
-                                                    class="hidden">
-                                                <label for="image2"
-                                                    class="flex flex-col items-center justify-center w-24 h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-slate-300 bg-slate-50 hover:bg-slate-100">
-                                                    <svg class="w-6 h-6 mb-1 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                        </path>
-                                                    </svg>
-                                                    <span class="text-xs text-slate-500">Tambah</span>
-                                                </label>
-                                                <div id="preview2"
-                                                    class="absolute inset-0 hidden overflow-hidden rounded-lg">
-                                                    <img src="" alt="Preview"
-                                                        class="object-contain object-center w-24 h-24 lazy-load">
-                                                    <button type="button"
-                                                        class="absolute p-1 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
-                                                        onclick="removeImage(2)">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <!-- Image 3 -->
-                                            <div class="relative">
-                                                <input type="file" id="image3" name="img_final"
-                                                    accept=".gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg"
-                                                    class="hidden">
-                                                <label for="image3"
-                                                    class="flex flex-col items-center justify-center w-24 h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-slate-300 bg-slate-50 hover:bg-slate-100">
-                                                    <svg class="w-6 h-6 mb-1 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                        </path>
-                                                    </svg>
-                                                    <span class="text-xs text-slate-500">Tambah</span>
-                                                </label>
-                                                <div id="preview3"
-                                                    class="absolute inset-0 hidden overflow-hidden rounded-lg">
-                                                    <img src="" alt="Preview"
-                                                        class="object-contain object-center w-24 h-24 lazy-load">
-                                                    <button type="button"
-                                                        class="absolute p-1 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
-                                                        onclick="removeImage(3)">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -225,7 +181,7 @@
                             <h3 class="text-lg font-semibold text-slate-900">Riwayat Laporan</h3>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" id="historyGrid">
                             <!-- Card -->
                             @forelse ($allImages as $imgData)
                                 <div class="overflow-hidden transition-shadow bg-white border rounded-lg shadow-sm border-slate-100 hover:shadow-md">
@@ -243,7 +199,7 @@
                                                 <img src="{{ URL::asset('/storage/'. $imgData->img_before) }}" alt="Before" class="object-cover w-full h-full">
                                             </div>
                                             <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                                <img src="{{ URL::asset('/storage/'. $imgData->img_proccess) }}" alt="Process" class="object-cover w-full h-full">
+                                                <img src="{{ $imgData->img_proccess ? URL::asset('/storage/'. $imgData->img_proccess) : 'https://placehold.co/400x400?text=Kosong' }}" alt="Process" class="object-cover w-full h-full">
                                             </div>
                                             <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
                                                 <img src="{{ URL::asset('/storage/'. $imgData->img_final) }}" alt="Final" class="object-cover w-full h-full">
@@ -263,7 +219,9 @@
                                     </div>
                                 </div>
                             @empty
-                                
+                                <div class="py-8 text-center col-span-full text-slate-500" id="emptyHistoryMessage">
+                                    Belum ada riwayat laporan
+                                </div>
                             @endforelse
                         </div>
                     </div>
@@ -495,6 +453,51 @@
                     };
                 }
 
+                // Function to create image card HTML
+                function createImageCard(imgData) {
+                    // Format dates
+                    const createdDate = new Date(imgData.created_at);
+                    const monthYear = createdDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    const dayMonthYear = createdDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Build the image URLs
+                    const baseUrl = window.location.origin + '/storage/';
+                    const imgBefore = imgData.img_before ? baseUrl + imgData.img_before : 'https://placehold.co/400x400?text=Kosong';
+                    const imgProcess = imgData.img_proccess ? baseUrl + imgData.img_proccess : 'https://placehold.co/400x400?text=Kosong';
+                    const imgFinal = imgData.img_final ? baseUrl + imgData.img_final : 'https://placehold.co/400x400?text=Kosong';
+
+                    return `
+                        <div class="overflow-hidden transition-shadow bg-white border rounded-lg shadow-sm border-slate-100 hover:shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-semibold text-md text-slate-900">${monthYear}</h4>
+                                        <p class="text-sm text-slate-500">${dayMonthYear}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Image Gallery -->
+                                <div class="grid grid-cols-3 gap-2 mb-3">
+                                    <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                        <img src="${imgBefore}" alt="Before" class="object-cover w-full h-full">
+                                    </div>
+                                    <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                        <img src="${imgProcess}" alt="Process" class="object-cover w-full h-full">
+                                    </div>
+                                    <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                        <img src="${imgFinal}" alt="Final" class="object-cover w-full h-full">
+                                    </div>
+                                </div>
+                                
+                                <!-- Note -->
+                                <div class="mb-3">
+                                    <p class="text-sm text-slate-700">${imgData.note}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 // Use async/await for better readability and performance
                 async function submitForm(formData, url, method) {
                     try {
@@ -595,48 +598,6 @@
                         }
                         alert(errorMessage);
                     }
-                    // $.ajax({
-                    //     url: url,
-                    //     type: method,
-                    //     data: formData,
-                    //     processData: false,
-                    //     contentType: false,
-                    //     headers: {
-                    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') ||
-                    //             '{{ csrf_token() }}'
-                    //     },
-                    //     success: function(response) {
-                    //         alert('Draft berhasil disimpan!');
-                            
-                    //         // Update draft data with the response
-                    //         draftData = response.data;
-                            
-                    //         // Show draft card
-                    //         showDraftCard(response.data);
-
-                    //         // Reset form
-                    //         reportForm[0].reset();
-                    //         reportId.val('');
-                    //         isEditMode = false;
-                    //         for (let i = 1; i <= 3; i++) {
-                    //             $(`#preview${i}`).addClass('hidden');
-                    //             $(`#preview${i} img`).attr('src', '');
-                    //             $(`#preview${i}`).removeData('is-new-image');
-                    //             $(`#preview${i}`).removeData('original-path');
-                    //         }
-                    //     },
-                    //     error: function(xhr) {
-                    //         let errorMessage = 'Terjadi kesalahan saat menyimpan draft.';
-                    //         if (xhr.responseJSON && xhr.responseJSON.message) {
-                    //             errorMessage = xhr.responseJSON.message;
-                    //         } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    //             // Handle validation errors
-                    //             const errors = Object.values(xhr.responseJSON.errors).flat();
-                    //             errorMessage = errors.join('\n');
-                    //         }
-                    //         alert(errorMessage);
-                    //     }
-                    // });
                 });
 
                 // Handle submit report button
@@ -734,6 +695,16 @@
                                 $(`#preview${i} img`).attr('src', '');
                                 $(`#preview${i}`).removeData('is-new-image');
                                 $(`#preview${i}`).removeData('original-path');
+                            }
+
+                            if (response.data) {
+                                $('#emptyHistoryMessage').remove();
+
+                                const newCard = createImageCard(response.data);
+                                $('#historyGrid').prepend(newCard);
+
+                                imagesUploadedThisMonth = response.totalImageCount || imagesUploadedThisMonth;
+                                updateRemainingImages();
                             }
                         },
                         error: function(xhr) {

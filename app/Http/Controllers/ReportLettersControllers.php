@@ -33,24 +33,38 @@ class ReportLettersControllers extends Controller
         return view('latters.create', compact('covers'));
     }
 
-    public function store(LattersRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
-        if($data['signature'])
-        {
-            $request->file('signature')->storeAs('report_pdf', $request->file('pdf')->getClientOriginalName(), 'public');
+        // Validate the request
+        $validated = $request->validate([
+            'cover_id' => 'required|exists:covers,id',
+            'latter_numbers' => 'required|string|max:255',
+            'latter_matters' => 'required|string',
+            'period' => 'required|string|max:255',
+            'report_content' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Max 10MB
+        ]);
+
+        // Handle file upload
+        if ($request->hasFile('signature')) {
+            $file = $request->file('signature');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('report_files', $filename, 'public');
+            $validated['signature'] = $path;
         }
-        $latter = Latters::create($data);
+
+        // Create the letter record
+        $latter = Latters::create($validated);
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'message' => 'Latter created successfully.',
+                'message' => 'Letter created successfully.',
                 'data' => $latter,
             ], 201);
         }
 
-        return to_route('latters.index')->with('success', 'Latter created successfully.');
+        return redirect()->route('latters.index')->with('success', 'Letter created successfully.');
     }
 
     public function edit(Request $request, $id)

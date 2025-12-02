@@ -37,5 +37,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/admin-settings', [SettingsController::class, 'store'])->name('admin.set.settings');
 });
 
+Route::view('/testPage', 'pages.admin.tesPages');
+
 
 require __DIR__.'/auth.php';
