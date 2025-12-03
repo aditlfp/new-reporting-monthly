@@ -20,6 +20,7 @@
                                     <th>No Number</th>
                                     <th>Hal Surat</th>
                                     <th>Period</th>
+                                    <th>Kepada</th>
                                     <th>Addition File</th>
                                     <th>Actions</th>
                                 </tr>
@@ -77,6 +78,17 @@
 
                 <div class="w-full mb-4 form-control">
                     <label class="label">
+                        <span class="label-text">Lamp <span class="text-info italic">(opsional)</span></span>
+                    </label>
+                    <input type="text" class="w-full input input-bordered" id="lamp" name="lamp"
+                        maxlength="255" placeholder="Satu Bandel">
+                    <label class="hidden label" id="error-lamp">
+                        <span class="label-text-alt text-error"></span>
+                    </label>
+                </div>
+
+                <div class="w-full mb-4 form-control">
+                    <label class="label">
                         <span class="label-text">Letter Matter <span class="text-error">*</span></span>
                     </label>
                     <textarea class="w-full h-24 textarea textarea-bordered" id="latter_matters" name="latter_matters" required
@@ -99,6 +111,17 @@
 
                 <div class="w-full mb-4 form-control">
                     <label class="label">
+                        <span class="label-text">Kepada <span class="text-error">*</span></span>
+                    </label>
+                    <input type="text" class="w-full input input-bordered" id="letter_to" name="letter_to" required
+                        maxlength="255" placeholder="Kepada yth....">
+                    <label class="hidden label" id="error-letter_to">
+                        <span class="label-text-alt text-error"></span>
+                    </label>
+                </div>
+
+                <div class="w-full mb-4 form-control">
+                    <label class="label">
                         <span class="label-text">Report Content</span>
                     </label>
                     <textarea class="w-full h-32 textarea textarea-bordered" id="report_content" name="report_content"
@@ -113,7 +136,8 @@
                     <label class="label">
                         <span class="label-text">Add File Lanjutan Surat (MCP, dkk)</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered" id="signature" name="signature">
+                    <input type="file" class="w-full file-input file-input-bordered" id="signature"
+                        name="signature">
                     <div id="current-file" class="mt-2 text-sm text-gray-600"></div>
                     <label class="hidden label" id="error-signature">
                         <span class="label-text-alt text-error"></span>
@@ -194,7 +218,7 @@
                     let html = '';
                     if (data.length === 0) {
                         html =
-                            '<tr><td colspan="7" class="py-8 text-center text-base-content/60">No data available</td></tr>';
+                            '<tr><td colspan="8" class="py-8 text-center text-base-content/60">No data available</td></tr>';
                     } else {
                         data.forEach(function(item) {
                             html += `
@@ -208,7 +232,14 @@
                             </div>
                         </td>
                         <td>${item.period}</td>
-                        <td>${item.signature || '-'}</td>
+                        <td>${item.letter_to}</td>
+                        <td>
+                            ${item.signature ? 
+                                `<span><i class="ri-file-pdf-2-line text-2xl text-error"></i></span>`
+                             : 
+                                `<span>-</span>`
+                            }
+                        </td>
                         <td>
                             <div class="flex gap-2">
                                 <button class="btn btn-sm btn-warning btn-edit" data-id="${item.id}">
@@ -298,9 +329,11 @@
                                 $('#formMethod').val('PUT');
                                 $('#letterId').val(response.data.id);
                                 $('#cover_id').val(response.data.cover_id);
+                                $('#lamp').val(response.data.lamp)
                                 $('#latter_numbers').val(response.data.latter_numbers);
                                 $('#latter_matters').val(response.data.latter_matters);
                                 $('#period').val(response.data.period);
+                                $('#letter_to').val(response.data.letter_to);
                                 $('#report_content').val(response.data.report_content || '');
                                 // Display current file name if it exists
                                 if (response.data.signature) {
@@ -333,8 +366,10 @@
                     const formData = new FormData();
                     formData.append('cover_id', $('#cover_id').val());
                     formData.append('latter_numbers', $('#latter_numbers').val());
+                    formData.append('lamp', $('#lamp').val());
                     formData.append('latter_matters', $('#latter_matters').val());
                     formData.append('period', $('#period').val());
+                    formData.append('letter_to', $('#letter_to').val());
                     formData.append('report_content', $('#report_content').val());
 
                     const signatureFile = $('#signature')[0].files[0];
@@ -364,11 +399,6 @@
                                 loadData(currentPage);
                                 Notify(response.message, null, null, 'success');
                                 resetForm();
-
-                                // Generate PDFs after successful submission
-                                // if (method === 'POST') {
-                                //     generatePDFs(response.data.id);
-                                // }
                             }
                         },
                         error: function(xhr) {
@@ -523,7 +553,7 @@
                             if (!jsPDFConstructor) {
                                 throw new Error(
                                     'jsPDF library not loaded properly. Please check the console for details.'
-                                    );
+                                );
                             }
 
                             pdf = new jsPDFConstructor({

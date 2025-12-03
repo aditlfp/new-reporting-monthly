@@ -11,6 +11,10 @@ function getLetterPageHtml(latterData, assetUrl) {
     ? latterData.report_content.split("\n")
     : [];
 
+  function toCapitalize(str) {
+    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  }
+
   // Generate list items with proper formatting
   const listItems = reportItems
     .map((item, index) => {
@@ -42,7 +46,7 @@ function getLetterPageHtml(latterData, assetUrl) {
                     </tr>
                     <tr>
                         <td>Lamp</td>
-                        <td>: Satu bendel</td>
+                        <td>: ${latterData.lamp}</td>
                     </tr>
                     <tr>
                         <td>Hal</td>
@@ -52,10 +56,14 @@ function getLetterPageHtml(latterData, assetUrl) {
             </table>
         </div>
         <div>
-            <p style="margin-left: 46mm; margin-top: 3mm; line-height: 1.5;">
+            <p style="margin-left: 46mm; margin-top: 3mm; line-height: 1.5; ">
                 Kepada Yth.<br>
-                <strong>Direktur Rumah Sakit Paru Mangunharjo Kota Madiun</strong><br>
-                Jl. Yos Sudarso No. 108-112, Kota Madiun
+                <strong>${latterData.letter_to}</strong><br>
+                ${
+                  toCapitalize(latterData.cover.client.address) +
+                  " " +
+                  toCapitalize(latterData.cover.client.kabupaten)
+                }
             </p>
         </div>
         <div>
@@ -68,16 +76,16 @@ function getLetterPageHtml(latterData, assetUrl) {
         <div style="margin-left: 46mm; margin-right: 22mm; margin-top: 3mm; line-height: 1.5;">
             <p style="line-height: 1.25;">Puji syukur kita panjatkan kehadirat Allah SWT yang telah melimpahkan taufiq,
                 hidayah serta kesehatan kepada kita semua. Amin</p>
-            <p style="line-height: 1.25; margin-top: 3mm;">Bersama dengan ini kami sampaikan Laporan Pekerjaan Cleaning Service di Rumah
-                Sakit Paru Mangunharjo Kota Madiun untuk periode ${
-                  latterData.period
-                }. </p>
+            <p style="line-height: 1.25; margin-top: 3mm;">Bersama dengan ini kami sampaikan Laporan Pekerjaan Cleaning Service di ${toCapitalize(
+              latterData.cover.client.name
+            )} untuk periode ${latterData.period}. </p>
             <p style="margin: 4mm 0;">Adapun isi laporan pekerjaan kami adalah sebagai berikut: </p>
             <ol style="line-height: 1.25; margin: 0; padding-left: 4px; list-style-type: none; counter-reset: item;">
                 ${listItems}
             </ol>
-            <p style="line-height: 1.25;">Besar harapan kami untuk selalu dapat bersama mendukung kemajuan Rumah Sakit
-                Paru Mangunharjo Kota Madiun serta memberikan <strong>“Pelayanan Dengan Lebih
+            <p style="line-height: 1.25;">Besar harapan kami untuk selalu dapat bersama mendukung kemajuan ${toCapitalize(
+              latterData.cover.client.name
+            )} serta memberikan <strong>“Pelayanan Dengan Lebih
                     Baik”</strong> dalam pekerjaan Kritik dan saran sangatlah di harapkan demi terciptanya
                 peningkatan kinerja kami. </p>
             <p style="line-height: 1.25; margin: 4mm 0;">Atas perhatian dan kerjasama Bapak/Ibu kami sampaikan terima kasih. </p>

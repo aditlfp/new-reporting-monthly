@@ -51,7 +51,6 @@ class CoverReportControllers extends Controller
                 'data' => $e
             ], 500);
         }
-
     }
 
     public function store(CoverRequest $request)
@@ -65,7 +64,7 @@ class CoverReportControllers extends Controller
             $cover = Cover::create($validated);
 
             $cover->load('client');
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -112,7 +111,7 @@ class CoverReportControllers extends Controller
     {
         try {
             $cover = Cover::findOrFail($id);
-            
+
             // Delete images
             if ($cover->img_src_1) {
                 FileHelper::deleteImage($cover->img_src_1);
@@ -120,9 +119,9 @@ class CoverReportControllers extends Controller
             if ($cover->img_src_2) {
                 FileHelper::deleteImage($cover->img_src_2);
             }
-            
+
             $cover->delete();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cover deleted successfully'
@@ -144,19 +143,35 @@ class CoverReportControllers extends Controller
             'srt_id' => 'required'
         ]);
 
-        $dataSrt = Latters::with('cover')->find(1);
+        $dataSrt = Latters::with('cover')->find($request->srt_id);
         $dataImg = UploadImage::where('clients_id', $dataSrt->cover->clients_id)->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)->get();
+        Carbon::setLocale('id');
 
+        $namePDF = $dataSrt->cover->client->name . ' ' . Carbon::now()->translatedFormat('F Y');
         $path = $request->file('pdf')->storeAs(
-            'covers_to_pdf',                                 
-            $request->file('pdf')->getClientOriginalName(),  
-            'public'                               
+            'covers_to_pdf',
+            $namePDF,
+            'public'
         );
+
+
+        $file1 = storage_path('app/public/' . $path);
+        $file2 = storage_path('app/public/' . $dataSrt->signature);
+
+        $files = [$file1, $file2];
+
+        FileHelper::mergePdfs($files, storage_path('app/public/pdf/merged.pdf'));
+
+        
+
+        
+
+
 
         return response()->json([
             'success' => true,
-            'path' => $path
+            'path' => $files
         ]);
     }
 
@@ -185,5 +200,4 @@ class CoverReportControllers extends Controller
 
         return back()->withInput()->withErrors(['error' => $message . ': ' . $e->getMessage()]);
     }
-    
 }

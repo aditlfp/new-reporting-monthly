@@ -5,7 +5,10 @@ namespace App\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use setasign\Fpdi\Fpdi;
+
 
 class FileHelper
 {
@@ -21,7 +24,7 @@ class FileHelper
     public static function uploadImage(?UploadedFile $file, string $folder = 'uploads', ?string $oldFile = null, bool $useOriginalName = false)
     {
         if (!$file) {
-            return $oldFile; 
+            return $oldFile;
         }
 
         // delete old file if exists
@@ -57,16 +60,16 @@ class FileHelper
             if (Storage::disk('public')->exists($path)) {
                 return Storage::disk('public')->delete($path);
             }
-            
+
             // If not in storage, check if it's a direct path
             $fullPath = public_path($path);
             if (File::exists($fullPath)) {
                 return File::delete($fullPath);
             }
-            
+
             return false;
         } catch (\Exception $e) {
-            \Log::error('Failed to delete image: ' . $e->getMessage());
+            Log::error('Failed to delete image: ' . $e->getMessage());
             return false;
         }
     }
@@ -101,11 +104,31 @@ class FileHelper
     public static function deleteMultipleImages($paths)
     {
         $results = [];
-        
+
         foreach ($paths as $path) {
             $results[$path] = self::deleteImage($path);
         }
-        
+
         return $results;
+    }
+
+
+    public static function mergePdfs($files, $mergedFilePath)
+    {
+        $pdf = new FPDI();
+
+        foreach ($files as $file) {
+            $pageCount = $pdf->setSourceFile($file);
+
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $templateId = $pdf->importPage($pageNo);
+                $size = $pdf->getTemplateSize($templateId);
+
+                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $pdf->useTemplate($templateId);
+            }
+        }
+
+        return $pdf->Output($mergedFilePath, 'F');
     }
 }

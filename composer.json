@@ -54,6 +54,10 @@
       "Composer\\Config::disableProcessTimeout",
       "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,logs,vite --kill-others"
     ],
+    "franken-dev": [
+      "Composer\\Config::disableProcessTimeout",
+      "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"frankenphp php-cli artisan serve\" \"frankenphp php-cli artisan pail --timeout=0\" \"npm run dev\" --names=server,logs,vite --kill-others"
+    ],
     "test": [
       "@php artisan config:clear --ansi",
       "@php artisan test"

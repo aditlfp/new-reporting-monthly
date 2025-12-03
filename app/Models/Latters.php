@@ -15,11 +15,14 @@ class Latters extends Model
         'latter_numbers',
         'latter_matters',
         'period',
+        'letter_to',
         'report_content',
-        'signature'
+        'signature',
+        'lamp'
     ];
 
-    public function cover(){
+    public function cover()
+    {
         return $this->belongsTo(Cover::class);
     }
 

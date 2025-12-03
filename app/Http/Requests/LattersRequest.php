@@ -26,8 +26,10 @@ class LattersRequest extends FormRequest
             'latter_numbers' => 'required|string|max:255',
             'latter_matters' => 'required|string',
             'period' => 'required|string|max:255',
+            'letter_to' => 'required|string|max:255',
             'report_content' => 'nullable|string',
-            'signature' => 'nullable|string|max:255',
+            'signature' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'lamp' => 'nullable'
         ];
     }
 
@@ -38,6 +40,7 @@ class LattersRequest extends FormRequest
             'latter_numbers.required' => 'No Surat Wajib diisi.',
             'latter_matters.required' => 'Hal Surat wajib diisi.',
             'period.required' => 'Periode wajib diisi.',
+            'letter_to' => 'Kepada wajib Diisi'
         ];
     }
 }

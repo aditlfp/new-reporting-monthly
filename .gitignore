@@ -4,3 +4,6 @@ storage
 *env
 .env
 public/build
+**/caddy
+frankenphp
+frankenphp-worker.php

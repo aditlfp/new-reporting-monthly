@@ -33,18 +33,10 @@ class ReportLettersControllers extends Controller
         return view('latters.create', compact('covers'));
     }
 
-    public function store(Request $request)
+    public function store(LattersRequest $request)
     {
-        // Validate the request
-        $validated = $request->validate([
-            'cover_id' => 'required|exists:covers,id',
-            'latter_numbers' => 'required|string|max:255',
-            'latter_matters' => 'required|string',
-            'period' => 'required|string|max:255',
-            'report_content' => 'nullable|string',
-            'signature' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Max 10MB
-        ]);
 
+        $validated = $request->validated();
         // Handle file upload
         if ($request->hasFile('signature')) {
             $file = $request->file('signature');
@@ -109,7 +101,7 @@ class ReportLettersControllers extends Controller
     }
 
     public function destroy(Request $request, $id)
-    {   
+    {
         try {
             Latters::find($id)->delete();
             if ($request->ajax()) {
