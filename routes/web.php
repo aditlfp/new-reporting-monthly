@@ -33,6 +33,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-latters', ReportLettersControllers::class);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
     Route::get('/admin-check-status/{admin_check_status}/{month}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
+    Route::get('/admin-foto-progress', [UploadImageController::class, 'adminIndex'])->name('admin.upload.index');
+    Route::put('/admin-foto-progress-update/{upload_image}', [UploadImageController::class, 'adminUpdate'])->name('admin.upload.update');
+    Route::delete('/admin-foto-progress-delete/{upload_image}', [UploadImageController::class, 'adminDestroy'])->name('admin.upload.destroy');
+    Route::get('admin/upload/get-pdf-data', [UploadImageController::class, 'getPdfData'])->name('admin.upload.get-pdf-data');
+    Route::post('admin/upload/store-pdf', [UploadImageController::class, 'storePdf'])->name('admin.upload.store-pdf');
     Route::get('/admin-settings', [SettingsController::class, 'index'])->name('admin.settings');
     Route::post('/admin-settings', [SettingsController::class, 'store'])->name('admin.set.settings');
 });

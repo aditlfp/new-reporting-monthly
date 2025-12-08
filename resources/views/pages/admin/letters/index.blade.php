@@ -78,7 +78,7 @@
 
                 <div class="w-full mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Lamp <span class="text-info italic">(opsional)</span></span>
+                        <span class="label-text">Lamp <span class="italic text-info">(opsional)</span></span>
                     </label>
                     <input type="text" class="w-full input input-bordered" id="lamp" name="lamp"
                         maxlength="255" placeholder="Satu Bandel">
@@ -235,7 +235,7 @@
                         <td>${item.letter_to}</td>
                         <td>
                             ${item.signature ? 
-                                `<span><i class="ri-file-pdf-2-line text-2xl text-error"></i></span>`
+                                `<span><i class="text-2xl ri-file-pdf-2-line text-error"></i></span>`
                              : 
                                 `<span>-</span>`
                             }
@@ -360,7 +360,7 @@
                     const id = $('#letterId').val();
                     const url = method === 'POST' ?
                         '{{ route('admin-latters.store') }}' :
-                        `{{ url('admin-latters') }}/${id}`;
+                        "{{ route('admin-latters.update', ':id') }}".replace(':id', id);
 
                     // Use FormData for proper file handling
                     const formData = new FormData();

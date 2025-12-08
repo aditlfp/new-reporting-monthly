@@ -25,7 +25,7 @@ class UploadImage extends Model
 
     public function clients()
     {
-        return $this->belongsTo(Clients::class);
+        return $this->belongsTo(Clients::class, 'clients_id', 'id');
     }
 
     public function scopeSearchFilters($query, $filters)
