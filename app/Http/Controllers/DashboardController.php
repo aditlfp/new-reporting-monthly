@@ -14,45 +14,23 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->role_id == 2) {
-            $now = now();
+        $now = now();
 
-            // Total bulan ini
-            $totalThisMonth = UploadImage::whereYear('created_at', $now->year)
-                ->whereMonth('created_at', $now->month)
-                ->count();
-
-            // Total bulan lalu
-            $lastMonth = $now->copy()->subMonth();
-
-            $totalLastMonth = UploadImage::whereYear('created_at', $lastMonth->year)
-                ->whereMonth('created_at', $lastMonth->month)
-                ->count();
-
-            if ($totalLastMonth > 0) {
-                $growth = (($totalThisMonth - $totalLastMonth) / $totalLastMonth) * 100;
-            } else {
-                $growth = 100;
-            }
-
-            $growthDirection = $growth >= 0 ? 'up' : 'down';
-            $growthAbs = abs($growth);
-
-            $data = UploadImage::with([
-                    'user.divisi.jabatan', // ambil jabatan
-                    'clients'
-                ])
-                ->select(
-                    'clients_id',
-                    'user_id',
-                    DB::raw('MONTH(created_at) as month'),
-                    DB::raw('YEAR(created_at) as year'),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->whereMonth('created_at', $now->month)
-                ->whereYear('created_at', $now->year)
-                ->groupBy('clients_id', 'user_id', 'month', 'year')
-                ->get();
+        $data = UploadImage::with([
+                'user.divisi.jabatan', // ambil jabatan
+                'clients'
+            ])
+            ->select(
+                'clients_id',
+                'user_id',
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->whereMonth('created_at', $now->month)
+            ->whereYear('created_at', $now->year)
+            ->groupBy('clients_id', 'user_id', 'month', 'year')
+            ->get();
 
             $summary = [];
 
@@ -88,6 +66,30 @@ class DashboardController extends Controller
                     ];
                 }
             }
+
+        if (Auth::user()->role_id == 2) {
+
+            // Total bulan ini
+            $totalThisMonth = UploadImage::whereYear('created_at', $now->year)
+                ->whereMonth('created_at', $now->month)
+                ->count();
+
+            // Total bulan lalu
+            $lastMonth = $now->copy()->subMonth();
+
+            $totalLastMonth = UploadImage::whereYear('created_at', $lastMonth->year)
+                ->whereMonth('created_at', $lastMonth->month)
+                ->count();
+
+            if ($totalLastMonth > 0) {
+                $growth = (($totalThisMonth - $totalLastMonth) / $totalLastMonth) * 100;
+            } else {
+                $growth = 100;
+            }
+
+            $growthDirection = $growth >= 0 ? 'up' : 'down';
+            $growthAbs = abs($growth);
+
 
             $activities = ActivityLogs::latest()
                         ->limit(7)
@@ -160,7 +162,7 @@ class DashboardController extends Controller
             // Calculate the total number of images
             $totalImageCount = $totalBefore + $totalProccess + $totalFinal;
 
-            return view('pages.user.dashboard', compact('uploadDraft', 'totalImageCount', 'allImages'));
+            return view('pages.user.dashboard', compact('uploadDraft', 'totalImageCount', 'allImages', 'percentage'));
         }
     }
 }

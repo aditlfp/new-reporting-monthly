@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UploadImageController;
+use App\Http\Controllers\UserNavigateController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
 use App\Models\UploadImage;
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/upload-img-lap', UploadImageController::class);
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
+    Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

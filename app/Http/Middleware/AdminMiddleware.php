@@ -15,12 +15,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->user()->role_id !== 2) {
+        if (auth()->user()->role_id != 2) {
             abort(403);
             session()->flush();
             return redirect()->back();
-        }else{
-            return $next($request);            
+        } else {
+            return $next($request);
         }
     }
 }

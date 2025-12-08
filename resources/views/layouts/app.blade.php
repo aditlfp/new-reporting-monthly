@@ -13,8 +13,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>  
+        @laravelPWA
+        <script src="/js/jquery3.7.1-min.js"></script>  
 
         <script src="/js/Notify.js"></script> 
 
