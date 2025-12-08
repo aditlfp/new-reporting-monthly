@@ -158,8 +158,9 @@ class CoverReportControllers extends Controller
 
         $file1 = storage_path('app/public/' . $path);
         $file2 = storage_path('app/public/' . $dataSrt->signature);
+        $file3 = storage_path('app/public/pdf/rekap_foto/' . Carbon::now()->format('Y-m') . '-' . $dataSrt->cover->clients_id . '.pdf');
 
-        $files = [$file1, $file2];
+        $files = [$file1, $file2, $file3];
 
         FileHelper::mergePdfs($files, storage_path('app/public/pdf/merged.pdf'));
 
