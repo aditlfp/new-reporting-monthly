@@ -1,9 +1,9 @@
-<x-app-layout title="Dashboard" subtitle="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod">
+<x-app-layout title="Dashboard" subtitle="Selamat Datang Admin">
 <div class="flex min-h-screen bg-slate-50">
   @include('components.sidebar-component')
 
   <!-- Main Content -->
-  <main class="flex-1 overflow-hidden">
+  <main class="flex-1 overflow-hidden mt-16 md:mt-0">
 
     <!-- Dashboard Content -->
     <div class="p-8">

@@ -1,36 +1,36 @@
 <x-app-layout title="Data Cover" subtitle="Menampilkan Data Cover Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-6 overflow-y-auto">
+        <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
             <div class="flex items-center justify-end mb-6">
                 <button id="openCoverModal"
-                    class="btn btn-sm rounded-sm bg-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white transition-all ease-in-out duration-200 border-none uppercase">
+                    class="text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm btn btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                     <i class="ri-add-line"></i> Add New Cover
                 </button>
             </div>
 
-            <div class="card bg-white shadow-lg">
+            <div class="bg-white shadow-lg card">
                 <div class="card-body">
                     <div class="overflow-x-auto">
-                        <table class="table table-zebra w-full">
+                        <table class="table w-full table-zebra">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Mitra</th>
-                                    <th>Jenis Cover</th>
+                                    <th class="hidden md:block">Jenis Cover</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
                                 <tr>
-                                    <td colspan="4" class="text-center py-8">
+                                    <td colspan="4" class="py-8 text-center">
                                         <span class="loading loading-spinner loading-lg"></span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
-                        <div id="pagination" class="flex justify-center mt-4 pb-4"></div>
+                        <div id="pagination" class="flex justify-center pb-4 mt-4"></div>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                                 <label class="label">
                                     <span class="label-text">Client <span class="text-error">*</span></span>
                                 </label>
-                                <select id="clientSelect" class="select select-bordered w-full" required>
+                                <select id="clientSelect" class="w-full select select-bordered" required>
                                     <option value="" disabled selected>Select a client</option>
                                     @foreach ($client as $cli)
                                         <option value="{{ $cli->id }}" data-name="{{ ucwords(strtolower($cli->name)) }}">
@@ -71,7 +71,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <label class="label hidden" id="errorClient">
+                                <label class="hidden label" id="errorClient">
                                     <span class="label-text-alt text-error">Please select a client</span>
                                 </label>
                             </div>
@@ -79,7 +79,7 @@
                                 <label class="label">
                                     <span class="label-text">Jenis rekap <span class="text-error">*</span></span>
                                 </label>
-                                <div class="flex flex-col space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
+                                <div class="flex items-center gap-2 md:flex-col sm:space-x-4 sm:space-y-0">
                                     <label class="flex items-center space-x-2 cursor-pointer">
                                         <input type="radio" name="jenisRekap" value="Cleaning Service" class="radio radio-primary radio-sm">
                                         <span class="text-sm text-slate-700 whitespace-nowrap">Cleaning Service</span>
@@ -89,41 +89,44 @@
                                         <span class="text-sm text-slate-700">Security</span>
                                     </label>
                                 </div>
-                                <label class="label hidden" id="errorJenisRekap">
+                                <label class="hidden label" id="errorJenisRekap">
                                     <span class="label-text-alt text-error">Please select a report type</span>
                                 </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="label">
-                                <span class="label-text">Image 1 (Kiri) <span class="text-error">*</span></span>
-                            </label>
-                            <input type="file" id="img1Input" class="file-input file-input-bordered w-full" accept=".svg,.png,.jpg,.jpeg">
-                            <div id="preview1" class="mt-2 border-2 border-dashed border-slate-300 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
-                                <span class="text-sm text-slate-500">No image selected</span>
+                            <div>
+                                <label class="label">
+                                    <span class="label-text">Image 1 (Kiri) <span class="text-error">*</span></span>
+                                </label>
+                                <input type="file" id="img1Input" class="w-full file-input file-input-bordered" accept=".svg,.png,.jpg,.jpeg">
+                                <div id="preview1" class="mt-2 border-2 border-dashed border-slate-300 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
+                                    <span class="text-sm text-slate-500">No image selected</span>
+                                </div>
+                                <label class="hidden label" id="errorImg1">
+                                    <span class="label-text-alt text-error">Please select an image</span>
+                                </label>
                             </div>
-                            <label class="label hidden" id="errorImg1">
-                                <span class="label-text-alt text-error">Please select an image</span>
-                            </label>
+    
+                            <div>
+                                <label class="label">
+                                    <span class="label-text">Image 2 (Kanan) <span class="text-error">*</span></span>
+                                </label>
+                                <input type="file" id="img2Input" class="w-full file-input file-input-bordered" accept=".svg,.png,.jpg,.jpeg">
+                                <div id="preview2" class="mt-2 border-2 border-dashed border-slate-300 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
+                                    <span class="text-sm text-slate-500">No image selected</span>
+                                </div>
+                                <label class="hidden label" id="errorImg2">
+                                    <span class="label-text-alt text-error">Please select an image</span>
+                                </label>
+                            </div>
                         </div>
 
-                        <div>
-                            <label class="label">
-                                <span class="label-text">Image 2 (Kanan) <span class="text-error">*</span></span>
-                            </label>
-                            <input type="file" id="img2Input" class="file-input file-input-bordered w-full" accept=".svg,.png,.jpg,.jpeg">
-                            <div id="preview2" class="mt-2 border-2 border-dashed border-slate-300 rounded-lg p-4 min-h-[120px] flex items-center justify-center">
-                                <span class="text-sm text-slate-500">No image selected</span>
-                            </div>
-                            <label class="label hidden" id="errorImg2">
-                                <span class="label-text-alt text-error">Please select an image</span>
-                            </label>
-                        </div>
 
-                        <div class="flex flex-col gap-2 sm:flex-row col-span-full">
-                            <button type="submit" class="btn bg-slate-900 text-white hover:bg-slate-800 border-none">
-                                <i class="ri-save-line hidden" id="btnSpinner"></i>
+                        <div class="flex gap-2 col-span-full">
+                            <button type="submit" class="text-white border-none btn bg-slate-900 hover:bg-slate-800">
+                                <i class="hidden ri-save-line" id="btnSpinner"></i>
                                 <span id="btnText">Save Cover</span>
                             </button>
                             <button type="button" id="cancelBtn" class="btn btn-ghost hover:bg-gray-200">Cancel</button>
@@ -132,7 +135,7 @@
                 </div>
 
                 <!-- Right Column: Preview -->
-                <div class="lg:col-span-1">
+                <div class="hidden lg:col-span-1 md:block">
                     <div class="sticky p-4 bg-white border rounded-lg md:p-6 top-6 border-slate-200 h-fit">
                         <h4 class="mb-4 text-sm font-semibold text-slate-700">Live Preview</h4>
                         <div class="relative overflow-hidden rounded-lg bg-slate-100 aspect-square">
@@ -179,9 +182,10 @@
     </dialog>
 
     <!-- Toast Container -->
-    <div class="toast toast-top toast-end z-50" id="toastContainer"></div>
+    <div class="z-50 toast toast-top toast-end" id="toastContainer"></div>
 
     @push('scripts')
+    <script src="{{ asset('js/Notify.js') }}"></script>
     <script>
     (function($) {
         'use strict';
@@ -252,14 +256,14 @@
                     }
                 },
                 error: function(xhr) {
-                    $els.tableBody.html('<tr><td colspan="4" class="text-center text-error py-8">Failed to load data</td></tr>');
+                    $els.tableBody.html('<tr><td colspan="4" class="py-8 text-center text-error">Failed to load data</td></tr>');
                 }
             });
         }
 
         function renderTable(data) {
             if (data.length === 0) {
-                $els.tableBody.html('<tr><td colspan="4" class="text-center text-gray-500 py-8">No covers found</td></tr>');
+                $els.tableBody.html('<tr><td colspan="4" class="py-8 text-center text-gray-500">No covers found</td></tr>');
                 return;
             }
 
@@ -270,9 +274,10 @@
                     <tr>
                         <td class="px-3 py-2">${index + 1}.</td>
                         <td class="px-3 py-2">
-                            <span class="text-sm font-semibold">${item.client ? item.client.name : '-'}</span>
+                            <span class="text-sm font-semibold">${item.client ? item.client.panggilan : '-'}</span>
+                            <span class="badge badge-sm ${badgeClass} w-full whitespace-nowrap">${item.jenis_rekap}</span>
                         </td>
-                        <td class="px-3 py-2">
+                        <td class="hidden px-3 py-2 md:block">
                             <span class="badge badge-sm ${badgeClass}">${item.jenis_rekap}</span>
                         </td>
                         <td class="whitespace-nowrap">
@@ -384,9 +389,9 @@
                 success: function(res) {
                     if (res.success) {
                         loadData(state.currentPage);
-                        showToast('Cover deleted successfully!', 'success');
+                        Notify('success', res.message || 'Cover deleted successfully');
                     } else {
-                        showToast(res.message || 'Failed to delete cover', 'error');
+                        Notify('error', res.message || 'Failed to delete cover');
                     }
                 },
                 error: (xhr) => handleError(xhr, 'Error deleting cover')
@@ -530,9 +535,9 @@
                     if (res.success) {
                         closeModal();
                         loadData(state.currentPage);
-                        showToast(state.isEdit ? 'Cover updated successfully!' : 'Cover created successfully!', 'success');
+                        Notify('success', res.message || 'Cover saved successfully');
                     } else {
-                        showToast(res.message || 'Something went wrong', 'error');
+                        Notify('error', res.message || 'Failed to save cover');
                     }
                 },
                 error: (xhr) => handleError(xhr, 'Error saving cover'),
@@ -548,26 +553,11 @@
             try {
                 const res = JSON.parse(xhr.responseText);
                 const errMsg = res.errors ? Object.values(res.errors).join('<br>') : (res.message || msg);
-                showToast(errMsg, 'error');
+                Notify('error', errMsg);
             } catch (e) {
-                showToast(msg, 'error');
+                Notify('error', msg);
             }
         }
-
-        function showToast(msg, type) {
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-            const icon = type === 'success' ? 'ri-checkbox-circle-line' : 'ri-error-warning-line';
-            
-            const $toast = $(`
-                <div class="alert ${alertClass} shadow-lg mb-2">
-                    <div><i class="${icon} text-lg"></i><span>${msg}</span></div>
-                </div>
-            `);
-            
-            $('#toastContainer').append($toast);
-            setTimeout(() => $toast.fadeOut(300, () => $toast.remove()), 3000);
-        }
-
         $(document).ready(init);
     })(jQuery);
     </script>

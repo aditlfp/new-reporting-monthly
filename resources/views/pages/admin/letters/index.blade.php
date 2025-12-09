@@ -1,33 +1,32 @@
 <x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="container px-4 py-8 mx-auto">
-            <div class="m-5 bg-white shadow-xl card">
+        <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
+            <div class="flex items-center justify-end mb-4 md:mb-6">
+                <button id="btnCreate"
+                    class="text-xs text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm md:text-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
+                    <i class="ri-add-line"></i> <span>Add New Letter</span>
+                </button>
+            </div>
+            <div class="m-3 bg-white shadow-xl md:m-5 card">
                 <div class="card-body">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl card-title">Letters Management</h2>
-                        <button class="btn btn-info" id="btnCreate">
-                            <i class="ri-add-line"></i> Create New Letter
-                        </button>
-                    </div>
-
                     <div class="overflow-x-auto">
-                        <table class="table w-full table-zebra">
+                        <table class="table w-full text-xs table-zebra md:text-sm">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Cover Mitra</th>
-                                    <th>No Number</th>
-                                    <th>Hal Surat</th>
-                                    <th>Period</th>
-                                    <th>Kepada</th>
-                                    <th>Addition File</th>
-                                    <th>Actions</th>
+                                    <th class="p-2 md:p-3">ID</th>
+                                    <th class="p-2 md:p-3">Cover Mitra</th>
+                                    <th class="hidden p-2 md:p-3 sm:table-cell">No Number</th>
+                                    <th class="hidden p-2 md:p-3 md:table-cell">Hal Surat</th>
+                                    <th class="hidden p-2 md:p-3 lg:table-cell">Period</th>
+                                    <th class="hidden p-2 md:p-3 lg:table-cell">Kepada</th>
+                                    <th class="p-2 text-center md:p-3">Addition File</th>
+                                    <th class="p-2 text-center md:p-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
                                 <tr>
-                                    <td colspan="7" class="text-center">
+                                    <td colspan="8" class="text-center">
                                         <span class="loading loading-spinner loading-lg"></span>
                                     </td>
                                 </tr>
@@ -35,7 +34,7 @@
                         </table>
                     </div>
 
-                    <div id="pagination" class="flex justify-center mt-6"></div>
+                    <div id="pagination" class="flex justify-center mt-4 md:mt-6"></div>
                 </div>
             </div>
         </div>
@@ -43,18 +42,18 @@
 
     <!-- Modal -->
     <dialog id="letterModal" class="modal">
-        <div class="max-w-2xl modal-box w-10/11">
-            <h3 class="mb-4 text-lg font-bold" id="modalTitle">Create Letter</h3>
+        <div class="w-11/12 max-w-2xl p-4 modal-box md:w-10/11 md:p-6">
+            <h3 class="mb-3 text-lg font-bold md:mb-4 md:text-xl" id="modalTitle">Create Letter</h3>
 
             <form id="letterForm" method="dialog">
                 <input type="hidden" id="letterId" name="id">
                 <input type="hidden" id="formMethod" value="POST">
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Cover ID <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Cover ID <span class="text-error">*</span></span>
                     </label>
-                    <select class="w-full select select-bordered" id="cover_id" name="cover_id" required>
+                    <select class="w-full select select-bordered select-xs md:select-sm" id="cover_id" name="cover_id" required>
                         <option value="" disabled selected>Select Cover</option>
                         @foreach ($covers as $cover)
                             <option value="{{ $cover->id }}">{{ $cover->client->name }}</option>
@@ -65,66 +64,66 @@
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Letter Number <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Letter Number <span class="text-error">*</span></span>
                     </label>
-                    <input type="text" class="w-full input input-bordered" id="latter_numbers" name="latter_numbers"
+                    <input type="text" class="w-full input input-bordered input-xs md:input-sm" id="latter_numbers" name="latter_numbers"
                         required maxlength="255" placeholder="XXX/XX/SAC/20XX">
                     <label class="hidden label" id="error-latter_numbers">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Lamp <span class="italic text-info">(opsional)</span></span>
+                        <span class="text-xs label-text md:text-sm">Lamp <span class="italic text-info">(opsional)</span></span>
                     </label>
-                    <input type="text" class="w-full input input-bordered" id="lamp" name="lamp"
+                    <input type="text" class="w-full input input-bordered input-xs md:input-sm" id="lamp" name="lamp"
                         maxlength="255" placeholder="Satu Bandel">
                     <label class="hidden label" id="error-lamp">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Letter Matter <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Letter Matter <span class="text-error">*</span></span>
                     </label>
-                    <textarea class="w-full h-24 textarea textarea-bordered" id="latter_matters" name="latter_matters" required
+                    <textarea class="w-full h-20 md:h-24 textarea textarea-bordered textarea-xs md:textarea-sm" id="latter_matters" name="latter_matters" required
                         placeholder="Perihal... eg.(Laporan Pekerjaan Cleaning Service Bulan Oktober 2025)"></textarea>
                     <label class="hidden label" id="error-latter_matters">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Period <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Period <span class="text-error">*</span></span>
                     </label>
-                    <input type="text" class="w-full input input-bordered" id="period" name="period" required
+                    <input type="text" class="w-full input input-bordered input-xs md:input-sm" id="period" name="period" required
                         maxlength="255" placeholder="Periode eg.(Bulan November 2025)">
                     <label class="hidden label" id="error-period">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Kepada <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Kepada <span class="text-error">*</span></span>
                     </label>
-                    <input type="text" class="w-full input input-bordered" id="letter_to" name="letter_to" required
+                    <input type="text" class="w-full input input-bordered input-xs md:input-sm" id="letter_to" name="letter_to" required
                         maxlength="255" placeholder="Kepada yth....">
                     <label class="hidden label" id="error-letter_to">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Report Content</span>
+                        <span class="text-xs label-text md:text-sm">Report Content</span>
                     </label>
-                    <textarea class="w-full h-32 textarea textarea-bordered" id="report_content" name="report_content"
+                    <textarea class="w-full h-24 md:h-32 textarea textarea-bordered textarea-xs md:textarea-sm" id="report_content" name="report_content"
                         placeholder="1. surat (enter) 2. mcp (enter), str.."></textarea>
                     <label class="hidden label" id="error-report_content">
                         <span class="label-text-alt text-error"></span>
@@ -132,21 +131,21 @@
                 </div>
 
                 <!-- Update the file input section -->
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Add File Lanjutan Surat (MCP, dkk)</span>
+                        <span class="text-xs label-text md:text-sm">Add File Lanjutan Surat (MCP, dkk)</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered" id="signature"
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="signature"
                         name="signature">
-                    <div id="current-file" class="mt-2 text-sm text-gray-600"></div>
+                    <div id="current-file" class="mt-2 text-xs text-gray-600 md:text-sm"></div>
                     <label class="hidden label" id="error-signature">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
                 <div class="modal-action">
-                    <button type="button" class="btn btn-ghost" id="btnClose">Close</button>
-                    <button type="submit" class="btn btn-primary" id="btnSave">
+                    <button type="button" class="btn btn-xs md:btn-sm btn-ghost" id="btnClose">Close</button>
+                    <button type="submit" class="btn btn-xs md:btn-sm btn-primary" id="btnSave">
                         <span class="hidden loading loading-spinner loading-sm" id="btnSpinner"></span>
                         Save
                     </button>
@@ -223,33 +222,49 @@
                         data.forEach(function(item) {
                             html += `
                     <tr class="hover">
-                        <td>${item.id}</td>
-                        <td>${item.cover?.client.name}</td>
-                        <td>${item.latter_numbers}</td>
-                        <td>
-                            <div class="max-w-xs truncate" title="${item.latter_matters}">
+                        <td class="px-2 py-2 md:px-3">${item.id}</td>
+                        <td class="px-2 py-2 md:px-3">
+                            <div class="max-w-[100px] md:max-w-xs truncate" title="${item.cover?.client.name}">
+                                ${item.cover?.client.name}
+                            </div>
+                        </td>
+                        <td class="hidden px-2 py-2 md:px-3 sm:table-cell">
+                            <div class="max-w-[100px] md:max-w-xs truncate" title="${item.latter_numbers}">
+                                ${item.latter_numbers}
+                            </div>
+                        </td>
+                        <td class="hidden px-2 py-2 md:px-3 md:table-cell">
+                            <div class="max-w-[100px] md:max-w-xs truncate" title="${item.latter_matters}">
                                 ${item.latter_matters}
                             </div>
                         </td>
-                        <td>${item.period}</td>
-                        <td>${item.letter_to}</td>
-                        <td>
+                        <td class="hidden px-2 py-2 md:px-3 lg:table-cell">
+                            <div class="max-w-[100px] md:max-w-xs truncate" title="${item.period}">
+                                ${item.period}
+                            </div>
+                        </td>
+                        <td class="hidden px-2 py-2 md:px-3 lg:table-cell">
+                            <div class="max-w-[100px] md:max-w-xs truncate" title="${item.letter_to}">
+                                ${item.letter_to}
+                            </div>
+                        </td>
+                        <td class="px-2 py-2 text-center md:px-3">
                             ${item.signature ? 
-                                `<span><i class="text-2xl ri-file-pdf-2-line text-error"></i></span>`
+                                `<span><i class="text-xl md:text-2xl ri-file-pdf-2-line text-error"></i></span>`
                              : 
                                 `<span>-</span>`
                             }
                         </td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="btn btn-sm btn-warning btn-edit" data-id="${item.id}">
-                                    <i class="ri-edit-line"></i>
+                        <td class="px-2 py-2 md:px-3">
+                            <div class="flex justify-center gap-1 md:gap-2">
+                                <button class="btn btn-xs btn-warning btn-edit" data-id="${item.id}">
+                                    <i class="text-xs md:text-sm ri-edit-line"></i>
                                 </button>
-                                <button data-latter-id="${item.id}" class="generate-pdf-btn btn btn-sm btn-info">
-                                    <i class="ri-file-pdf-line"></i>
+                                <button data-latter-id="${item.id}" class="generate-pdf-btn btn btn-xs btn-info">
+                                    <i class="text-xs md:text-sm ri-file-pdf-line"></i>
                                 </button>
-                                <button class="btn btn-sm btn-error btn-delete" data-id="${item.id}">
-                                    <i class="ri-delete-bin-line"></i>
+                                <button class="btn btn-xs btn-error btn-delete" data-id="${item.id}">
+                                    <i class="text-xs md:text-sm ri-delete-bin-line"></i>
                                 </button>
                             </div>
                         </td>
@@ -270,7 +285,7 @@
                     let html = '<div class="join">';
 
                     // Previous
-                    html += `<button class="join-item btn btn-sm ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
+                    html += `<button class="join-item btn btn-xs ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
             <i class="ri-arrow-left-s-line"></i>
         </button>`;
 
@@ -279,14 +294,14 @@
                         if (i === 1 || i === data.last_page || (i >= data.current_page - 2 && i <= data.current_page +
                                 2)) {
                             html +=
-                                `<button class="join-item btn btn-sm ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
+                                `<button class="join-item btn btn-xs ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
                         } else if (i === data.current_page - 3 || i === data.current_page + 3) {
-                            html += '<button class="join-item btn btn-sm btn-disabled">...</button>';
+                            html += '<button class="join-item btn btn-xs btn-disabled">...</button>';
                         }
                     }
 
                     // Next
-                    html += `<button class="join-item btn btn-sm ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
+                    html += `<button class="join-item btn btn-xs ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
             <i class="ri-arrow-right-s-line"></i>
         </button>`;
 
@@ -583,7 +598,8 @@
                             backgroundColor: null,
                             removeContainer: false,
                             onclone: function(clonedDoc) {
-                                const clonedElement = clonedDoc.querySelector('section');
+                                const clonedElement = clonedDoc.querySelector(
+                                    'section');
                                 if (clonedElement) {
                                     // Force background image to load
                                     const bgImage = clonedElement.querySelector(

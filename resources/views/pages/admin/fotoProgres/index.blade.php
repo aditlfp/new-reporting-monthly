@@ -1,63 +1,67 @@
 <x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="container px-4 py-8 mx-auto">
-            <div class="m-5 bg-white shadow-xl card">
-                <div class="card-body">
-                    <div class="flex flex-col gap-4 mb-6">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-2xl card-title">Photo Progress Management</h2>
-                        </div>
-
-                        <!-- Filter Section -->
-                        <div class="flex flex-wrap items-center gap-4 p-4 rounded-lg bg-gray-50">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="font-medium label-text">Filter by Month</span>
-                                </label>
-                                <input type="month" id="monthFilter" class="input input-bordered">
+        <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
+            <div class="container px-3 py-6 mx-auto md:px-4 md:py-8">
+                <div class="m-3 bg-white shadow-xl md:m-5 card">
+                    <div class="card-body">
+                        <div class="flex flex-col gap-3 mb-4 md:gap-4 md:mb-6">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl md:text-2xl card-title">Photo Progress Management</h2>
                             </div>
-                            <button id="applyFilter" class="mt-6 btn btn-primary">Apply Filter</button>
-                            <button id="clearFilter" class="mt-6 btn btn-ghost">Clear</button>
-                            <button id="generatePdf" class="mt-6 btn btn-success">
-                                <i class="mr-2 ri-file-pdf-line"></i>Generate PDF
-                            </button>
+
+                            <!-- Filter Section -->
+                            <div class="flex flex-col gap-3 p-3 rounded-lg md:p-4 bg-gray-50">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="text-xs font-medium md:text-sm label-text">Filter by Month</span>
+                                    </label>
+                                    <input type="month" id="monthFilter" class="input input-bordered input-xs md:input-sm">
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button id="applyFilter" class="btn btn-xs md:btn-sm btn-primary">Apply Filter</button>
+                                    <button id="clearFilter" class="btn btn-xs md:btn-sm btn-ghost">Clear</button>
+                                    <button id="generatePdf" class="btn btn-xs md:btn-sm btn-success">
+                                        <i class="mr-1 md:mr-2 ri-file-pdf-line"></i><span class="hidden sm:inline">Generate PDF</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Selection Controls -->
+                            <div class="flex gap-2">
+                                <button id="selectAll" class="btn btn-xs md:btn-sm">Select All</button>
+                                <button id="deselectAll" class="btn btn-xs md:btn-sm">Deselect All</button>
+                            </div>
                         </div>
 
-                        <!-- Selection Controls -->
-                        <div class="flex gap-2">
-                            <button id="selectAll" class="btn btn-sm">Select All</button>
-                            <button id="deselectAll" class="btn btn-sm">Deselect All</button>
+                        <div class="overflow-x-auto">
+                            <table class="table w-full text-xs table-zebra md:text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="p-2 md:p-3">
+                                            <input type="checkbox" id="headerCheckbox" class="checkbox checkbox-xs">
+                                        </th>
+                                        <th class="p-2 md:p-3">ID</th>
+                                        <th class="p-2 md:p-3">Nama Mitra</th>
+                                        <th class="hidden p-2 md:p-3 sm:table-cell">Before</th>
+                                        <th class="hidden p-2 md:p-3 md:table-cell">Progress</th>
+                                        <th class="hidden p-2 md:p-3 lg:table-cell">After</th>
+                                        <th class="hidden p-2 md:p-3 md:table-cell">Keterangan</th>
+                                        <th class="p-2 text-center md:p-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <span class="loading loading-spinner loading-lg"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="table w-full table-zebra">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" id="headerCheckbox" class="checkbox">
-                                    </th>
-                                    <th>ID</th>
-                                    <th>Nama Mitra</th>
-                                    <th>Before</th>
-                                    <th>Progress</th>
-                                    <th>After</th>
-                                    <th>Keterangan</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                                <tr>
-                                    <td colspan="8" class="text-center">
-                                        <span class="loading loading-spinner loading-lg"></span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div id="pagination" class="flex justify-center mt-4 md:mt-6"></div>
                     </div>
-
-                    <div id="pagination" class="flex justify-center mt-6"></div>
                 </div>
             </div>
         </div>
@@ -65,18 +69,18 @@
 
     {{-- Edit Modal --}}
     <dialog id="fotoModal" class="modal">
-        <div class="max-w-2xl modal-box w-10/11">
-            <h3 class="mb-4 text-lg font-bold" id="modalTitle">Edit Photo Progress</h3>
+        <div class="w-11/12 max-w-2xl p-4 modal-box md:w-10/11 md:p-6">
+            <h3 class="mb-3 text-lg font-bold md:mb-4 md:text-xl" id="modalTitle">Edit Photo Progress</h3>
 
             <form id="photoForm" method="dialog">
                 <input type="hidden" id="photoId" name="id">
                 <input type="hidden" id="formMethod" value="POST">
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Nama Mitra <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Nama Mitra <span class="text-error">*</span></span>
                     </label>
-                    <select name="client_id" id="client_id" class="w-full select select-bordered" required>
+                    <select name="client_id" id="client_id" class="w-full select select-bordered select-xs md:select-sm" required>
                         <option value="" disabled selected>Select Client</option>
                         @foreach ($client as $cl)
                             <option value="{{ $cl->id }}">{{ $cl->name }}</option>
@@ -87,11 +91,11 @@
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Before Image</span>
+                        <span class="text-xs label-text md:text-sm">Before Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered" id="img_before"
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_before"
                         name="img_before">
                     <div id="current-img_before" class="mt-2"></div>
                     <label class="hidden label" id="error-img_before">
@@ -99,11 +103,11 @@
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Progress Image</span>
+                        <span class="text-xs label-text md:text-sm">Progress Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered" id="img_proccess"
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_proccess"
                         name="img_proccess">
                     <div id="current-img_proccess" class="mt-2"></div>
                     <label class="hidden label" id="error-img_proccess">
@@ -111,30 +115,30 @@
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">After Image</span>
+                        <span class="text-xs label-text md:text-sm">After Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered" id="img_final" name="img_final">
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_final" name="img_final">
                     <div id="current-img_final" class="mt-2"></div>
                     <label class="hidden label" id="error-img_final">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
-                <div class="w-full mb-4 form-control">
+                <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="label-text">Keterangan</span>
+                        <span class="text-xs label-text md:text-sm">Keterangan</span>
                     </label>
-                    <textarea class="w-full h-24 textarea textarea-bordered" id="note" name="note"></textarea>
+                    <textarea class="w-full h-20 md:h-24 textarea textarea-bordered textarea-xs md:textarea-sm" id="note" name="note"></textarea>
                     <label class="hidden label" id="error-note">
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
 
                 <div class="modal-action">
-                    <button type="button" class="btn btn-ghost" id="btnClose">Close</button>
-                    <button type="submit" class="btn btn-primary" id="btnSave">
+                    <button type="button" class="btn btn-xs md:btn-sm btn-ghost" id="btnClose">Close</button>
+                    <button type="submit" class="btn btn-xs md:btn-sm btn-primary" id="btnSave">
                         <span class="hidden loading loading-spinner loading-sm" id="btnSpinner"></span>
                         Save
                     </button>
@@ -155,28 +159,28 @@
                 <div class="flex gap-2 p-1 bg-black rounded-full bg-opacity-70">
                     <button id="closeImagePreview"
                         class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                     <button id="rotateImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
                     <button id="zoomInImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                         </svg>
                     </button>
                     <button id="zoomOutImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
@@ -184,7 +188,7 @@
                     </button>
                     <button id="downloadImage"
                         class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -195,29 +199,29 @@
 
             <!-- Navigation buttons -->
             <button id="prevImage"
-                class="absolute z-10 p-3 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full left-4 top-1/2 hover:bg-opacity-70">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24"
+                class="absolute z-10 p-2 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full md:p-3 left-2 md:left-4 top-1/2 hover:bg-opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
 
             <button id="nextImage"
-                class="absolute z-10 p-3 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full right-4 top-1/2 hover:bg-opacity-70">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24"
+                class="absolute z-10 p-2 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full md:p-3 right-2 md:right-4 top-1/2 hover:bg-opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
 
             <!-- Image container -->
-            <div class="flex items-center justify-center w-full h-[85vh] overflow-hidden">
+            <div class="flex items-center justify-center w-full h-[75vh] md:h-[85vh] overflow-hidden">
                 <img id="previewImage" src="" alt="Preview"
                     class="object-contain max-w-full max-h-full transition-transform duration-300">
             </div>
 
             <!-- Image info -->
-            <div id="imageInfo" class="absolute left-0 right-0 text-sm text-center text-white bottom-4">
+            <div id="imageInfo" class="absolute left-0 right-0 text-xs text-center text-white md:text-sm bottom-4">
                 <span id="imageCounter"></span>
             </div>
         </div>
@@ -293,22 +297,36 @@
 
                     const html = data.map((item, index) => `
                         <tr class="hover">
-                            <td>
-                                <input type="checkbox" class="row-checkbox checkbox" data-id="${item.id}">
+                            <td class="px-2 py-2 md:px-3">
+                                <input type="checkbox" class="row-checkbox checkbox checkbox-xs" data-id="${item.id}">
                             </td>
-                            <td>${index + 1}</td>
-                            <td>${item.clients?.name || '-'}</td>
-                            <td>${renderImageCell(item.img_before, 'Before')}</td>
-                            <td>${renderImageCell(item.img_proccess, 'Progress')}</td>
-                            <td>${renderImageCell(item.img_final, 'After')}</td>
-                            <td>${item.note || '-'}</td>
-                            <td>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-sm btn-warning btn-edit" data-id="${item.id}">
-                                        <i class="ri-edit-line"></i>
+                            <td class="px-2 py-2 md:px-3">${index + 1}</td>
+                            <td class="px-2 py-2 md:px-3">
+                                <div class="max-w-[100px] md:max-w-xs truncate" title="${item.clients?.name || '-'}">
+                                    ${item.clients?.name || '-'}
+                                </div>
+                            </td>
+                            <td class="hidden px-2 py-2 md:px-3 sm:table-cell">
+                                ${renderImageCell(item.img_before, 'Before')}
+                            </td>
+                            <td class="hidden px-2 py-2 md:px-3 md:table-cell">
+                                ${renderImageCell(item.img_proccess, 'Progress')}
+                            </td>
+                            <td class="hidden px-2 py-2 md:px-3 lg:table-cell">
+                                ${renderImageCell(item.img_final, 'After')}
+                            </td>
+                            <td class="hidden px-2 py-2 md:px-3 md:table-cell">
+                                <div class="max-w-[100px] md:max-w-xs truncate" title="${item.note || '-'}">
+                                    ${item.note || '-'}
+                                </div>
+                            </td>
+                            <td class="px-2 py-2 md:px-3">
+                                <div class="flex justify-center gap-1 md:gap-2">
+                                    <button class="btn btn-xs btn-warning btn-edit" data-id="${item.id}">
+                                        <i class="text-xs md:text-sm ri-edit-line"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-error btn-delete" data-id="${item.id}">
-                                        <i class="ri-delete-bin-line"></i>
+                                    <button class="btn btn-xs btn-error btn-delete" data-id="${item.id}">
+                                        <i class="text-xs md:text-sm ri-delete-bin-line"></i>
                                     </button>
                                 </div>
                             </td>
@@ -321,12 +339,12 @@
                 // Helper function to render image cell
                 function renderImageCell(imagePath, label) {
                     if (!imagePath) {
-                        return `<img src="https://placehold.co/600x400?text=Kosong" class="max-w-[100px] opacity-50" />`;
+                        return `<img src="https://placehold.co/600x400?text=Kosong" class="max-w-[60px] md:max-w-[100px] opacity-50" />`;
                     }
 
                     const fullUrl = window.location.origin + '/storage/' + imagePath;
                     return `<img src="${fullUrl}" 
-                             class="max-w-[100px] cursor-pointer hover:opacity-80 transition-opacity" 
+                             class="max-w-[60px] md:max-w-[100px] cursor-pointer hover:opacity-80 transition-opacity" 
                              onclick="showImagePreview('${fullUrl}')" 
                              alt="${label}" />`;
                 }
@@ -341,7 +359,7 @@
                     let html = '<div class="join">';
 
                     // Previous button
-                    html += `<button class="join-item btn btn-sm ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
+                    html += `<button class="join-item btn btn-xs ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
                         <i class="ri-arrow-left-s-line"></i>
                     </button>`;
 
@@ -350,14 +368,14 @@
                         if (i === 1 || i === data.last_page || (i >= data.current_page - 2 && i <= data.current_page +
                                 2)) {
                             html +=
-                                `<button class="join-item btn btn-sm ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
+                                `<button class="join-item btn btn-xs ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
                         } else if (i === data.current_page - 3 || i === data.current_page + 3) {
-                            html += '<button class="join-item btn btn-sm btn-disabled">...</button>';
+                            html += '<button class="join-item btn btn-xs btn-disabled">...</button>';
                         }
                     }
 
                     // Next button
-                    html += `<button class="join-item btn btn-sm ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
+                    html += `<button class="join-item btn btn-xs ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
                         <i class="ri-arrow-right-s-line"></i>
                     </button>`;
 
@@ -607,7 +625,7 @@
                     if (imagePath) {
                         const fullUrl = window.location.origin + '/storage/' + imagePath;
                         container.html(
-                            `<img src="${fullUrl}" class="max-w-[200px] mt-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="showImagePreview('${fullUrl}')" />`
+                            `<img src="${fullUrl}" class="max-w-[150px] md:max-w-[200px] mt-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="showImagePreview('${fullUrl}')" />`
                         );
                     } else {
                         container.html('');

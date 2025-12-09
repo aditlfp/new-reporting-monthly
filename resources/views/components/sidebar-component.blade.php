@@ -1,6 +1,6 @@
 <!-- Sidebar -->
-<aside class="flex flex-col w-64 min-h-screen bg-white border-r min-w-64 border-slate-200">
-
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 min-h-screen pt-16 transition-transform duration-300 ease-in-out transform -translate-x-full bg-white border-r md:z-20 md:pt-0 md:relative md:translate-x-0 min-w-64 border-slate-200">
   <!-- Navigation -->
   <div class="flex-1 p-4 overflow-y-auto">
     <a href="{{ route('dashboard')}}" class="flex items-center my-2 px-3 py-2 space-x-2 transition-all rounded-lg {{ request()->routeIs('dashboard') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
@@ -9,6 +9,7 @@
       </svg>
       <span class="text-sm">Dashboard</span>
     </a>
+    
     {{-- Master Data Dropdown --}}
     <div class="mb-2">
       <button 
@@ -56,6 +57,18 @@
       </svg>
       <span class="text-sm">Settings</span>
     </a>
+
+    <div class="block p-2 md:p-4 md:hidden">
+      <form action="{{ route('logout') }}" method="POST" class="w-full">
+        @csrf
+        <button type="submit" class="flex items-center w-full gap-2 p-2 text-red-500 transition-colors rounded-lg hover:text-red-400 bg-red-500/20">
+          <svg class="relative w-8 h-8 p-2 text-red-500 transition-colors rounded-full hover:text-red-400 bg-red-500/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Logout
+        </button>
+      </form>
+    </div>
   </div>
 
   <!-- User Profile - Fixed at Bottom -->
@@ -75,6 +88,30 @@
   </div>
 </aside>
 
+<!-- Sidebar Toggle Button -->
+<button id="sidebarToggle" class="fixed p-2 bg-white rounded-md drop-shadow-sm z-60 top-3 left-4 md:hidden">
+  <svg class="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+  </svg>
+</button>
+
+<!-- Overlay for mobile sidebar -->
+<div id="sidebarOverlay" class="fixed inset-0 z-40 hidden bg-black/15 md:hidden"></div>
+
+<div class="fixed z-50 w-full md:w-auto md:hidden top-4 left-16">
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center justify-center w-8 h-8 rounded-lg md:w-10 md:h-10 bg-gradient-to-br from-slate-700 to-slate-900">
+        <svg class="w-5 h-5 text-white md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-lg font-semibold md:text-xl text-slate-800">SILAB</span>
+        <span class="hidden text-xs md:text-sm text-slate-600 sm:block">Sistem Laporan Bulanan</span>
+      </div>
+    </div>
+  </div>
+
 @push('scripts')
 <script>
   function toggleDropdown(dropdownId) {
@@ -91,5 +128,22 @@
       icon.classList.add('rotate-180');
     }
   }
+
+  // Sidebar toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    sidebarToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('-translate-x-full');
+      sidebarOverlay.classList.toggle('hidden');
+    });
+
+    sidebarOverlay.addEventListener('click', function() {
+      sidebar.classList.add('-translate-x-full');
+      sidebarOverlay.classList.add('hidden');
+    });
+  });
 </script>
 @endpush
