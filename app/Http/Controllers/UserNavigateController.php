@@ -31,7 +31,7 @@ class UserNavigateController extends Controller
             ->latest()
             ->get();
         $imageCount = UploadImage::where('clients_id', $this->auth->kerjasama->client_id)
-            ->whereMonth('created_at', $this->now>month)
+            ->whereMonth('created_at', $this->now->month)
             ->where('status', 1);
 
         // Count each image type separately
