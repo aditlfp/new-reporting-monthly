@@ -170,7 +170,8 @@ class DashboardController extends Controller
         $totals = [];
 
         foreach ($performance as $row) {
-            $months[] = Carbon::create()->month($row->month)->format('F');
+            $monthNumber = (int) $row->month;
+            $months[] = Carbon::create()->month($monthNumber)->format('F');
             $totals[] = $row->total;
         }
 
