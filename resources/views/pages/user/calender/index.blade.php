@@ -293,7 +293,7 @@
                         
                         const classes = isToday 
                             ? 'calendar-day flex flex-col items-center justify-center p-0.5 xs:p-1 sm:p-2 rounded-lg cursor-pointer today text-white font-bold shadow-lg'
-                            : `calendar-day flex flex-col items-center justify-center p-0.5 xs:p-1 sm:p-2 rounded-none cursor-pointer hover:bg-blue-100 bg-gray-50 ${textColorClass}`;
+                            : `calendar-day flex flex-col items-center justify-center p-0.5 xs:p-1 sm:p-2 rounded-lg cursor-pointer ${textColorClass}`;
                         
                         let dayContent = `<span class="leading-none">${day}</span>`;
                         if (isHoliday && !mobile) {
@@ -305,11 +305,8 @@
                         
                         $('#calendarDays').append(
                             `<div class="indicator w-full">
-							  <span class="${verify.length >= 1 ? 'indicator-item indicator-top indicator-end -mr-1 -mt-1' : 'hidden'}">
-                            		${verify.length ? `<i class="ri-verified-badge-fill text-blue-500"></i>` : ""}
-							  </span>
                               <span class="${verify.length >= 1 ? 'indicator-item indicator-bottom indicator-center badge bg-green-500 text-white border-0' : 'hidden'}">${totalUploads}</span>
-							  <div class="${classes} calendar-day-wrapper grid place-items-center w-full" data-date="${dateStr}" data-holiday="${isHoliday ? isHoliday.name : ''}">
+							  <div class="${classes} calendar-day-wrapper ${verify.length >= 1 ? 'bg-blue-100/80 border border-blue-500' : 'hover:bg-blue-100 bg-gray-50'} grid place-items-center w-full" data-date="${dateStr}" data-holiday="${isHoliday ? isHoliday.name : ''}">
                                 	${dayContent}
 								</div>
                             </div>`
