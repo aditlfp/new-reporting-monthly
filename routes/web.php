@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\CalenderApiHandler;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
@@ -27,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('/upload-img-lap', UploadImageController::class);
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
+    Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
+    Route::get('/check-calender', [UserNavigateController::class, 'toCalenderUpload'])->name('check.calender.upload');
+    Route::get('/fetch-calender', [CalenderApiHandler::class, 'getCalendarData']);
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

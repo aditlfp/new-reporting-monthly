@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'calendar' => [
+        'url' => env('CALL_API_CALENDER'),
+        'key' => env('CALL_API_KEY_CAL'),
+    ],
+
 ];

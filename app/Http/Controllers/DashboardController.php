@@ -15,7 +15,8 @@ class DashboardController extends Controller
     public function index()
     {
         $now = now();
-
+        $user = Auth::user();
+        $clientId = $user->kerjasama->client_id;
         $data = UploadImage::with([
                 'user.divisi.jabatan', // ambil jabatan
                 'clients'
@@ -67,7 +68,7 @@ class DashboardController extends Controller
                 }
             }
 
-        if (Auth::user()->role_id == 2) {
+        if ($user->role_id == 2) {
 
             // Total bulan ini
             $totalThisMonth = UploadImage::whereYear('created_at', $now->year)
@@ -129,40 +130,94 @@ class DashboardController extends Controller
                 'isUp'
             ));
         } else {
-            $uploadDraft = UploadImage::where('user_id', Auth::user()->id)
-                ->where('status', 0)
-                ->latest()
-                ->first();
-            $allImages = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
-                ->where('status', 1)
-                ->latest()
-                ->get();
-            $imageCount = UploadImage::where('clients_id', Auth::user()->kerjasama->client_id)
-                ->where('status', 1);
+            $summary = $this->getUserImageSummary(
+                $user->id,
+                $user->kerjasama->client_id,
+                now()
+            );
 
-            // Count each image type separately
-            $totalBefore = (clone $imageCount)
-                ->whereNotNull('img_before')
-                ->where('img_before', '!=', '')
-                ->where('img_before', '!=', 'none')
-                ->count();
-
-            $totalProccess = (clone $imageCount)
-                ->whereNotNull('img_proccess')
-                ->where('img_proccess', '!=', '')
-                ->where('img_proccess', '!=', 'none')
-                ->count();
-
-            $totalFinal = (clone $imageCount)
-                ->whereNotNull('img_final')
-                ->where('img_final', '!=', '')
-                ->where('img_final', '!=', 'none')
-                ->count();
-
-            // Calculate the total number of images
-            $totalImageCount = $totalBefore + $totalProccess + $totalFinal;
-
-            return view('pages.user.dashboard', compact('uploadDraft', 'totalImageCount', 'allImages', 'percentage'));
+            return view('pages.user.dashboard', [
+                'uploadDraft' => $summary->uploadDraft,
+                'allImages' => $summary->allImages,
+                'totalImageCount' => $summary->totalImageCount,
+                'percentage' => $percentage ?? 0
+            ]);
         }
     }
+
+    public function performancePerMonth()
+    {
+        if (Auth::user()->role_id == 2) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $userId = Auth::id();
+
+        $performance = UploadImage::selectRaw("
+                MONTH(created_at) as month,
+                (
+                    COUNT(CASE WHEN img_before IS NOT NULL AND img_before != '' AND img_before != 'none' THEN 1 END) +
+                    COUNT(CASE WHEN img_proccess IS NOT NULL AND img_proccess != '' AND img_proccess != 'none' THEN 1 END) +
+                    COUNT(CASE WHEN img_final IS NOT NULL AND img_final != '' AND img_final != 'none' THEN 1 END)
+                ) as total
+            ")
+            ->where('user_id', $userId)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        $months = [];
+        $totals = [];
+
+        foreach ($performance as $row) {
+            $monthNumber = (int) $row->month;
+            $months[] = Carbon::create()->month($monthNumber)->format('F');
+            $totals[] = $row->total;
+        }
+
+        return response()->json([
+            'months' => $months,
+            'totals' => $totals,
+        ]);
+    }
+
+    private function getUserImageSummary($userId, $clientId, $date)
+    {
+        $uploadDraft = UploadImage::where('user_id', $userId)
+            ->where('status', 0)
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
+            ->latest()
+            ->first();
+
+        $allImages = UploadImage::where('clients_id', $clientId)
+            ->where('status', 1)
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
+            ->latest()
+            ->get();
+
+        $imageCounts = UploadImage::selectRaw("
+                COUNT(CASE WHEN img_before IS NOT NULL AND img_before != '' AND img_before != 'none' THEN 1 END) AS total_before,
+                COUNT(CASE WHEN img_proccess IS NOT NULL AND img_proccess != '' AND img_proccess != 'none' THEN 1 END) AS total_proccess,
+                COUNT(CASE WHEN img_final IS NOT NULL AND img_final != '' AND img_final != 'none' THEN 1 END) AS total_final
+            ")
+            ->where('clients_id', $clientId)
+            ->where('status', 1)
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
+            ->first();
+
+        $totalImageCount = 
+            $imageCounts->total_before +
+            $imageCounts->total_proccess +
+            $imageCounts->total_final;
+
+        return (object)[
+            'uploadDraft' => $uploadDraft,
+            'allImages' => $allImages,
+            'totalImageCount' => $totalImageCount
+        ];
+    }
+
 }

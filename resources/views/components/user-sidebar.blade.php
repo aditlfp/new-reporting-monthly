@@ -45,8 +45,8 @@
             <div class="px-4 mb-2 text-xs font-semibold tracking-wider uppercase text-slate-400">
                 Tools
             </div>
-            <a href="#"
-                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-slate-100">
+            <a href="{{ route('check.calender.upload')}}"
+                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('check.calender.upload') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100'}}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
