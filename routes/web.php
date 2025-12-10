@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FixedImageController;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
@@ -31,6 +32,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
+    Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store');
+
 
     Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
 
