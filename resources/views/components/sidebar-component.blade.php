@@ -1,5 +1,8 @@
 <!-- Sidebar -->
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 min-h-screen pt-16 transition-transform duration-300 ease-in-out transform -translate-x-full bg-white border-r md:translate-x-0 md:pt-0 md:relative md:z-auto min-w-64 border-slate-200">
+<aside id="sidebar"
+style="transform: translateX(-100%)"
+  class="fixed inset-y-0 left-0 z-50 w-64 pt-16 transition-transform duration-300 ease-in-out transform bg-white border-r border-slate-200 md:translate-x-0 md:relative md:z-auto">
+
   <!-- Navigation -->
   <div class="flex-1 p-4 overflow-y-auto">
     <a href="{{ route('dashboard')}}" class="flex items-center my-2 px-3 py-2 space-x-2 transition-all rounded-lg {{ request()->routeIs('dashboard') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
@@ -99,7 +102,7 @@
 </button>
 
 <!-- Overlay for mobile sidebar -->
-<div id="sidebarOverlay" class="fixed inset-0 z-40 hidden bg-black/50 md:hidden"></div>
+<div id="sidebarOverlay" class="fixed inset-0 z-40 hidden transition-opacity duration-300 opacity-0 bg-black/50 md:hidden"></div>
 
 <!-- Logo display when sidebar is closed on mobile -->
 <div id="mobileLogo" class="fixed z-50 w-full md:w-auto md:hidden top-4 left-16">
@@ -125,30 +128,5 @@
     $el.css('maxHeight', isOpen ? '0px' : $el[0].scrollHeight + 'px');
     $('#masterDataIcon').toggleClass('rotate-180', !isOpen);
   }
-
-  $(document).ready(function() {
-
-    const sidebar = $('#sidebar');
-    const sidebarOverlay = $('#sidebarOverlay');
-    const sidebarToggle = $('#sidebarToggle');
-
-    sidebarToggle.on('click', function() {
-            sidebar.toggleClass('-translate-x-full');
-            sidebarOverlay.toggleClass('hidden');
-            sidebarToggle.toggleClass('swap-active');
-    });
-    // Close sidebar when clicking outside on mobile
-    $(document).on('click', function(event) {
-        const isClickInsideSidebar = sidebar.has(event.target).length > 0;
-        const isClickOnToggle = sidebarToggle.has(event.target).length > 0;
-
-        if (!isClickInsideSidebar && !isClickOnToggle && !sidebar.hasClass('-translate-x-full')) {
-            sidebar.addClass('-translate-x-full');
-            sidebarOverlay.addClass('hidden');
-            sidebarToggle.removeClass('swap-active');
-        }
-    });
-})
-
 </script>
 @endpush

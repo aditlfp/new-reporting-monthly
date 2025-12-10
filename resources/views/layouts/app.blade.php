@@ -44,23 +44,39 @@
         @stack('scripts')
         <script>
             $(document).ready(function() {
-
                 const sidebar = $('#sidebar');
+                const overlay = $('#sidebarOverlay');
+                const toggle = $('#sidebarToggle');
 
-                const sidebarToggle = $('#sidebarToggle');
-                sidebarToggle.on('click', function() {
-                        sidebar.toggleClass('-translate-x-full');
+                toggle.on('click', function () {
+                    const isOpen = sidebar.css('transform') == 'matrix(1, 0, 0, 1, 0, 0)';
+                    if (!isOpen) {
+                        sidebar.css('transform', 'translateX(0)');
+                        overlay.removeClass('hidden');
+                        setTimeout(() => overlay.addClass('opacity-100').removeClass('opacity-0'), 10);
+                    } else {
+                        sidebar.css('transform', 'translateX(-100%)');
+                        overlay.removeClass('opacity-100').addClass('opacity-0');
+                        setTimeout(() => overlay.addClass('hidden'), 300);
+                    }
+
+                    // DaisyUI icon swap
+                    toggle.toggleClass('swap-active');
                 });
-                // Close sidebar when clicking outside on mobile
-                $(document).on('click', function(event) {
-                    const isClickInsideSidebar = sidebar.has(event.target).length > 0;
-                    const isClickOnToggle = sidebarToggle.has(event.target).length > 0;
 
-                    if (!isClickInsideSidebar && !isClickOnToggle && !sidebar.hasClass('-translate-x-full')) {
-                        sidebar.addClass('-translate-x-full');
+                // Close when clicking outside
+                $(document).on('click', function(e) {
+                    const insideSidebar = sidebar.has(e.target).length > 0;
+                    const onToggle = toggle.has(e.target).length > 0;
+
+                    if (!insideSidebar && !onToggle && !sidebar.hasClass('-translate-x-full')) {
+                        sidebar.removeClass('translate-x-0').addClass('-translate-x-full');
+                        overlay.removeClass('opacity-100').addClass('opacity-0');
+                        setTimeout(() => overlay.addClass('hidden'), 300);
+                        toggle.removeClass('swap-active');
                     }
                 });
-            })
+            });
 
         </script>
     </body>
