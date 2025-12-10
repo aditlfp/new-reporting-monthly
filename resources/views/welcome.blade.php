@@ -257,10 +257,10 @@
                 </ul>
             </div>
             <div class="flex items-center gap-3">
-                <a href="#" class="hidden btn btn-sm sm:inline-flex btn-ghost">
+                <button disabled class="disabled btn btn-sm sm:inline-flex">
                     <i class="ri-user-line"></i>
                     Belum Dibuka Untuk Umum
-                </a>
+                </button>
                 <a href="{{ route('login')}}" class="text-white transition-all duration-300 border-0 shadow-lg btn btn-sm bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-xl">
                     <i class="ri-login-box-line"></i>
                     Masuk

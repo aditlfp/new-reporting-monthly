@@ -6,14 +6,23 @@ use App\Models\UploadImage;
 use App\Http\Requests\UImageUserRequest;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
+use App\Http\Requests\UImageUserDraftRequest;
 use App\Models\Clients;
 use App\Models\PendingSync;
+use App\Services\UploadImageService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class UploadImageController extends Controller
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = auth()->user();;
+    }
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -33,53 +42,26 @@ class UploadImageController extends Controller
         return view('upload_images.index', compact('images'));
     }
 
-    public function store(UImageUserRequest $request)
+    public function countData(Request $request)
     {
-        $tempFile = [];
-
-            $img_before = $request->file('img_before')->store('temp');
-            $img_proccess = $request->hasFile('img_proccess') ?? $request->file('img_proccess')->store('temp');
-            $img_final = $request->file('img_final')->store('temp');
-
-            $tempFile = [
-                'img_before' => $img_before, 
-                'img_proccess' => $img_proccess ?? 'img_proccess', 
-                'img_final' => $img_final
-            ];
-
-
-        try {
-            $user = $request->user();
-
-            // Monthly limit
-            $uploadCount = UploadImage::where('clients_id', $user->clients_id)
-                ->where('user_id', $user->id)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year)
+            $uploadDraft = UploadImage::where('user_id', $this->user->id)
+                ->where('status', 0)
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
                 ->count();
 
-            if ($uploadCount >= 14) {
-                $message = 'Maksimal Upload Data sudah terpenuhi coba lagi bulan depan.';
-
-                return $request->ajax()
-                    ? response()->json(['message' => $message], 403)
-                    : back()->with('error', $message);
-            }
-
-            $img_before   = FileHelper::uploadImage($request->file('img_before'), 'upload_images/before');
-            $img_proccess = FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process');
-            $img_final    = FileHelper::uploadImage($request->file('img_final'), 'upload_images/final');
-
-            $upload = UploadImage::create([
-                'user_id'      => $request->user_id,
-                'clients_id'   => $request->clients_id,
-                'img_before'   => $img_before,
-                'img_proccess' => $img_proccess,
-                'img_final'    => $img_final,
-                'note'         => $request->note,
-                'max_data'     => 14,
-                'status'       => $request->status,
+            return response()->json([
+                'status' => true,
+                'data' => $uploadDraft,
             ]);
+    
+    }
+
+    public function store(UImageUserRequest $request, UploadImageService $service
+    ) 
+    {
+        try {
+            $upload = $service->store($request);
 
             if ($request->ajax()) {
                 return response()->json([
@@ -89,90 +71,41 @@ class UploadImageController extends Controller
                 ], 201);
             }
 
-            return redirect()->route('upload-images.index')->with('success', 'Upload created successfully.');
-        } catch (Exception $e) {
-             // Jika gagal, simpan ke draft
-            PendingSync::create([
-                'user_id' => auth()->id(),
-                'type' => 'create_post',
-                'payload' => [
-                    'title' => $request->title,
-                    'temp_file' => $tempFile,
+            return redirect()
+                ->route('upload-images.index')
+                ->with('success', 'Upload created successfully.');
 
-                    'user_id'      => auth()->id(),
-                    'clients_id'   => $request->clients_id,
-                    'note'         => $request->note,
-                    'max_data'     => 14,
-                    'status'       => $request->status,
-            ]
-        ]);
-
-        return response()->json(['status' => 'draft_saved']);
-        }
-            
-    }
-
-    public function draft(Request $request)
-    {
-        $user = $request->user();
-
-        $request->validate([
-            "user_id" => 'required',
-            "clients_id" => 'required',
-            "img_before" => 'nullable',
-            "img_proccess" => 'nullable',
-            "img_final" => 'nullable',
-            "note" => 'required',
-            "max_data" => 'nullable',
-            "status" => 'nullable',
-        ], [
-            "user_id.required" => 'User wajib diisi.',
-            "clients_id.required" => 'Mitra wajib diisi.',
-            "note.required" => 'Keterangan wajib diisi.',
-        ]);
-
-        // Monthly limit
-        $uploadCount = UploadImage::where('clients_id', $user->clients_id)
-            ->where('user_id', $user->id)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
-            ->count();
-
-        if ($uploadCount >= 14) {
-            $message = 'Maksimal Upload Data sudah terpenuhi coba lagi bulan depan.';
+        } catch (\Exception $e) {
 
             return $request->ajax()
-                ? response()->json(['message' => $message], 403)
-                : back()->with('error', $message);
+                ? response()->json(['message' => $e->getMessage()], 403)
+                : back()->with('error', $e->getMessage());
         }
+    }
 
-        if($request->hasFile('img_before') || $request->hasFile('img_proccess') || $request->hasFile('img_final')) {
-            $img_before   = FileHelper::uploadImage($request->file('img_before'), 'upload_images/before');
-            $img_proccess = FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process');
-            $img_final    = FileHelper::uploadImage($request->file('img_final'), 'upload_images/final');
+
+    public function draft(UImageUserDraftRequest $request, UploadImageService $service
+    ) 
+    {
+        try {
+            $upload = $service->storeDraft($request);
+
+            return $request->ajax()
+                ? response()->json([
+                    'status' => true,
+                    'message' => 'Draft saved successfully',
+                    'data' => $upload,
+                ], 201)
+                : redirect()
+                    ->route('upload-images.index')
+                    ->with('success', 'Draft saved successfully.');
+
+        } catch (\Exception $e) {
+
+            return $request->ajax()
+                ? response()->json(['message' => $e->getMessage()], 403)
+                : back()->with('error', $e->getMessage());
         }
-        
-
-        $upload = UploadImage::create([
-            'user_id'      => $request->user_id,
-            'clients_id'   => $request->clients_id,
-            'img_before'   => $img_before ?? 'none',
-            'img_proccess' => $img_proccess ?? 'none',
-            'img_final'    => $img_final ?? 'none',
-            'note'         => $request->note,
-            'max_data'     => 14,
-            'status'       => $request->status,
-        ]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Upload created successfully',
-                'data' => $upload,
-            ], 201);
-        }
-
-        return redirect()->route('upload-images.index')->with('success', 'Upload created successfully.');
     }
 
     /**

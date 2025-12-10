@@ -187,8 +187,7 @@ class DashboardController extends Controller
             ->where('status', 0)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month)
-            ->latest()
-            ->first();
+            ->get();
 
         $allImages = UploadImage::where('clients_id', $clientId)
             ->where('status', 1)

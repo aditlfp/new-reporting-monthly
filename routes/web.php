@@ -31,6 +31,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
 
+    Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
+
     // Tools Route
     Route::get('/check-calender', [UserNavigateController::class, 'toCalenderUpload'])->name('check.calender.upload');
     Route::get('/fetch-calender', [CalenderApiHandler::class, 'getCalendarData']);

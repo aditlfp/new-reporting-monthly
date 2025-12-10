@@ -1,7 +1,7 @@
 <x-app-layout>
 	@push('styles')
 	    .card-expandable {
-	        max-height: 5rem;
+	        max-height: 6rem;
 	        overflow: hidden;
 	    }
 	    
@@ -39,6 +39,7 @@
                             <h3 class="text-lg font-semibold text-slate-900">Upload Gambar Kegiatan</h3>
                             <button id="openModalRiwayat" class="btn btn-md bg-blue-500 text-white hover:bg-slate-50 hover:text-blue-500 transition-all ease-in-out duration-150 border-0 rounded-sm">Riwayat Laporan</button>
                         </div>
+						<div id="draftCardContainer"></div>
 
                         <div class="p-4 bg-white border rounded-lg shadow-sm border-slate-100 sm:p-6">
 						    <form id="reportForm">
@@ -177,6 +178,7 @@
 				                                    <div class="flex-1">
 				                                        <h4 class="font-semibold text-md text-slate-900">{{ $imgData->note }}</h4>
 				                                        <p class="text-sm text-slate-500">{{ $imgData->created_at->isoformat('d MMMM Y') }}</p>
+				                                        <p class="text-xs text-slate-500 truncate max-w-[300px]">Di Upload Oleh : {{ $imgData->user->nama_lengkap}}</p>
 				                                    </div>
 				                                    <svg class="w-5 h-5 transition-transform duration-300 text-slate-400 expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -282,7 +284,7 @@
 		    function collapseCard(card) {
 		        const icon = card.querySelector('.expand-icon');
 		        card.classList.remove('expanded', 'active');
-		        card.style.maxHeight = '5rem';
+		        card.style.maxHeight = '6rem';
 		        if (icon) {
 		            icon.style.transform = 'rotate(0deg)';
 		        }
@@ -349,14 +351,42 @@
                 let imagesUploadedThisMonth = {{ $totalImageCount }}; // This would come from your backend
                 let isEditMode = false;
                 let draftData = null;
+                let firstDraft = null;
 
                 // Store draft data for later use
                 @if ($uploadDraft)
-                    draftData = {!! json_encode($uploadDraft) !!};
+                    draftData = @json($uploadDraft);
+                    firstDraft = draftData.sort((a, b) => 
+				        new Date(a.created_at) - new Date(b.created_at)
+				    )[0];
+                    showDraftCard(firstDraft)
                 @endif
 
                 // Update remaining images display
                 updateRemainingImages();
+
+               	function getCount() {
+				    fetch('{{ route('v1.count.data') }}', {
+				        headers: {
+				            'Accept': 'application/json'
+				        }
+				    })
+				    .then(res => res.json())
+				    .then(res => {
+				        const draftCountEl = document.querySelector('#draftCount');
+				        const editBtn = document.querySelector('#editDraftBtn');
+
+				        if (res.data > 0) {
+				            draftCountEl.textContent = "Draft Tersedia " + res.data;
+				            editBtn.classList.remove('hidden');
+				        } else {
+				            draftCountEl.textContent = "Tidak Ada Draft Tersedia";
+				            editBtn.classList.add('hidden');
+				        }
+				    })
+				    .catch(err => console.error(err));
+				}
+               	getCount()
 
                 function setLoading(val) {
 				    if (val !== prevLoading) {
@@ -604,8 +634,8 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-slate-500">Draft Tersedia</p>
-                                <button id="editDraftBtn" class="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">Edit Draft</button>
+                                <p class="text-sm text-slate-500" id="draftCount">Draft Tersedia</p>
+                                <button id="editDraftBtn" class="hidden px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">Edit Draft</button>
                             </div>
                         </div>
                     `;
@@ -795,6 +825,7 @@
                         }
                     } catch (xhr) {
                         // ... error handling ...
+                        console.log(xhr)
                         let errorMessage = 'Terjadi kesalahan saat menyimpan draft.';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
@@ -892,8 +923,11 @@
                         	setLoading(false);
                             alert('Laporan berhasil dikirim!');
                             
-                            // Hide draft card since the draft has been submitted
-                            hideDraftCard();
+                            if(draftData){
+                            	showDraftCard(firstDraft);
+                            }else{
+                        	    hideDraftCard();
+                            }
 
                             // Reset form
                             reportForm[0].reset();

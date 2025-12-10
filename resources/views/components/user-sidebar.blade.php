@@ -54,7 +54,8 @@
                 </svg>
                 <span class="font-medium">Kalender</span>
             </a>
-            <a href="{{ route('user.settings.index')}}"
+
+           {{--  <a href="{{ route('user.settings.index')}}"
                 class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('user.settings.index') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100'}}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -62,7 +63,8 @@
                     </path>
                 </svg>
                 <span class="font-medium">Pengaturan</span>
-            </a>
+            </a> --}}
+            
         </div>
     </nav>
 
