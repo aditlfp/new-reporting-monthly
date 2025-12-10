@@ -37,11 +37,11 @@
                     <div class="mb-8">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-slate-900">Upload Gambar Kegiatan</h3>
-                            <button id="openModalRiwayat" class="btn btn-md bg-blue-500 text-white hover:bg-slate-50 hover:text-blue-500 transition-all ease-in-out duration-150 border-0 rounded-sm">Riwayat Laporan</button>
+                            <button id="openModalRiwayat" class="text-white transition-all duration-150 ease-in-out bg-blue-500 border-0 rounded-sm btn btn-md hover:bg-slate-50 hover:text-blue-500">Riwayat Laporan</button>
                         </div>
 						<div id="draftCardContainer"></div>
 
-                        <div class="p-4 bg-white border rounded-lg shadow-sm border-slate-100 sm:p-6">
+                        <div class="p-4 bg-white border rounded-b-lg shadow-sm border-slate-100 sm:p-6">
 						    <form id="reportForm">
 						        @csrf
 						        <input type="hidden" id="reportStatus" name="status" value="0">
@@ -77,9 +77,10 @@
 						                            ]
 						                        ];
 						                        
-						                        $acceptedTypes = '.gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg';
+						                        // $acceptedTypes = '.gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg';
+                                                $acceptedTypes = 'image/*,.jpg,.jpeg,.png,.webp,.heic';
 						                        
-						                        $uploadIcon = '<svg class="w-5 h-5 sm:w-6 sm:h-6 mb-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						                        $uploadIcon = '<svg class="w-5 h-5 mb-1 sm:w-6 sm:h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
 						                        </svg>';
 						                        
@@ -93,7 +94,7 @@
 						                            <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}"
 						                                accept="{{ $acceptedTypes }}" class="hidden">
 						                            <label for="{{ $config['id'] }}"
-						                                class="flex flex-col items-center justify-center w-full h-24 sm:h-28 md:h-32 lg:h-36 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-slate-300 bg-slate-50 hover:bg-slate-100">
+						                                class="flex flex-col items-center justify-center w-full h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer sm:h-28 md:h-32 lg:h-36 border-slate-300 bg-slate-50 hover:bg-slate-100">
 						                                {!! $uploadIcon !!}
 						                                <span class="text-[10px] sm:text-xs text-slate-500 text-center px-1">+ {{ $config['label'] }}</span>
 						                            </label>
@@ -117,7 +118,7 @@
 						                <label for="reportContent"
 						                    class="block mb-2 text-sm font-medium text-slate-700">Isi Keterangan</label>
 						                <textarea id="reportContent" name="note" rows="4"
-						                    class="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border rounded-lg text-slate-900 border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+						                    class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						                    placeholder="Tulis isi keterangan di sini... (format: 'nama kegiatan - nama area')"></textarea>
 						            </div>
 
@@ -139,7 +140,7 @@
 						                    class="w-full sm:w-auto px-4 py-2.5 text-sm sm:text-base font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
 						                    Kirim Laporan
 						                </button>
-						                <button class="btn btnLoading hidden">
+						                <button class="hidden btn btnLoading">
 										  <span class="loading loading-spinner"></span>
 										  loading
 										</button>
@@ -159,7 +160,7 @@
 				            <!-- Modal Header -->
 				            <div class="flex items-center justify-between p-6 border-b border-slate-200">
 				                <h3 class="text-xl font-semibold text-slate-900">Riwayat Laporan</h3>
-				                <button id="closeModalRiwayat" class="text-slate-400 hover:text-slate-600 transition-colors">
+				                <button id="closeModalRiwayat" class="transition-colors text-slate-400 hover:text-slate-600">
 				                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 				                    </svg>
@@ -625,7 +626,7 @@
                 function showDraftCard(draft) {
                     const fragment = document.createDocumentFragment();
                     const draftCard = document.createElement('div');
-                    draftCard.className = 'p-4 bg-white border rounded-lg shadow-sm border-slate-100';
+                    draftCard.className = 'p-4 bg-white border rounded-t-lg shadow-sm border-slate-100';
                     draftCard.innerHTML = `
                         <div class="flex items-center">
                             <div class="p-2 text-blue-500 bg-blue-100 rounded-lg">
