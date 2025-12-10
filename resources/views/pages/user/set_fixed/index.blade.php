@@ -233,9 +233,11 @@
             // Get Image Type Badge
             const getImageBadge = (image) => {
                 const badges = [];
+                console.log(image.fixedImage)
                 if (image.img_before) badges.push('<span class="badge badge-xs badge-info">B</span>');
                 if (image.img_proccess) badges.push('<span class="badge badge-xs badge-warning">P</span>');
                 if (image.img_final) badges.push('<span class="badge badge-xs badge-success">A</span>');
+                if(image.fixed_image) badges.push('<span class="badge badge-xs py-2 bg-blue-600 text-white"><i class="ri-verified-badge-line text-lg font-semibold"></i></span>')
                 return badges.join(' ');
             };
 
@@ -277,7 +279,7 @@
                                     style="opacity: 0; transition: opacity 0.3s;"
                                     onload="this.style.opacity=1"
                                 >
-                                <div class="absolute top-2 right-2 flex gap-1">
+                                <div class="absolute top-2 right-2 flex items-center gap-1">
                                     ${imageBadges}
                                 </div>
                                 <div class="absolute bottom-2 left-2">
@@ -404,6 +406,7 @@
                             Notify('Data berhasil disimpan!',null,null, 'success');
                             document.getElementById('imageModal').close();
                             selectedImageData = null;
+                            loadData();
                         }
                     },
                     error: function(xhr) {

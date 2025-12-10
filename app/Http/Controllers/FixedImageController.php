@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clients;
+use App\Models\FixedImage;
 use App\Models\UploadImage;
 use App\Services\FixedServices;
 use Exception;
@@ -22,8 +23,8 @@ class FixedImageController extends Controller
             $user = auth()->user();
 
             $client = Clients::where('id', $user->kerjasama->client_id)->first();
-            $image = UploadImage::where('clients_id', $client->id)->where("status", 1)->get();
-            
+            $image = UploadImage::with(['fixedImage'])->where('clients_id', $client->id)->where("status", 1)->get();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Get All Required Data',
