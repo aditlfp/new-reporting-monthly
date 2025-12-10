@@ -77,7 +77,8 @@
 						                            ]
 						                        ];
 						                        
-						                        $acceptedTypes = '.gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg';
+						                        // $acceptedTypes = '.gif,.tif,.tiff,.png,.crw,.cr2,.dng,.raf,.nef,.nrw,.orf,.rw2,.pef,.arw,.sr2,.raw,.psd,.svg,.webp,.heic,.jpg,.jpeg';
+                                                $acceptedTypes = 'image/*';
 						                        
 						                        $uploadIcon = '<svg class="w-5 h-5 mb-1 sm:w-6 sm:h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -91,7 +92,7 @@
 						                    @foreach ($imageConfig as $index => $config)
 						                        <div class="relative">
 						                            <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}"
-						                                accept="{{ $acceptedTypes }}" class="hidden">
+						                                accept="{{ $acceptedTypes }}" capture="environment" class="hidden">
 						                            <label for="{{ $config['id'] }}"
 						                                class="flex flex-col items-center justify-center w-full h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer sm:h-28 md:h-32 lg:h-36 border-slate-300 bg-slate-50 hover:bg-slate-100">
 						                                {!! $uploadIcon !!}
