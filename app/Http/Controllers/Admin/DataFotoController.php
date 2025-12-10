@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Helpers\FileHelper;
+use App\Http\Controllers\Controller;
+use App\Models\Clients;
+use App\Models\UploadImage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class DataFotoController extends Controller
+{
+    public function index(Request $request)
+    {
+        if($request->has('id')){
+            $images = UploadImage::with('clients')->where('id', $request->input('id'))->first();
+        } else {
+            $images = UploadImage::with('clients')->latest()->paginate(20);
+        }
+
+        if($request->month)
+        {
+            $images = UploadImage::with('clients')->searchFilters([
+                'month' => $request->month,
+                'year' => $request->year
+            ])->paginate(14);
+        }
+
+        $client = Clients::all();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => true,
+                'data' => $images,
+            ]);
+        }
+
+        return view('pages.admin.fotoProgres.index', compact('images', 'client'));
+    }
+
+    public function update(Request $request, UploadImage $uploadImage)
+    {
+        
+        if($request->hasFile('img_before') || $request->hasFile('img_proccess') || $request->hasFile('img_final')) {
+            $img_before   = FileHelper::uploadImage($request->file('img_before'), 'upload_images/before');
+            $img_proccess = FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process');
+            $img_final    = FileHelper::uploadImage($request->file('img_final'), 'upload_images/final');
+        }
+        
+        $updateData = [
+            'clients_id' => $request->client_id,
+            'img_before' => $img_before ?? $uploadImage->img_before,
+            'img_proccess' => $img_proccess ?? $uploadImage->img_proccess,
+            'img_final' => $img_final ?? $uploadImage->img_final,
+            'note' => $request->note,
+            'status' => 1,
+        ];
+        // dd($updateData);
+
+        $uploadImage->update($updateData);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload updated successfully',
+                'data' => $uploadImage,
+            ]);
+        }
+
+        return redirect()->route('admin.upload.index')->with('success', 'Upload updated successfully.');
+    }
+
+    public function destroy(Request $request, UploadImage $uploadImage)
+    {
+        if ($uploadImage->img_before) Storage::disk('public')->delete($uploadImage->img_before);
+        if ($uploadImage->img_proccess) Storage::disk('public')->delete($uploadImage->img_proccess);
+        if ($uploadImage->img_final) Storage::disk('public')->delete($uploadImage->img_final);
+
+        $uploadImage->delete();
+
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Upload deleted successfully']);
+        }
+
+        return redirect()->route('admin.upload.index')->with('success', 'Upload deleted successfully.');
+    }
+}

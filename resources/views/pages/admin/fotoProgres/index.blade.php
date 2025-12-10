@@ -1,4 +1,4 @@
-<x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
+<x-app-layout title="Data Photo Progress" subtitle="Menampilkan Data Photo Yang Sudah Ada">
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
         <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
@@ -7,30 +7,59 @@
                     <div class="card-body">
                         <div class="flex flex-col gap-3 mb-4 md:gap-4 md:mb-6">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-xl md:text-2xl card-title">Photo Progress Management</h2>
+                                <h2 class="text-xl md:text-2xl card-title">Data Photo Progress</h2>
                             </div>
 
                             <!-- Filter Section -->
-                            <div class="flex flex-col gap-3 p-3 rounded-lg md:p-4 bg-gray-50">
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="text-xs font-medium md:text-sm label-text">Filter by Month</span>
-                                    </label>
-                                    <input type="month" id="monthFilter" class="input input-bordered input-xs md:input-sm">
+                            <div class="flex flex-col gap-3 rounded-lg">
+                                <div class="form-control flex gap-x-2">
+                                    <div>
+                                        <label class="label">
+                                            <span class="text-xs font-medium md:text-sm label-text">Filter Bulan</span>
+                                        </label>
+                                        <select id="monthFilter" class="select select-bordered select-xs md:select-md rounded-sm">
+                                            <option selected value="">All Months</option>
+                                            <option value="1">Januari</option>
+                                            <option value="2">Februari</option>
+                                            <option value="3">Maret</option>
+                                            <option value="4">April</option>
+                                            <option value="5">Mei</option>
+                                            <option value="6">Juni</option>
+                                            <option value="7">Juli</option>
+                                            <option value="8">Agustus</option>
+                                            <option value="9">September</option>
+                                            <option value="10">Oktober</option>
+                                            <option value="11">November</option>
+                                            <option value="12">Desember</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="label">
+                                            <span class="text-xs font-medium md:text-sm label-text">Filter Tahun</span>
+                                        </label>
+                                        <select id="yearFilter" class="select select-bordered select-xs md:select-md rounded-sm">
+                                            <option selected value="">All Year</option>
+                                            @for ($year = now()->year; $year >= 2024; $year--)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endfor
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="flex flex-wrap gap-2">
-                                    <button id="applyFilter" class="btn btn-xs md:btn-sm btn-primary">Apply Filter</button>
-                                    <button id="clearFilter" class="btn btn-xs md:btn-sm btn-ghost">Clear</button>
-                                    <button id="generatePdf" class="btn btn-xs md:btn-sm btn-success">
-                                        <i class="mr-1 md:mr-2 ri-file-pdf-line"></i><span class="hidden sm:inline">Generate PDF</span>
+                                <div class="flex gap-2">
+                                    <button id="applyFilter" class="btn btn-xs md:btn-sm bg-blue-500/20 border-0 text-blue-600 rounded-sm hover:bg-blue-600 hover:text-white">Apply Filter</button>
+                                    <button id="clearFilter" class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white">Clear</button>
+                                    <button id="generatePdf" class="btn btn-xs md:btn-sm bg-green-500/20 border-0 text-green-600 rounded-sm hover:bg-green-600 hover:text-white">
+                                       <i class="mr-1 ri-download-cloud-2-line text-xs md:text-sm"></i><span class="hidden sm:inline">Download PDF</span>
                                     </button>
                                 </div>
+                                <divider class="border-t border-gray-100"/>
                             </div>
 
                             <!-- Selection Controls -->
                             <div class="flex gap-2">
-                                <button id="selectAll" class="btn btn-xs md:btn-sm">Select All</button>
-                                <button id="deselectAll" class="btn btn-xs md:btn-sm">Deselect All</button>
+                                <button id="selectAll" class="btn btn-xs md:btn-sm bg-blue-500/20 border-0 text-blue-600 rounded-sm hover:bg-blue-600 hover:text-white">Select All</button>
+                                <button id="deselectAll" class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white">Deselect All</button>
                             </div>
                         </div>
 
@@ -232,9 +261,12 @@
         <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js"></script>
         <script src="{{ asset('js/fotoPages.js') }}"></script>
         <script>
+
+
             $(document).ready(function() {
                 let currentPage = 1;
                 let currentMonth = '';
+                let currentRequest = null;
                 const modal = document.getElementById('fotoModal');
                 const imageModal = document.getElementById('imagePreviewModal');
                 const pdfViewerModal = document.getElementById('pdfViewerModal');
@@ -251,11 +283,6 @@
                 const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
                 function init() {
-                    // Set current month as default
-                    const now = new Date();
-                    currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-                    $('#monthFilter').val(currentMonth);
-
                     loadData();
                     setupImagePreviewControls();
                     setupFilterControls();
@@ -263,25 +290,55 @@
                     setupPdfGeneration();
                 }
 
-                // Load data
-                function loadData(page = 1) {
-                    $.ajax({
+                // Load data (defensive)
+                function loadData(page = 1, month = null, year = null) {
+                    // Abort previous request if any
+                    if (currentRequest && currentRequest.readyState !== 4) {
+                        currentRequest.abort();
+                    }
+
+                    // show loader or disable controls if you want
+                    $('#tableContainer').html('Loading...');
+
+                    currentRequest = $.ajax({
                         url: '{{ route('admin.upload.index') }}',
                         type: 'GET',
                         data: {
                             page: page,
-                            month: currentMonth
+                            month,
+                            year
                         },
                         dataType: 'json',
-                        success: function(response) {
+                        success: function (response) {
+                            // defensive checks
+                            if (!response) {
+                                console.error('Empty JSON response');
+                                Notify('Empty response from server', null, null, 'error');
+                                return;
+                            }
+
                             if (response.status) {
                                 renderTable(response.data.data);
                                 renderPagination(response.data);
                                 currentPage = page;
+                            } else {
+                                // server returned JSON but with status false
+                                $('#tableContainer').html('<p>No data</p>');
                             }
                         },
-                        error: function(xhr) {
+                        error: function (xhr, textStatus, errorThrown) {
+                            if (textStatus === 'abort') {
+                                console.log('Previous request aborted');
+                                return;
+                            }
+
+                            // show useful debugging info
+                            {{-- console.error('AJAX error', textStatus, errorThrown); --}}
+                            {{-- console.log('Response text:', xhr); --}}
                             Notify('Error loading data', null, null, 'error');
+
+                            // if server returned HTML (login page / error page):
+                            // inspect xhr.responseText in devtools
                         }
                     });
                 }
@@ -309,11 +366,11 @@
                             <td class="hidden px-2 py-2 md:px-3 sm:table-cell">
                                 ${renderImageCell(item.img_before, 'Before')}
                             </td>
-                            <td class="hidden px-2 py-2 md:px-3 md:table-cell">
-                                ${renderImageCell(item.img_proccess, 'Progress')}
+                            <td class="hidden px-2 py-2 md:px-3 md:table-cell text-center">
+                                ${renderImageCell(item.img_proccess, '-')}
                             </td>
-                            <td class="hidden px-2 py-2 md:px-3 lg:table-cell">
-                                ${renderImageCell(item.img_final, 'After')}
+                            <td class="hidden px-2 py-2 md:px-3 lg:table-cell text-center">
+                                ${renderImageCell(item.img_final, '-')}
                             </td>
                             <td class="hidden px-2 py-2 md:px-3 md:table-cell">
                                 <div class="max-w-[100px] md:max-w-xs truncate" title="${item.note || '-'}">
@@ -322,10 +379,10 @@
                             </td>
                             <td class="px-2 py-2 md:px-3">
                                 <div class="flex justify-center gap-1 md:gap-2">
-                                    <button class="btn btn-xs btn-warning btn-edit" data-id="${item.id}">
-                                        <i class="text-xs md:text-sm ri-edit-line"></i>
+                                    <button class="btn btn-xs md:btn-sm bg-yellow-500/20 border-0 text-yellow-600 rounded-sm hover:bg-yellow-600 hover:text-white btn-edit" data-id="${item.id}">
+                                        <i class="ri-settings-3-line text-xs md:text-sm"></i>
                                     </button>
-                                    <button class="btn btn-xs btn-error btn-delete" data-id="${item.id}">
+                                    <button class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white btn-delete" data-id="${item.id}">
                                         <i class="text-xs md:text-sm ri-delete-bin-line"></i>
                                     </button>
                                 </div>
@@ -385,17 +442,19 @@
 
                 // Setup filter controls
                 function setupFilterControls() {
-                    $('#applyFilter').click(function() {
-                        currentMonth = $('#monthFilter').val();
-                        loadData(1);
-                    });
-
                     $('#clearFilter').click(function() {
                         $('#monthFilter').val('');
+                        $('#yearFilter').val('');
                         currentMonth = '';
                         loadData(1);
                     });
                 }
+
+                 $('#applyFilter').click(function() {
+                    const month = $('#monthFilter').val();
+                    const year = $('#yearFilter').val();
+                    loadData(1, month, year);
+                });
 
                 // Setup checkbox controls
                 function setupCheckboxControls() {

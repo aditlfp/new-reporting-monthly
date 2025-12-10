@@ -34,10 +34,21 @@ class UploadImage extends Model
             ->when($filters['month'] ?? null, function ($q, $month) {
                 $q->whereMonth('created_at', $month);
             })
+            ->when($filters['year'] ?? null, function ($q, $year) {
+                $q->whereYear('created_at', $year);
+            })
+            ->when(
+                !empty($filters['month']) && !empty($filters['year']),
+                function ($q) use ($filters) {
+                    $q->whereMonth('created_at', $filters['month'])
+                      ->whereYear('created_at', $filters['year']);
+                }
+            )
             ->when($filters['client_id'] ?? null, function ($q, $client_id) {
                 $q->where('clients_id', $client_id);
             });
     }
+
 
     protected static function booted()
     {
