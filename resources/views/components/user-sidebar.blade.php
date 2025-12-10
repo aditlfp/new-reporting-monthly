@@ -1,10 +1,11 @@
 <!-- Sidebar -->
 <aside id="sidebar"
-    class="fixed z-10 w-64 h-screen transition-transform duration-300 ease-in-out transform -translate-x-full bg-white border-r border-slate-100 md:translate-x-0 md:static text-sm">
+style="transform: translateX(-100%)"
+    class="fixed z-50 w-64 h-screen text-sm transition-transform duration-300 ease-in-out transform bg-white border-r border-slate-100 md:translate-x-0 md:static">
     <div class="p-6 border-b border-slate-100">
         <div class="flex items-center space-x-3">
             <div
-                class="flex items-center justify-center w-12 h-12 font-semibold text-white bg-blue-500 rounded-full">
+                class="flex items-center justify-center w-12 overflow-hidden font-semibold text-white bg-blue-500 rounded-full aspect-square">
                 {{ auth()->user()->nama_lengkap ? substr(auth()->user()->nama_lengkap, 0, 1) : 'U' }}
             </div>
             <div>
@@ -72,10 +73,10 @@
         <form action="{{ route('logout') }}" method="POST" class="w-full">
             @csrf
             <button type="submit"
-                class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-red-50">
-                <svg class="w-5 h-5 text-slate-400" stroke="red" fill="none" viewBox="0 0 24 24">
+            class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-red-50">
+            <svg class="w-5 h-5 text-slate-400" stroke="red" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                     </path>
                 </svg>
                 <span class="font-medium text-red-600">Keluar</span>
@@ -83,3 +84,6 @@
         </form>
     </div>
 </aside>
+
+<!-- Overlay for mobile sidebar -->
+<div id="sidebarOverlay" class="fixed inset-0 z-40 hidden transition-opacity duration-300 opacity-0 bg-black/50 md:hidden"></div>

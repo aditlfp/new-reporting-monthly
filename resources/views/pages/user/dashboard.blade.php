@@ -19,7 +19,7 @@
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-3">
                         <div class="p-4 bg-white border rounded-lg shadow-sm border-slate-100">
-                            <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2 md:justify-between">
                                 <div class="p-2 text-purple-500 bg-purple-100 rounded-lg">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -1,5 +1,5 @@
  <!-- Top Navbar -->
- <nav class="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100" id="sidebarToggle">
+ <nav class="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100" id="sidebarToggle">
     <div class="flex items-center">
         <button class="p-2 transition-all rounded-lg text-slate-600 hover:bg-slate-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
