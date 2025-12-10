@@ -10,6 +10,7 @@ use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UploadImageController;
 use App\Http\Controllers\UserNavigateController;
+use App\Http\Controllers\UserSettingsController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
 use App\Models\UploadImage;
@@ -19,9 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'theme'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -29,8 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
+
+    // Tools Route
     Route::get('/check-calender', [UserNavigateController::class, 'toCalenderUpload'])->name('check.calender.upload');
     Route::get('/fetch-calender', [CalenderApiHandler::class, 'getCalendarData']);
+    Route::get('/settings', [UserNavigateController::class, 'toSettings'])->name('user.settings.index');
+    Route::post('/save-settings', [UserSettingsController::class, 'store']);
+    // End Tools Route
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

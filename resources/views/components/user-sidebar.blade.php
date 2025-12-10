@@ -54,6 +54,15 @@
                 </svg>
                 <span class="font-medium">Kalender</span>
             </a>
+            <a href="{{ route('user.settings.index')}}"
+                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('user.settings.index') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100'}}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                    </path>
+                </svg>
+                <span class="font-medium">Pengaturan</span>
+            </a>
         </div>
     </nav>
 
@@ -62,7 +71,7 @@
             @csrf
             <button type="submit"
                 class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-red-50">
-                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="red" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-slate-400" stroke="var(--err-stroke)" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                     </path>

@@ -131,4 +131,20 @@ class FileHelper
 
         return $pdf->Output($mergedFilePath, 'F');
     }
+
+    public static function lighten_color($hex, $percent)
+    {
+        $hex = str_replace('#', '', $hex);
+
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+
+        $r = min(255, $r + 255 * ($percent / 100));
+        $g = min(255, $g + 255 * ($percent / 100));
+        $b = min(255, $b + 255 * ($percent / 100));
+
+        return sprintf("#%02x%02x%02x", $r, $g, $b);
+    }
+
 }

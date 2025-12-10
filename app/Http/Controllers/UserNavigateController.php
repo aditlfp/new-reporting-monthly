@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UploadImage;
+use App\Models\UserSettings;
 use App\Services\HolidayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -96,5 +97,11 @@ class UserNavigateController extends Controller
             ->orderBy(DB::raw("DATE(created_at)"))
             ->get();
         return view('pages.user.calender.index', compact('holidays', 'translate', 'uploadsByDay'));
+    }
+
+    public function toSettings()
+    {
+        $dataSetting = UserSettings::where('user_id', $this->auth->id)->first();
+        return view('pages.user.settings.index', compact('dataSetting'));
     }
 }

@@ -22,6 +22,7 @@
         <style>
             @stack('styles')
         </style>
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -42,5 +43,26 @@
         </div>
 
         @stack('scripts')
+        <script>
+            $(document).ready(function() {
+
+                const sidebar = $('#sidebar');
+
+                const sidebarToggle = $('#sidebarToggle');
+                sidebarToggle.on('click', function() {
+                        sidebar.toggleClass('-translate-x-full');
+                });
+                // Close sidebar when clicking outside on mobile
+                $(document).on('click', function(event) {
+                    const isClickInsideSidebar = sidebar.has(event.target).length > 0;
+                    const isClickOnToggle = sidebarToggle.has(event.target).length > 0;
+
+                    if (!isClickInsideSidebar && !isClickOnToggle && !sidebar.hasClass('-translate-x-full')) {
+                        sidebar.addClass('-translate-x-full');
+                    }
+                });
+            })
+
+        </script>
     </body>
 </html>
