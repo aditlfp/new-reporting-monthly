@@ -31,11 +31,17 @@ class UploadImageController extends Controller
             ->where('user_id', $user->id)
             ->latest()
             ->paginate(14);
+        $draft = UploadImage::where('clients_id', $user->clients_id)
+            ->where('user_id', $user->id)
+            ->where('status', 0)
+            ->latest()
+            ->first();
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
                 'data' => $images,
+                'draft' => $draft,
             ]);
         }
 
@@ -115,7 +121,7 @@ class UploadImageController extends Controller
     {
         $user = auth()->user();
 
-        if ($uploadImage->clients_id !== $user->clients_id || $uploadImage->user_id !== $user->id) {
+        if ($uploadImage->clients_id != $user->clients_id || $uploadImage->user_id != $user->id) {
             $message = 'Unauthorized';
 
             return $request->ajax()
@@ -150,7 +156,7 @@ class UploadImageController extends Controller
         $uploadImage = UploadImage::findOrFail($id);
         
         // Authorization check
-        if ($uploadImage->clients_id !== $user->kerjasama->client_id || $uploadImage->user_id !== $user->id) {
+        if ($uploadImage->clients_id != $user->kerjasama->client_id || $uploadImage->user_id != $user->id) {
             $message = 'Unauthorized';
             
             return $request->ajax()
@@ -269,7 +275,7 @@ class UploadImageController extends Controller
     {
         $user = $request->user();
 
-        if ($uploadImage->clients_id !== $user->clients_id || $uploadImage->user_id !== $user->id) {
+        if ($uploadImage->clients_id != $user->clients_id || $uploadImage->user_id != $user->id) {
             $message = 'Unauthorized';
 
             return $request->ajax()
