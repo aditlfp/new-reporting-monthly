@@ -6,7 +6,7 @@
             {{-- sidebar --}}
             <x-user-sidebar />
             <!-- Main Content -->
-            <main class="flex-1 p-1 overflow-y-auto xs:p-2 sm:p-4 md:p-6 m-2">
+            <main class="flex-1 p-1 m-2 overflow-y-auto xs:p-2 sm:p-4 md:p-6">
                 <div class="w-full max-w-6xl mx-auto">
                     <!-- Page Header -->
                     <div class="mb-6 md:mb-8">
@@ -15,51 +15,77 @@
                     </div>
 
                     <!-- Client Info Card -->
-                    <div class="mb-6 card bg-base-100 shadow-xl" id="clientInfoCard" style="display: none;">
-                        <div class="card-body p-4 sm:p-6">
-                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-6 overflow-hidden bg-white border shadow-lg rounded-xl border-slate-200" id="clientInfoCard" style="display: none;">
+                        <!-- Accent Bar -->
+                        <div class="h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        
+                        <div class="p-5 sm:p-6">
+                            <!-- Header -->
+                            <div class="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h3 class="text-lg font-semibold sm:text-xl text-slate-900" id="clientName">-</h3>
-                                    <p class="text-sm text-slate-500" id="clientDetails">-</p>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <div class="flex flex-col">
-                                        <span>Total Foto</span>
-                                        <div class="badge badge-info badge-lg">
-                                            <i class="ri-image-line mr-2"></i>
-                                            <span id="totalImages">0</span> Foto
+                                    <h3 class="flex items-center gap-2 text-lg font-bold text-slate-900" id="clientName">
+                                        <div class="p-1.5 bg-blue-100 rounded-lg">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
                                         </div>
+                                        -
+                                    </h3>
+                                    <p class="mt-1 text-sm text-slate-500" id="clientDetails">-</p>
+                                </div>
+                                
+                                <!-- Stats -->
+                                <div class="flex items-center justify-center gap-2 mx-4">
+                                    <div class="p-3 text-center border shadow-sm min-w-1/3 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-slate-200">
+                                        <div class="text-2xl font-bold text-slate-800" id="totalImages">0</div>
+                                        <div class="text-xs font-medium tracking-wide uppercase text-slate-600">Total</div>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span>Total Foto Yang Dipilih</span>
-                                        <div class="badge badge-success badge-lg">
-                                            <i class="ri-image-line mr-2"></i>
-                                            <span id="totalHasFix">0</span>/ 11 Foto
-                                        </div>
+                                    
+                                    <div class="text-xl font-light text-slate-300">|</div>
+                                    
+                                    <div class="p-3 text-center border border-blue-200 shadow-sm min-w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                                        <div class="text-2xl font-bold text-blue-600" id="totalHasFix">0</div>
+                                        <div class="text-xs font-medium tracking-wide text-blue-600 uppercase">Dipilih</div>
+                                    </div>
+                                    
+                                    <div class="text-xl font-light text-slate-300">|</div>
+                                    
+                                    <div class="p-3 text-center border border-purple-200 shadow-sm min-w-1/3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                                        <div class="text-2xl font-bold text-purple-600">11</div>
+                                        <div class="text-xs font-medium tracking-wide text-purple-600 uppercase">Maks</div>
                                     </div>
                                 </div>
-                                 <span class="text-xs italic font-bold">Note : Termasuk (before/progress/after)</span>
+                            </div>
+                            
+                            <!-- Note -->
+                            <div class="flex items-center gap-2 p-3 border rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                                <div class="p-1 rounded-full bg-amber-100">
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-xs font-medium text-amber-700">Termasuk foto Before, Progress, dan After</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Filter Tabs -->
                     <div class="mb-6" id="filterTabs" style="display: none;">
-                        <div role="tablist" class="tabs tabs-boxed bg-base-200">
+                        <div role="tablist" class="border-2 border-dashed rounded-md border-base-300 tabs tabs-boxed bg-base-200">
                             <a role="tab" class="tab tab-active" data-filter="all">
-                                <i class="ri-gallery-line mr-2"></i>
+                                <i class="mr-2 ri-gallery-line"></i>
                                 <span class="inline">Semua</span>
                             </a>
                             <a role="tab" class="tab" data-filter="before">
-                                <i class="ri-image-line mr-2"></i>
+                                <i class="mr-2 ri-image-line"></i>
                                 <span class="inline">Before</span>
                             </a>
                             <a role="tab" class="tab" data-filter="process">
-                                <i class="ri-settings-3-line mr-2"></i>
+                                <i class="mr-2 ri-settings-3-line"></i>
                                 <span class="inline">Proses</span>
                             </a>
                             <a role="tab" class="tab" data-filter="final">
-                                <i class="ri-checkbox-circle-line mr-2"></i>
+                                <i class="mr-2 ri-checkbox-circle-line"></i>
                                 <span class="inline">After</span>
                             </a>
                         </div>
@@ -67,17 +93,17 @@
 
                     <!-- Loading Skeleton -->
                     <div id="loadingSkeleton" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4">
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
-                        <div class="skeleton h-48 sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
+                        <div class="h-48 skeleton sm:h-56 md:h-64"></div>
                     </div>
 
                     <!-- Empty State -->
                     <div id="emptyState" class="flex flex-col items-center justify-center py-12 text-center" style="display: none;">
-                        <i class="ri-image-line text-6xl sm:text-7xl text-slate-300 mb-4"></i>
+                        <i class="mb-4 text-6xl ri-image-line sm:text-7xl text-slate-300"></i>
                         <h3 class="mb-2 text-lg font-semibold sm:text-xl text-slate-700">Tidak Ada Foto</h3>
                         <p class="text-sm sm:text-base text-slate-500">Belum ada foto yang tersedia untuk mitra ini</p>
                     </div>
@@ -92,26 +118,26 @@
     </div>
 
     <!-- Image Selection Modal -->
-    <dialog id="imageModal" class="modal p-2">
-        <div class="modal-box max-w-5xl p-0 overflow-hidden">
+    <dialog id="imageModal" class="p-2 modal">
+        <div class="max-w-5xl p-0 overflow-hidden modal-box">
             <form method="dialog">
-                <button class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2 z-10 bg-black/50 text-white hover:bg-black/70">
-                    <i class="ri-close-line text-xl"></i>
+                <button class="absolute z-10 text-white btn btn-sm btn-circle btn-ghost right-2 top-2 bg-black/50 hover:bg-black/70">
+                    <i class="text-xl ri-close-line"></i>
                 </button>
             </form>
             
             <!-- Image Preview Tabs -->
-            <div class="p-4 sm:p-6 pb-2">
+            <div class="p-4 pb-2 sm:p-6">
                 <h3 class="mb-4 text-lg font-bold sm:text-xl" id="modalImageTitle">Pilih Foto</h3>
-                <span class="name_upload text-sm"></span>
+                <span class="text-sm name_upload"></span>
                 <div role="tablist" class="tabs tabs-lifted">
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Before" data-type="before" checked />
-                    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-4">
-                        <figure class="relative w-full bg-slate-200 rounded-lg overflow-hidden" style="min-height: 300px;">
-                            <img id="imgBefore" src="" alt="Before" class="w-full h-auto object-contain" style="max-height: 400px;">
+                    <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
+                        <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
+                            <img id="imgBefore" src="" alt="Before" class="object-contain w-full h-auto" style="max-height: 400px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyBefore" style="display: none;">
                                 <div class="text-center">
-                                    <i class="ri-image-line text-5xl text-slate-400 mb-2"></i>
+                                    <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
                                     <p class="text-slate-500">Tidak ada foto</p>
                                 </div>
                             </div>
@@ -119,12 +145,12 @@
                     </div>
 
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Proses" data-type="process" />
-                    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-4">
-                        <figure class="relative w-full bg-slate-200 rounded-lg overflow-hidden" style="min-height: 300px;">
-                            <img id="imgProcess" src="" alt="Process" class="w-full h-auto object-contain" style="max-height: 400px;">
+                    <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
+                        <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
+                            <img id="imgProcess" src="" alt="Process" class="object-contain w-full h-auto" style="max-height: 400px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyProcess" style="display: none;">
                                 <div class="text-center">
-                                    <i class="ri-image-line text-5xl text-slate-400 mb-2"></i>
+                                    <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
                                     <p class="text-slate-500">Tidak ada foto</p>
                                 </div>
                             </div>
@@ -132,12 +158,12 @@
                     </div>
 
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="After" data-type="final" />
-                    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-4">
-                        <figure class="relative w-full bg-slate-200 rounded-lg overflow-hidden" style="min-height: 300px;">
-                            <img id="imgFinal" src="" alt="Final" class="w-full h-auto object-contain" style="max-height: 400px;">
+                    <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
+                        <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
+                            <img id="imgFinal" src="" alt="Final" class="object-contain w-full h-auto" style="max-height: 400px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyFinal" style="display: none;">
                                 <div class="text-center">
-                                    <i class="ri-image-line text-5xl text-slate-400 mb-2"></i>
+                                    <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
                                     <p class="text-slate-500">Tidak ada foto</p>
                                 </div>
                             </div>
@@ -149,13 +175,13 @@
                 </div>
             </div>
 
-            <div class="p-4 sm:p-6 pt-2">
+            <div class="p-4 pt-2 sm:p-6">
                 <div class="flex gap-2 sm:flex-row">
-                    <button disabled class="disabled:bg-gray-300 disabled:text-gray-50 btn bg-blue-500/20 text-blue-600 border-0 rounded-sm flex-1 py-1 hover:bg-blue-500 hover:text-white" id="saveSelectionBtn">
+                    <button disabled class="flex-1 py-1 text-blue-600 border-0 rounded-sm disabled:bg-gray-300 disabled:text-gray-50 btn bg-blue-500/20 hover:bg-blue-500 hover:text-white" id="saveSelectionBtn">
                         <i class="ri-check-line"></i>
                         Simpan
                     </button>
-                     <button type="button" class="hidden btn bg-amber-500/20 text-amber-600 border-0 rounded-sm flex-1 py-1 hover:bg-amber-500 hover:text-white" id="cancelSelectionBtn">
+                     <button type="button" class="flex-1 hidden py-1 border-0 rounded-sm btn bg-amber-500/20 text-amber-600 hover:bg-amber-500 hover:text-white" id="cancelSelectionBtn">
                         <i class="ri-close-circle-line"></i>
                          Hapus Pilihan
                     </button>
@@ -168,7 +194,7 @@
     </dialog>
 
     <!-- Toast Notification -->
-    <div class="toast toast-top toast-end z-50" id="toastContainer" style="display: none;">
+    <div class="z-50 toast toast-top toast-end" id="toastContainer" style="display: none;">
         <div class="alert" id="toastAlert">
             <i id="toastIcon" class="text-xl"></i>
             <span id="toastMessage">Message</span>
@@ -296,10 +322,10 @@
             // Get Image Type Badge
             const getImageBadge = (image) => {
                 const badges = [];
-                if (image.img_before) badges.push('<span class="badge badge-xs badge-info">B</span>');
-                if (image.img_proccess) badges.push('<span class="badge badge-xs badge-warning">P</span>');
-                if (image.img_final) badges.push('<span class="badge badge-xs badge-success">A</span>');
-                if(image.fixed_image) badges.push('<span class="badge badge-xs py-2 bg-blue-600 text-white"><i class="ri-verified-badge-line text-lg font-semibold"></i></span>')
+                if (image.img_before) badges.push('<span class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">Before</span>');
+                if (image.img_proccess) badges.push('<span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800">Process</span>');
+                if (image.img_final) badges.push('<span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">After</span>');
+                if(image.fixed_image) badges.push('<span class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-800 bg-purple-100 rounded-full"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Verified</span>');
                 return badges.join(' ');
             };
 
@@ -332,33 +358,34 @@
                     const imageBadges = getImageBadge(image);
                     
                     const imageCard = `
-                        <div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow cursor-pointer image-card" data-image-id="${image.id}">
-                            <figure class="relative overflow-hidden bg-slate-200" style="padding-top: 100%;">
-                                <img 
-                                    data-src="${baseUrl + "/" + primaryImage}" 
-                                    alt="Image ${index + 1}"
-                                    class="lazy-load absolute inset-0 w-full h-full object-cover transition-transform hover:scale-105"
-                                    style="opacity: 0; transition: opacity 0.3s;"
-                                    onload="this.style.opacity=1"
-                                >
-                                <div class="absolute top-2 right-2 flex items-center gap-1">
-                                    ${imageBadges}
-                                </div>
-                                <div class="absolute bottom-2 left-2">
-                                    <div class="badge badge-sm badge-neutral">
-                                        <i class="ri-image-line mr-1"></i>
-                                        #${image.id}
-                                    </div>
-                                </div>
-                            </figure>
-                            <div class="card-body p-3">
-                                <p class="text-xs text-slate-500">
-                                    <i class="ri-calendar-line mr-1"></i>
-                                    ${image.created_at ? new Date(image.created_at).toLocaleDateString('id-ID') : '-'}
-                                </p>
-                            </div>
-                        </div>
-                    `;
+    <div class="overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md hover:shadow-xl image-card" data-image-id="${image.id}">
+        <div class="relative overflow-hidden bg-slate-200" style="padding-top: 100%;">
+            <img 
+                data-src="${baseUrl + "/" + primaryImage}" 
+                alt="Image ${index + 1}"
+                class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 lazy-load hover:scale-105"
+                style="opacity: 0; transition: opacity 0.3s;"
+                onload="this.style.opacity=1"
+            >
+            <div class="absolute top-0 right-0 flex flex-col items-end gap-2 p-2">
+                <div class="flex flex-wrap justify-end gap-1 max-w-[120px]">
+                    ${imageBadges}
+                </div>
+                <div class="px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
+                    #${image.id}
+                </div>
+            </div>
+        </div>
+        <div class="p-3">
+            <div class="flex items-center text-xs text-slate-500">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                ${image.created_at ? new Date(image.created_at).toLocaleDateString('id-ID') : '-'}
+            </div>
+        </div>
+    </div>
+`;
                     gallery.append(imageCard);
                 });
 
