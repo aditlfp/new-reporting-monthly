@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Divisi::class, 'devisi_id', 'id');
     }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class);
+    }
 }

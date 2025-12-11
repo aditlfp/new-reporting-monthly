@@ -32,8 +32,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
-    Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store');
 
+    Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store');
 
     Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
 
