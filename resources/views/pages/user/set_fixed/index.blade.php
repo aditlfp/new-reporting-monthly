@@ -22,10 +22,23 @@
                                     <h3 class="text-lg font-semibold sm:text-xl text-slate-900" id="clientName">-</h3>
                                     <p class="text-sm text-slate-500" id="clientDetails">-</p>
                                 </div>
-                                <div class="badge badge-primary badge-lg">
-                                    <i class="ri-image-line mr-2"></i>
-                                    <span id="totalImages">0</span> Foto
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <div class="flex flex-col">
+                                        <span>Total Foto</span>
+                                        <div class="badge badge-info badge-lg">
+                                            <i class="ri-image-line mr-2"></i>
+                                            <span id="totalImages">0</span> Foto
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span>Total Foto Yang Dipilih</span>
+                                        <div class="badge badge-success badge-lg">
+                                            <i class="ri-image-line mr-2"></i>
+                                            <span id="totalHasFix">0</span>/ 11 Foto
+                                        </div>
+                                    </div>
                                 </div>
+                                 <span class="text-xs italic font-bold">Note : Termasuk (before/progress/after)</span>
                             </div>
                         </div>
                     </div>
@@ -90,6 +103,7 @@
             <!-- Image Preview Tabs -->
             <div class="p-4 sm:p-6 pb-2">
                 <h3 class="mb-4 text-lg font-bold sm:text-xl" id="modalImageTitle">Pilih Foto</h3>
+                <span class="name_upload text-sm"></span>
                 <div role="tablist" class="tabs tabs-lifted">
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Before" data-type="before" checked />
                     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-4">
@@ -130,19 +144,26 @@
                         </figure>
                     </div>
                 </div>
+                <div class="mt-5">
+                    <span class="note"></span>
+                </div>
             </div>
 
             <div class="p-4 sm:p-6 pt-2">
-                <div class="flex flex-col gap-2 sm:flex-row">
-                    <button class="btn bg-blue-500/20 text-blue-600 border-0 rounded-sm flex-1 py-1 hover:bg-blue-500 hover:text-white" id="saveSelectionBtn">
+                <div class="flex gap-2 sm:flex-row">
+                    <button disabled class="disabled:bg-gray-300 disabled:text-gray-50 btn bg-blue-500/20 text-blue-600 border-0 rounded-sm flex-1 py-1 hover:bg-blue-500 hover:text-white" id="saveSelectionBtn">
                         <i class="ri-check-line"></i>
-                        Simpan Pilihan
+                        Simpan
+                    </button>
+                     <button type="button" class="hidden btn bg-amber-500/20 text-amber-600 border-0 rounded-sm flex-1 py-1 hover:bg-amber-500 hover:text-white" id="cancelSelectionBtn">
+                        <i class="ri-close-circle-line"></i>
+                         Hapus Pilihan
                     </button>
                 </div>
             </div>
         </div>
         <form method="dialog" class="modal-backdrop">
-            <button>close</button>
+            <button id="modalCloseBtn">close</button>
         </form>
     </dialog>
 
@@ -159,9 +180,35 @@
         $(document).ready(function() {
             let clientData = null;
             let imagesData = [];
+            let fixedData = [];
             let selectedImageData = null;
             let currentImageType = 'before';
             let currentFilter = 'all';
+
+            const getCountData = () => {
+                $.ajax({
+                    url: '{{ route("v1.count.fixed.image")}}',
+                    method: 'GET',
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $('#totalHasFix').text("loading....");
+                    },
+                    success: function(response) {
+                        if (response.status) {
+
+                            if (response.data.count >= 0) {
+                                $('#totalHasFix').text(response.data.count);
+                                if(response.data.count <= 11) $('#saveSelectionBtn').prop('disabled', false);
+
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#totalHasFix').text("loading....");
+                        Notify('Gagal memuat data. Silakan coba lagi.',null,null, 'error');
+                    }
+                })
+            }
 
             // Lazy Load Images
             const lazyLoadImages = () => {
@@ -199,6 +246,7 @@
                         if (response.status) {
                             clientData = response.data.client;
                             imagesData = response.data.image;
+                            fixedData = response.data.fixed;
 
                             // Update client info
                             $('#clientName').text(clientData.name || '-');
@@ -233,7 +281,6 @@
             // Get Image Type Badge
             const getImageBadge = (image) => {
                 const badges = [];
-                console.log(image.fixedImage)
                 if (image.img_before) badges.push('<span class="badge badge-xs badge-info">B</span>');
                 if (image.img_proccess) badges.push('<span class="badge badge-xs badge-warning">P</span>');
                 if (image.img_final) badges.push('<span class="badge badge-xs badge-success">A</span>');
@@ -321,9 +368,25 @@
                 const imageId = $(this).data('image-id');
                 const baseUrl = "{{ URL::asset('/storage/')}}"
                 const image = imagesData.find(img => img.id === imageId);
-                
+                $('.note').text("Keterangan : " + image.note)
+                $('.name_upload').text("Di Upload Oleh : " + image.user.nama_lengkap)
                 if (image) {
                     selectedImageData = image;
+                    if(fixedData)
+                    {
+                        const finalData = fixedData.find(e => e.upload_image_id === imageId);
+                        if(finalData) 
+                        {
+                            $('#cancelSelectionBtn').removeClass('hidden')
+                            $('#saveSelectionBtn').prop('disabled', true).html('<i class="ri-save-2-line"></i> Sudah Disimpan');
+                        }
+                        else 
+                        {
+                            $('#cancelSelectionBtn').addClass('hidden')
+                            $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan');
+                        }
+                    }
+                    {{-- if(image.upload_image_id == ) --}}
                     
                     // Load images into modal
                     if (image.img_before) {
@@ -404,9 +467,10 @@
                     success: function(response) {
                         if (response.status) {
                             Notify('Data berhasil disimpan!',null,null, 'success');
-                            document.getElementById('imageModal').close();
                             selectedImageData = null;
                             loadData();
+                            getCountData()
+                            $('#modalCloseBtn').click();
                         }
                     },
                     error: function(xhr) {
@@ -417,8 +481,41 @@
                     }
                 });
             });
+
+            // Delete Selection Button
+            $('#cancelSelectionBtn').on('click', function() {
+                {{-- fixed.destroy --}}
+                $.ajax({
+                    url: '{{ route("fixed.destroy", ":id") }}'.replace(':id', selectedImageData.id),
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        _method: 'DELETE',
+                        _token: '{{ csrf_token() }}'
+                    },
+                    beforeSend: function() {
+                        $('#cancelSelectionBtn').prop('disabled', true).html('<span class="loading loading-spinner"></span> Menghapus...');
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            Notify(response.message,null,null, 'warning');
+                            loadData()
+                            getCountData()
+                            $('#modalCloseBtn').click();
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#loadingSkeleton').hide();
+                        $('#modalCloseBtn').click();
+                        Notify('Gagal delete data. Silakan coba lagi.',null,null, 'error');
+                    }
+                });
+            })
+
+
             // Initialize
             loadData();
+            getCountData();
         });
     </script>
     @endpush

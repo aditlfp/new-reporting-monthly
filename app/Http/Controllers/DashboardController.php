@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLogs;
 use App\Models\Clients;
+use App\Models\FixedImage;
 use App\Models\UploadImage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -196,26 +197,16 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        $imageCounts = UploadImage::selectRaw("
-                COUNT(CASE WHEN img_before IS NOT NULL AND img_before != '' AND img_before != 'none' THEN 1 END) AS total_before,
-                COUNT(CASE WHEN img_proccess IS NOT NULL AND img_proccess != '' AND img_proccess != 'none' THEN 1 END) AS total_proccess,
-                COUNT(CASE WHEN img_final IS NOT NULL AND img_final != '' AND img_final != 'none' THEN 1 END) AS total_final
-            ")
-            ->where('clients_id', $clientId)
-            ->where('status', 1)
+        $imageCounts = FixedImage::where('clients_id', $clientId)
             ->whereYear('created_at', $date->year)
             ->whereMonth('created_at', $date->month)
-            ->first();
+            ->count();
 
-        $totalImageCount = 
-            $imageCounts->total_before +
-            $imageCounts->total_proccess +
-            $imageCounts->total_final;
 
         return (object)[
             'uploadDraft' => $uploadDraft,
             'allImages' => $allImages,
-            'totalImageCount' => $totalImageCount
+            'totalImageCount' => $imageCounts
         ];
     }
 

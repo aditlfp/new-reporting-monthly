@@ -37,13 +37,18 @@
                                                 : ($varCount >= 15 ? 'text-amber-600'
                                                 : ($varCount <= 14 ? 'text-red-600'
                                                 : ''));
+                                            $persen = $totalImageCount > 0 ?($totalImageCount / 33) * 100 : 0;
+                                            $varPersenClass = $persen >= 80 ? 'bg-green-600'
+                                                                : ($persen >= 75 ? 'bg-lime-600'
+                                                                : ($persen >= 50 ? 'bg-amber-600'
+                                                                : 'bg-red-600'));
                                         @endphp
                                         <p class="text-2xl font-bold {{ $varClass }}" id="remainingImages">{{ 33 -   $totalImageCount }}</p>
                                         <span class="ml-1 text-sm text-slate-500">/ 33</span>
                                     </div>
                                     <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2">
-                                        <div class="bg-purple-500 h-1.5 rounded-full transition-all duration-300" id="imageProgress"
-                                            style="width: {{ $percentage . '%' }}"></div>
+                                        <div class="{{ $varPersenClass }} h-1.5 rounded-full transition-all duration-300" id="imageProgress"
+                                            style="width: {{  $persen. '%' }}"></div>
                                     </div>
                                     </div>
                                 </div>

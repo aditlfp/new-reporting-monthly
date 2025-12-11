@@ -33,9 +33,8 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
 
-    Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store');
+    Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store', 'destroy');
 
-    Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
 
     // Tools Route
     Route::get('/check-calender', [UserNavigateController::class, 'toCalenderUpload'])->name('check.calender.upload');
@@ -43,6 +42,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/settings', [UserNavigateController::class, 'toSettings'])->name('user.settings.index');
     Route::post('/save-settings', [UserSettingsController::class, 'store']);
     // End Tools Route
+    // 
+    
+    Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
+    Route::get('/api/v1/count-fixed-image', [FixedImageController::class, 'getCountFixed'])->name('v1.count.fixed.image');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
