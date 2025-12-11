@@ -7,7 +7,6 @@
     <title>SILAB - Sistem Laporan Bulanan</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @laravelPWA 
 
     <style>
         * {
