@@ -17,7 +17,7 @@
                                 </h1>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600 md:text-base">Showing {{ $UploadsAll->count() }} of 14 uploads this month</p>
+                        <p class="text-sm text-gray-600 md:text-base">Showing {{ $UploadsAll->count() }} uploads this month</p>
 
                         <!-- Filter/Status Summary -->
                         <div class="grid grid-cols-1 gap-3 mb-6 md:grid-cols-2 lg:grid-cols-4">
@@ -54,8 +54,11 @@
                             <div class="p-3 bg-white border border-gray-200 rounded-lg shadow-md md:p-4">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-xs text-gray-500 md:text-sm">Remaining Uploads</p>
-                                        <p class="text-2xl font-bold text-blue-600 md:text-3xl">{{ 14 - $UploadsAll->count() }}</p>
+                                        <p class="text-xs text-gray-500 md:text-sm">Has Acc Image</p>
+                                        <div class="flex">
+                                            <p class="text-2xl font-bold text-blue-600 md:text-3xl">{{ $fixed->count() }}</p>
+                                            <p class="text-2xl font-bold text-gray-300 md:text-3xl">/11</p>
+                                        </div>
                                         <div class="mt-1 text-xs text-gray-400">This month</div>
                                     </div>
                                     <i class="text-3xl text-blue-400 md:text-4xl ri-time-line"></i>
@@ -216,8 +219,8 @@
                     @if($UploadsAll->count() > 0)
                     <div class="mt-6 text-center md:mt-8">
                         <p class="text-xs text-gray-600 md:text-sm">
-                            {{ $UploadsAll[0]->user->nama_lengkap }} have used <span class="font-bold text-blue-600">{{ $UploadsAll->count() }}</span> out of 
-                            <span class="font-bold">14</span> uploads this month
+                            {{ $UploadsAll[0]->user->kerjasama->client->name }} have <span class="font-bold text-blue-600">{{ $UploadsAll->count() }}</span>
+                            uploads this month
                         </p>
                     </div>
                     @endif

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clients;
+use App\Models\FixedImage;
 use App\Models\UploadImage;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,119 +16,155 @@ class SendImageStatusController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['month', 'client_id', 'status', 'upload_min', 'upload_max']);
+        $month = $request->month;
+        $clientId = $request->client_id;
+        $uploadMin = $request->upload_min ?? 1;
+        $uploadMax = $request->upload_max ?? 14;
 
-        // FILTER CLIENT BY MIN / MAX UPLOAD
-        $clientIds = collect();
-        $clientUserIds = [];
-        if (($filters['upload_min'] ?? null) || ($filters['upload_max'] ?? null)) {
-            $query = UploadImage::select(
-                        'user_id',
-                        'clients_id',
-                        DB::raw('MONTH(created_at) as month'),
-                        DB::raw('YEAR(created_at) as year'),
-                        DB::raw('COUNT(*) as total')
-                    )
-                    ->groupBy('user_id', 'clients_id', 'month', 'year');
+        $usersAbsensi = DB::connection('dbAbsensi')
+            ->table('users')
+            ->join('divisis', 'users.devisi_id', '=', 'divisis.id')
+            ->join('jabatans', 'divisis.jabatan_id', '=', 'jabatans.id')
+            ->select(
+                'users.id',
+                'users.nama_lengkap',
+                'users.email',
+                'users.image',
+                'divisis.name',
+                'jabatans.name_jabatan'
+            )
+            ->get();
 
-                if (!empty($filters['upload_min'])) {
-                    $query->havingRaw('COUNT(*) >= ?', [$filters['upload_min']]);
-                }
-                if (!empty($filters['upload_max'])) {
-                    $query->havingRaw('COUNT(*) <= ?', [$filters['upload_max']]);
-                }
+        $absensiUsersIndexed = $usersAbsensi->keyBy('id');
 
-                // yang kita simpan pasangan user+client+month+year
-                $clientUserIds = $query->get()->map(function($row){
-                    return $row->user_id.'-'.$row->clients_id.'-'.$row->month.'-'.$row->year;
-                })->toArray();
-        }
-
-        // MAIN QUERY (GROUP PER USER + CLIENT + MONTH + YEAR)
-        $uploads = UploadImage::with('clients', 'user.divisi.jabatan')
+        $uploadsQuery = DB::table('upload_images')
             ->select(
                 'user_id',
                 'clients_id',
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('YEAR(created_at) as year'),
-                DB::raw('COUNT(*) as total')
+                DB::raw('COUNT(*) as total_count'),
+                DB::raw("SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today_count")
             )
-            ->searchFilters($filters)
             ->groupBy('user_id', 'clients_id', 'month', 'year')
-            ->when(!empty($clientUserIds), function($q) use ($clientUserIds) {
-                $ids = implode("','", $clientUserIds);
-                $q->havingRaw("CONCAT(user_id, '-', clients_id, '-', month, '-', year) IN ('$ids')");
-            })
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
-            ->paginate(10);
-        $dataCount = UploadImage::searchFilters($filters)
-            ->select(
-                'clients_id',
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('COUNT(*) as total_count')
-            )
-            ->groupBy('clients_id', 'month', 'year')
-            ->get()
-            ->keyBy(fn($row) => $row->clients_id.'-'.$row->month.'-'.$row->year);
+            ->orderBy('year', 'DESC')
+            ->orderBy('month', 'DESC')
+            ->orderBy('user_id');
 
-        $uploads->getCollection()->transform(function ($item) {
-
-            // Ambil jabatan user ini
-        $jabatanId = $item->user->divisi->jabatan->id ?? null;
-
-            // Ambil semua upload milik client + month + year
-        $filtered = UploadImage::where('clients_id', $item->clients_id)
-                ->whereMonth('created_at', $item->month)
-                ->whereYear('created_at', $item->year)
-                ->get()
-                ->filter(function ($u) use ($jabatanId) {
-                    return optional($u->user->divisi->jabatan)->id == $jabatanId;
-                });
-
-            // Simpan total count baru
-            $item->total_count = $filtered->count();
-
-            return $item;
-        });
-
-        $clients = Clients::all();
-
-        $userMonthlyCount = 0;
-        $totalUploads = 0;
-
-        // Dropdown Month
-        $months = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $months[] = [
-                'value' => $i,
-                'label' => Carbon::create()->month($i)->locale('id')->isoFormat('MMMM')
-            ];
+        // Filter
+        if ($month) {
+            $uploadsQuery->having('month', '=', $month);
         }
 
-        return view('pages.admin.send_image_status.index', compact(
-            'uploads',
-            'clients',
-            'userMonthlyCount',
-            'totalUploads',
-            'months',
-            'dataCount'
-        ));
+        if ($clientId) {
+            $uploadsQuery->where('clients_id', $clientId);
+        }
+
+        $uploads = $uploadsQuery->paginate(20);
+
+
+        foreach ($uploads as $upload) {
+            $user = $absensiUsersIndexed[$upload->user_id] ?? null;
+
+            $upload->user = $user;
+            $upload->divisi = $user->nama_divisi ?? '-';
+            $upload->jabatan = $user->name_jabatan ?? '-';
+
+            $upload->has_uploaded_today = $upload->today_count > 0;
+        }
+
+        $months = [
+            ['value' => 1, 'label' => 'Januari'],
+            ['value' => 2, 'label' => 'Februari'],
+            ['value' => 3, 'label' => 'Maret'],
+            ['value' => 4, 'label' => 'April'],
+            ['value' => 5, 'label' => 'Mei'],
+            ['value' => 6, 'label' => 'Juni'],
+            ['value' => 7, 'label' => 'Juli'],
+            ['value' => 8, 'label' => 'Agustus'],
+            ['value' => 9, 'label' => 'September'],
+            ['value' => 10, 'label' => 'Oktober'],
+            ['value' => 11, 'label' => 'November'],
+            ['value' => 12, 'label' => 'Desember'],
+        ];
+
+        $clients = Clients::get();
+
+        return view('pages.admin.send_image_status.index', [
+            'uploads' => $uploads,
+            'months' => $months,
+            'clients' => $clients
+        ]);
     }
 
-    public function show($id, $month)
+
+    public function show($id, $client, $month, $year)
     {
         try {
+            $user = User::with('divisi.jabatan')->findOrFail($id);
+            $jabatan = strtolower($user->divisi->jabatan->name_jabatan ?? '');
+
             $UploadsAll = UploadImage::with('clients', 'user.divisi.jabatan')
-                            ->where('user_id', $id)
+                ->where('user_id', $id)
+                ->where('clients_id', $client)
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $jabatan = strtolower(optional(
+                $UploadsAll->first()?->user?->divisi?->jabatan
+            )->name_jabatan);
+
+            if (!$jabatan) {
+                return $UploadsAll;
+            }
+
+            if (str_contains($jabatan, 'clean')) {
+                // Jika user Cleaning, maka kecualikan Security
+                $UploadsAll = $UploadsAll->filter(function ($item) {
+                    $jab = strtolower(optional($item->user->divisi->jabatan)->name_jabatan);
+                    return !str_contains($jab, 'secu') &&
+                           !str_contains($jab, 'scur') &&
+                           !str_contains($jab, 'sekur');
+                });
+            } else {
+                $UploadsAll = $UploadsAll->filter(function ($item) {
+                    $jab = strtolower(optional($item->user->divisi->jabatan)->name_jabatan);
+                    return !str_contains($jab, 'clean');
+                });
+            }
+            $fixed = FixedImage::with('clients', 'user.divisi.jabatan')
+                            ->where('clients_id', $client)
                             ->whereMonth('created_at', $month)
-                            ->orderBy('created_at', 'desc')
+                            ->whereYear('created_at', $year)
                             ->get();
 
-            return view('pages.admin.send_image_status.show', compact('UploadsAll'));
+            return view('pages.admin.send_image_status.show', compact('UploadsAll', 'fixed'));
         } catch (Exception $e) {
-            Log::error($e->getMessage());
+            throw new Exception("Error Processing Request: ". $e->getMessage(), 1);
+        }
+    }
+
+    public function getDetailFixed($user_id, $month, $year)
+    {
+        try {
+            $fixed = FixedImage::where('user_id', $user_id)
+                ->when($month != 'all', function ($q) use ($month) {
+                    $q->whereMonth('created_at', $month);
+                })
+                ->when($year != 'all', function ($q) use ($year) {
+                    $q->whereYear('created_at', $year);
+                })
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Get Data Detail Image Has Accept!',
+                'data' => $fixed
+            ]);
+        } catch (Exception $e) {
+            throw new Exception("Error Processing Request: ". $e->getMessage(), 1);
         }
     }
 

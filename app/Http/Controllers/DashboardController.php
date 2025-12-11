@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $now = now();
         $user = Auth::user();
         $clientId = $user->kerjasama->client_id;
-        $data = UploadImage::with([
+        $data = FixedImage::with([
                 'user.divisi.jabatan', // ambil jabatan
                 'clients'
             ])
@@ -53,8 +53,7 @@ class DashboardController extends Controller
             foreach ($summary as $clientId => $jabList) {
                 foreach ($jabList as $jabatan => $totalUpload) {
 
-                    $quota = 14;
-
+                    $quota = 11;
                     $percentage = $quota > 0
                         ? round(($totalUpload / $quota) * 100, 1)
                         : 0;
@@ -64,7 +63,7 @@ class DashboardController extends Controller
                         'jabatan' => $jabatan,
                         'uploads' => $totalUpload,
                         'quota' => $quota,
-                        'percentage' => $percentage,
+                        'percentage' => $percentage > 100 ? 100 : $percentage,
                     ];
                 }
             }

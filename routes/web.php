@@ -53,7 +53,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('admin-covers/store-pdf', [CoverReportControllers::class, 'store_pdf']);
     Route::resource('/admin-latters', ReportLettersControllers::class);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
-    Route::get('/admin-check-status/{admin_check_status}/{month}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
+    Route::get('/admin-check-status/{admin_check_status}/{client}/{month}/{year}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
 
     Route::get('admin/upload/get-pdf-data', [UploadImageController::class, 'getPdfData'])->name('admin.upload.get-pdf-data');
     Route::post('admin/upload/store-pdf', [UploadImageController::class, 'storePdf'])->name('admin.upload.store-pdf');
@@ -63,6 +63,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/admin-foto-progress', [DataFotoController::class, 'index'])->name('admin.upload.index');
     Route::put('/admin-foto-progress-update/{upload_image}', [DataFotoController::class, 'update'])->name('admin.upload.update');
     Route::delete('/admin-foto-progress-delete/{upload_image}', [DataFotoController::class, 'destroy'])->name('admin.upload.destroy');
+
+    // Route Handle AJAX API GET
+    Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');
 });
 
 Route::view('/testPage', 'pages.admin.tesPages');
