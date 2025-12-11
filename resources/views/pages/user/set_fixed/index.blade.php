@@ -273,15 +273,15 @@
             // Get Primary Image for Display
            const getPrimaryImage = (image, filterType) => {
 
-                if (filterType === "before") {
+                if (filterType == "before") {
                     return image.img_before ?? "/placeholder.jpg";
                 }
 
-                if (filterType === "proccess") {
+                if (filterType == "proccess") {
                     return image.img_proccess ?? "/placeholder.jpg";
                 }
 
-                if (filterType === "final") {
+                if (filterType == "final") {
                     return image.img_final ?? "/placeholder.jpg";
                 }
 
