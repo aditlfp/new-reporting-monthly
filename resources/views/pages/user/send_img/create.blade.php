@@ -162,7 +162,7 @@
                     </div>
                 </div>
 
-                <!-- Modal Overlay -->
+                <!-- Modal Riwayat -->
                 <div id="modalRiwayat" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-md">
                     <div class="flex items-center justify-center min-h-screen px-4 py-6">
                         <!-- Modal Content -->
@@ -208,20 +208,17 @@
                                                 <div class="mt-4 expanded-content">
                                                     <!-- Image Gallery -->
                                                     <div class="grid grid-cols-3 gap-2 mb-3">
-                                                        <div
-                                                            class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                                            <img src="{{ URL::asset('/storage/' . $imgData->img_before) }}"
-                                                                alt="Before" class="object-cover w-full h-full">
+                                                        <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                                            <img data-src="{{ URL::asset('/storage/' . $imgData->img_before) }}" 
+                                                                alt="Before" class="object-cover w-full h-full lazy-load">
                                                         </div>
-                                                        <div
-                                                            class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                                            <img src="{{ $imgData->img_proccess ? URL::asset('/storage/' . $imgData->img_proccess) : 'https://placehold.co/400x400?text=Kosong' }}"
-                                                                alt="Process" class="object-cover w-full h-full">
+                                                        <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                                            <img data-src="{{ $imgData->img_proccess ? URL::asset('/storage/' . $imgData->img_proccess) : 'https://placehold.co/400x400?text=Kosong' }}" 
+                                                                alt="Process" class="object-cover w-full h-full lazy-load">
                                                         </div>
-                                                        <div
-                                                            class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                                            <img src="{{ URL::asset('/storage/' . $imgData->img_final) }}"
-                                                                alt="Final" class="object-cover w-full h-full">
+                                                        <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                                                            <img data-src="{{ URL::asset('/storage/' . $imgData->img_final) }}" 
+                                                                alt="Final" class="object-cover w-full h-full lazy-load">
                                                         </div>
                                                     </div>
 
@@ -324,6 +321,15 @@
                 if (icon) {
                     icon.style.transform = 'rotate(180deg)';
                 }
+                
+                // Load images when card is expanded
+                const lazyImages = card.querySelectorAll('.lazy-load');
+                lazyImages.forEach(img => {
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                });
             }
 
             // Expandable cards functionality - Only one at a time
@@ -795,13 +801,13 @@
                                 <!-- Image Gallery -->
                                 <div class="grid grid-cols-3 gap-2 mb-3">
                                     <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                        <img src="${imgBefore}" alt="Before" class="object-cover w-full h-full">
+                                        <img data-src="${imgBefore}" alt="Before" class="object-cover w-full h-full lazy-load">
                                     </div>
                                     <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                        <img src="${imgProcess}" alt="Process" class="object-cover w-full h-full">
+                                        <img data-src="${imgProcess}" alt="Process" class="object-cover w-full h-full lazy-load">
                                     </div>
                                     <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
-                                        <img src="${imgFinal}" alt="Final" class="object-cover w-full h-full">
+                                        <img data-src="${imgFinal}" alt="Final" class="object-cover w-full h-full lazy-load">
                                     </div>
                                 </div>
                                 
