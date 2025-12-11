@@ -271,12 +271,27 @@
             };
 
             // Get Primary Image for Display
-            const getPrimaryImage = (image) => {
-                if (image.img_final) return image.img_final;
-                if (image.img_proccess) return image.img_proccess;
+           const getPrimaryImage = (image, filterType) => {
+
+                if (filterType === "before") {
+                    return image.img_before ?? "/placeholder.jpg";
+                }
+
+                if (filterType === "proccess") {
+                    return image.img_proccess ?? "/placeholder.jpg";
+                }
+
+                if (filterType === "final") {
+                    return image.img_final ?? "/placeholder.jpg";
+                }
+
                 if (image.img_before) return image.img_before;
-                return '/placeholder.jpg';
+                if (image.img_proccess) return image.img_proccess;
+                if (image.img_final) return image.img_final;
+
+                return "/placeholder.jpg";
             };
+
 
             // Get Image Type Badge
             const getImageBadge = (image) => {
@@ -290,10 +305,10 @@
 
             // Filter Images
             const filterImages = (images, filter) => {
-                if (filter === 'all') return images;
-                if (filter === 'before') return images.filter(img => img.img_before);
-                if (filter === 'process') return images.filter(img => img.img_proccess);
-                if (filter === 'final') return images.filter(img => img.img_final);
+                if (filter == 'all') return images;
+                if (filter == 'before') return images.filter(img => img.img_before);
+                if (filter == 'process') return images.filter(img => img.img_proccess);
+                if (filter == 'final') return images.filter(img => img.img_final);
                 return images;
             };
 
@@ -304,7 +319,7 @@
 
                 const filteredImages = filterImages(images, filter);
 
-                if (filteredImages.length === 0) {
+                if (filteredImages.length == 0) {
                     $('#loadingSkeleton').hide();
                     $('#emptyState').fadeIn();
                     $('#imageGallery').hide();
@@ -312,7 +327,7 @@
                 }
 
                 filteredImages.forEach((image, index) => {
-                    const primaryImage = getPrimaryImage(image);
+                    const primaryImage = getPrimaryImage(image, filter);
                     const baseUrl = "{{ URL::asset('/storage/')}}"
                     const imageBadges = getImageBadge(image);
                     
@@ -367,14 +382,14 @@
             $(document).on('click', '.image-card', function() {
                 const imageId = $(this).data('image-id');
                 const baseUrl = "{{ URL::asset('/storage/')}}"
-                const image = imagesData.find(img => img.id === imageId);
+                const image = imagesData.find(img => img.id == imageId);
                 $('.note').text("Keterangan : " + image.note)
                 $('.name_upload').text("Di Upload Oleh : " + image.user.nama_lengkap)
                 if (image) {
                     selectedImageData = image;
                     if(fixedData)
                     {
-                        const finalData = fixedData.find(e => e.upload_image_id === imageId);
+                        const finalData = fixedData.find(e => e.upload_image_id == imageId);
                         if(finalData) 
                         {
                             $('#cancelSelectionBtn').removeClass('hidden')
@@ -416,8 +431,8 @@
                     $('#modalImageTitle').text(`Foto #${image.id}`);
                     
                     // Reset to first tab
-                    $('input[name="image_tabs"]:first').prop('checked', true);
-                    currentImageType = 'before';
+                    {{-- $('input[name="image_tabs"]:first').prop('checked', true);
+                    currentImageType = 'before'; --}}
                     
                     document.getElementById('imageModal').showModal();
                 }
@@ -437,11 +452,11 @@
 
                 // Get selected image URL based on current tab
                 let selectedImageUrl = null;
-                if (currentImageType === 'before' && selectedImageData.img_before) {
+                if (currentImageType == 'before' && selectedImageData.img_before) {
                     selectedImageUrl = selectedImageData.img_before;
-                } else if (currentImageType === 'process' && selectedImageData.img_proccess) {
+                } else if (currentImageType == 'process' && selectedImageData.img_proccess) {
                     selectedImageUrl = selectedImageData.img_proccess;
-                } else if (currentImageType === 'final' && selectedImageData.img_final) {
+                } else if (currentImageType == 'final' && selectedImageData.img_final) {
                     selectedImageUrl = selectedImageData.img_final;
                 }
 
