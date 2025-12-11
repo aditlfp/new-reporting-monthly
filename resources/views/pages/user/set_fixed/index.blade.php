@@ -48,19 +48,19 @@
                         <div role="tablist" class="tabs tabs-boxed bg-base-200">
                             <a role="tab" class="tab tab-active" data-filter="all">
                                 <i class="ri-gallery-line mr-2"></i>
-                                <span class="hidden sm:inline">Semua</span>
+                                <span class="inline">Semua</span>
                             </a>
                             <a role="tab" class="tab" data-filter="before">
                                 <i class="ri-image-line mr-2"></i>
-                                <span class="hidden sm:inline">Before</span>
+                                <span class="inline">Before</span>
                             </a>
                             <a role="tab" class="tab" data-filter="process">
                                 <i class="ri-settings-3-line mr-2"></i>
-                                <span class="hidden sm:inline">Proses</span>
+                                <span class="inline">Proses</span>
                             </a>
                             <a role="tab" class="tab" data-filter="final">
                                 <i class="ri-checkbox-circle-line mr-2"></i>
-                                <span class="hidden sm:inline">After</span>
+                                <span class="inline">After</span>
                             </a>
                         </div>
                     </div>
