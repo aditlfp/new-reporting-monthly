@@ -20,6 +20,12 @@
         {{-- Stack To Push Styles --}}
         <style>
             @stack('styles')
+
+            @media screen and (min-width: 768px) {
+                #sidebar {
+                    transform: translateX(0) !important;
+                }
+            }
         </style>
 
     </head>
@@ -68,8 +74,9 @@
                 $(document).on('click', function(e) {
                     const insideSidebar = sidebar.has(e.target).length > 0;
                     const onToggle = toggle.has(e.target).length > 0;
+                    const maxScreenWidth = window.screen.width;
 
-                    if (!insideSidebar && !onToggle) {
+                    if (!insideSidebar && !onToggle && maxScreenWidth < 768) {
                         sidebar.css('transform', 'translateX(-100%)');
                         overlay.removeClass('opacity-100').addClass('opacity-0');
                         setTimeout(() => overlay.addClass('hidden'), 300);
