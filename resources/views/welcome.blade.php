@@ -7,6 +7,7 @@
     <title>SILAB - Sistem Laporan Bulanan</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @laravelPWA
 
     <style>
         * {
@@ -54,13 +55,6 @@
             background-clip: text;
         }
 
-        .gradient-text-2 {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
         /* Glass Effect */
         .glass {
             background: rgba(255, 255, 255, 0.1);
@@ -79,38 +73,6 @@
         .fade-up.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        .slide-in-left {
-            opacity: 0;
-            transform: translateX(-60px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .slide-in-left.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .slide-in-right {
-            opacity: 0;
-            transform: translateX(60px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .slide-in-right.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* Stats Counter */
-        .stat-number {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         /* Feature Cards */
@@ -137,43 +99,6 @@
 
         .feature-card:hover {
             transform: translateY(-10px);
-        }
-
-        /* Mockup Browser */
-        .mockup-browser {
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            background: white;
-            transition: transform 0.3s ease;
-        }
-
-        .mockup-browser:hover {
-            transform: scale(1.02);
-        }
-
-        .mockup-header {
-            background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
-            padding: 16px 20px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .mockup-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        /* Testimonial Cards */
-        .testimonial-card {
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-8px);
         }
 
         /* Scroll Indicator */
@@ -251,8 +176,8 @@
                 </a>
                 <ul class="items-center hidden gap-8 lg:flex">
                     <li><a href="#beranda" class="font-medium text-gray-700 transition-colors hover:text-purple-600">Beranda</a></li>
+                    <li><a href="#tentang" class="font-medium text-gray-700 transition-colors hover:text-purple-600">Tentang</a></li>
                     <li><a href="#fitur" class="font-medium text-gray-700 transition-colors hover:text-purple-600">Fitur</a></li>
-                    <li><a href="#preview" class="font-medium text-gray-700 transition-colors hover:text-purple-600">Preview</a></li>
                     <li><a href="#kontak" class="font-medium text-gray-700 transition-colors hover:text-purple-600">Kontak</a></li>
                 </ul>
             </div>
@@ -279,41 +204,25 @@
                     <div class="space-y-8 text-white fade-up">
                         <div class="inline-block">
                             <span class="px-6 py-3 text-sm font-semibold rounded-full shadow-lg glass">
-                                🚀 Sistem Terpercaya #1
+                                🚀 Sistem Laporan Bulanan
                             </span>
                         </div>
                         <h1 class="text-5xl font-black leading-tight md:text-6xl lg:text-7xl">
-                            Kelola Laporan<br />
-                            <span class="text-yellow-300">Lebih Efisien</span>
+                            SILAB - Sistem<br />
+                            <span class="text-yellow-300">Laporan Bulanan</span>
                         </h1>
                         <p class="max-w-xl text-xl leading-relaxed md:text-2xl opacity-95">
-                            Sistem Laporan Bulanan terintegrasi dengan dashboard realtime dan role-based access control
+                            Platform digital untuk mengelola laporan kegiatan bulanan dengan sistem yang terintegrasi, efisien, dan mudah digunakan.
                         </p>
                         <div class="flex flex-col gap-4 pt-4 sm:flex-row">
-                            <a href="#" class="text-white transition-all duration-300 border-white shadow-lg btn btn-lg glass hover:bg-white hover:text-purple-700 hover:shadow-xl">
-                                <i class="text-xl ri-rocket-line"></i>
-                                Mulai Gratis
+                            <a href="#tentang" class="text-white transition-all duration-300 border-white shadow-lg btn btn-lg glass hover:bg-white hover:text-purple-700 hover:shadow-xl">
+                                <i class="text-xl ri-information-line"></i>
+                                Pelajari Lebih Lanjut
                             </a>
-                            <a href="#" class="text-white transition-all duration-300 border-white btn btn-lg btn-outline hover:bg-white hover:text-purple-700">
-                                <i class="text-xl ri-play-circle-line"></i>
-                                Lihat Demo
+                            <a href="{{ route('login')}}" class="text-white transition-all duration-300 border-white btn btn-lg btn-outline hover:bg-white hover:text-purple-700">
+                                <i class="text-xl ri-login-box-line"></i>
+                                Masuk ke Sistem
                             </a>
-                        </div>
-
-                        <!-- Stats -->
-                        <div class="grid grid-cols-3 gap-6 pt-8">
-                            <div class="text-center">
-                                <div class="stat-number">500+</div>
-                                <div class="text-sm opacity-90">User Aktif</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="stat-number">10K+</div>
-                                <div class="text-sm opacity-90">Laporan</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="stat-number">99.9%</div>
-                                <div class="text-sm opacity-90">Uptime</div>
-                            </div>
                         </div>
                     </div>
 
@@ -334,139 +243,115 @@
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="py-20 md:py-32 bg-gradient-to-br from-purple-50 to-indigo-50" id="fitur">
+        <!-- About Section -->
+        <section class="py-20 md:py-32 bg-gradient-to-br from-purple-50 to-indigo-50" id="tentang">
             <div class="container px-4 mx-auto">
                 <div class="mb-16 text-center fade-up">
-                    <span class="text-sm font-semibold tracking-wider text-purple-600 uppercase">Fitur Unggulan</span>
+                    <span class="text-sm font-semibold tracking-wider text-purple-600 uppercase">Tentang SILAB</span>
                     <h2 class="mt-4 mb-6 text-4xl font-black md:text-5xl lg:text-6xl">
-                        Solusi <span class="gradient-text">Lengkap</span> Untuk Anda
+                        Apa Itu <span class="gradient-text">SILAB</span>?
                     </h2>
-                    <p class="max-w-2xl mx-auto text-xl text-gray-600">
-                        Sistem terintegrasi dengan teknologi modern dan interface yang intuitif
+                    <p class="max-w-3xl mx-auto text-xl text-gray-600">
+                        SILAB (Sistem Laporan Bulanan) adalah platform berbasis web yang dirancang khusus untuk memudahkan pengelolaan laporan kegiatan bulanan dengan cara yang lebih terstruktur dan efisien.
                     </p>
                 </div>
 
-                <div class="grid gap-8 mx-auto md:grid-cols-2 lg:grid-cols-3 max-w-7xl">
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
+                <div class="grid max-w-6xl gap-12 mx-auto md:grid-cols-2">
+                    <div class="p-8 bg-white shadow-lg rounded-2xl fade-up">
                         <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl">
-                            <i class="text-3xl text-white ri-dashboard-3-line"></i>
+                            <i class="text-3xl text-white ri-target-line"></i>
                         </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Dashboard Admin</h3>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Tujuan SILAB</h3>
                         <p class="leading-relaxed text-gray-600">
-                            Monitoring realtime dengan statistik lengkap dan analytics dashboard
+                            SILAB dibuat untuk mengatasi kesulitan dalam pengelolaan laporan kegiatan bulanan yang seringkali tidak terstruktur, sulit diakses, dan memakan waktu. Dengan SILAB, seluruh proses pelaporan menjadi lebih sederhana, terorganisir, dan dapat diakses kapan saja serta di mana saja.
                         </p>
                     </div>
 
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
+                    <div class="p-8 bg-white shadow-lg rounded-2xl fade-up">
                         <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl">
-                            <i class="text-3xl text-white ri-user-line"></i>
+                            <i class="text-3xl text-white ri-lightbulb-line"></i>
                         </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">User Dashboard</h3>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Mengapa SILAB?</h3>
                         <p class="leading-relaxed text-gray-600">
-                            Interface user-friendly untuk upload dan kelola dokumen dengan mudah
-                        </p>
-                    </div>
-
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
-                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl">
-                            <i class="text-3xl text-white ri-upload-cloud-2-line"></i>
-                        </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Upload Kegiatan</h3>
-                        <p class="leading-relaxed text-gray-600">
-                            3 step upload dengan dokumentasi lengkap: Before, Process, After
-                        </p>
-                    </div>
-
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
-                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl">
-                            <i class="text-3xl text-white ri-file-list-3-line"></i>
-                        </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Master Data</h3>
-                        <p class="leading-relaxed text-gray-600">
-                            Kelola status upload dan dokumen dengan sistem terorganisir
-                        </p>
-                    </div>
-
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
-                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl">
-                            <i class="text-3xl text-white ri-calendar-check-line"></i>
-                        </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Kalender Laporan</h3>
-                        <p class="leading-relaxed text-gray-600">
-                            View riwayat laporan berdasarkan bulan dengan preview thumbnail
-                        </p>
-                    </div>
-
-                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card">
-                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl">
-                            <i class="text-3xl text-white ri-file-chart-line"></i>
-                        </div>
-                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Activity Tracking</h3>
-                        <p class="leading-relaxed text-gray-600">
-                            Timeline aktivitas dengan timestamp detail untuk setiap upload
+                            SILAB menawarkan solusi lengkap dengan antarmuka yang intuitif, sistem keamanan yang andal, dan fitur-fitur yang disesuaikan dengan kebutuhan pelaporan kegiatan. Platform ini dirancang untuk meningkatkan produktivitas dan memastikan setiap laporan tersimpan dengan rapi dan mudah ditemukan kembali.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Testimonials -->
-        <section class="py-20 md:py-32 bg-gradient-to-br from-purple-50 to-indigo-50">
+        <!-- Features Section -->
+        <section class="py-20 md:py-32 bg-gradient-to-br from-purple-50 to-indigo-50" id="fitur">
             <div class="container px-4 mx-auto">
                 <div class="mb-16 text-center fade-up">
-                    <span class="text-sm font-semibold tracking-wider text-purple-600 uppercase">Testimoni</span>
+                    <span class="text-sm font-semibold tracking-wider text-purple-600 uppercase">Fitur Utama</span>
                     <h2 class="mt-4 mb-6 text-4xl font-black md:text-5xl lg:text-6xl">
-                        Kata <span class="gradient-text-2">Mereka</span>
+                        Fitur <span class="gradient-text">Unggulan</span>
                     </h2>
                     <p class="max-w-2xl mx-auto text-xl text-gray-600">
-                        Pengalaman nyata dari pengguna SILAB
+                        Fitur-fitur yang dirancang khusus untuk memenuhi kebutuhan pelaporan kegiatan bulanan
                     </p>
                 </div>
 
-                <div class="grid max-w-6xl gap-8 mx-auto md:grid-cols-3">
-                    <div class="p-8 bg-white shadow-lg rounded-2xl testimonial-card">
-                        <div class="flex gap-1 mb-4">
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
+                <div class="grid gap-8 mx-auto md:grid-cols-2 lg:grid-cols-3 max-w-7xl">
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl">
+                            <i class="text-3xl text-white ri-dashboard-3-line"></i>
                         </div>
-                        <p class="mb-6 leading-relaxed text-gray-700">
-                            "Dashboard admin memberikan insight yang jelas. Monitoring aktivitas jadi lebih efisien dan real-time!"
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Dashboard Admin</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Monitoring laporan dengan statistik lengkap dan akses kontrol berdasarkan peran pengguna
                         </p>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center justify-center w-12 h-12 text-lg font-bold text-white rounded-full bg-gradient-to-r from-pink-500 to-rose-600">
-                                AM
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-800">Anonim</h4>
-                                <p class="text-sm text-gray-600">Pengguna Setia</p>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="p-8 bg-white shadow-lg rounded-2xl testimonial-card">
-                        <div class="flex gap-1 mb-4">
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
-                            <i class="text-xl text-yellow-400 ri-star-fill"></i>
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl">
+                            <i class="text-3xl text-white ri-user-line"></i>
                         </div>
-                        <p class="mb-6 leading-relaxed text-gray-700">
-                            "Tracking limit upload sangat membantu. Riwayat laporan juga mudah dicari berdasarkan bulan. Recommended!"
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">User Dashboard</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Interface yang mudah digunakan untuk upload dan kelola dokumen laporan kegiatan
                         </p>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center justify-center w-12 h-12 text-lg font-bold text-white rounded-full bg-gradient-to-r from-cyan-500 to-blue-600">
-                                AM
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-800">Anonim</h4>
-                                <p class="text-sm text-gray-600">Pengguna Pertama</p>
-                            </div>
+                    </div>
+
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl">
+                            <i class="text-3xl text-white ri-upload-cloud-2-line"></i>
                         </div>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Upload Kegiatan</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Sistem upload 3 langkah dengan dokumentasi lengkap: Before, Process, After
+                        </p>
+                    </div>
+
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl">
+                            <i class="text-3xl text-white ri-file-list-3-line"></i>
+                        </div>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Master Data</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Kelola status upload dan dokumen dengan sistem terorganisir dan terstruktur
+                        </p>
+                    </div>
+
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl">
+                            <i class="text-3xl text-white ri-calendar-check-line"></i>
+                        </div>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Kalender Laporan</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Akses riwayat laporan berdasarkan bulan dengan preview thumbnail untuk memudahkan pencarian
+                        </p>
+                    </div>
+
+                    <div class="p-8 bg-white shadow-lg rounded-2xl feature-card fade-up">
+                        <div class="flex items-center justify-center w-16 h-16 mb-6 shadow-lg bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl">
+                            <i class="text-3xl text-white ri-file-chart-line"></i>
+                        </div>
+                        <h3 class="mb-4 text-2xl font-bold text-gray-800">Activity Tracking</h3>
+                        <p class="leading-relaxed text-gray-600">
+                            Timeline aktivitas dengan timestamp detail untuk setiap upload dan perubahan data
+                        </p>
                     </div>
                 </div>
             </div>
@@ -481,17 +366,17 @@
                         <i class="ri-rocket-2-line text-7xl"></i>
                     </div>
                     <h2 class="mb-6 text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-                        Siap Kelola Laporan<br />Dengan Lebih Baik?
+                        Siap Memulai Dengan SILAB?
                     </h2>
                     <p class="max-w-2xl mx-auto mb-10 text-xl md:text-2xl opacity-95">
-                        Bergabunglah sekarang dan rasakan kemudahan sistem rekapitulasi modern
+                        Bergabunglah sekarang dan rasakan kemudahan dalam mengelola laporan kegiatan bulanan
                     </p>
                     <div class="flex flex-col justify-center gap-4 mb-12 sm:flex-row">
-                        <a href="#" class="text-white transition-all duration-300 border-white shadow-lg btn btn-lg glass hover:bg-white hover:text-purple-700 hover:shadow-xl">
-                            <i class="text-xl ri-download-cloud-line"></i>
-                            Daftar Gratis
+                        <a href="{{ route('login')}}" class="text-white transition-all duration-300 border-white shadow-lg btn btn-lg glass hover:bg-white hover:text-purple-700 hover:shadow-xl">
+                            <i class="text-xl ri-login-box-line"></i>
+                            Masuk ke Sistem
                         </a>
-                        <a href="#" class="text-white transition-all duration-300 border-white btn btn-lg btn-outline hover:bg-white hover:text-purple-700">
+                        <a href="#kontak" class="text-white transition-all duration-300 border-white btn btn-lg btn-outline hover:bg-white hover:text-purple-700">
                             <i class="text-xl ri-phone-line"></i>
                             Hubungi Kami
                         </a>
@@ -500,15 +385,15 @@
                     <div class="flex flex-wrap justify-center gap-8 opacity-90">
                         <div class="flex items-center gap-2">
                             <i class="text-2xl ri-shield-check-line"></i>
-                            <span class="text-sm font-medium">SSL Certified</span>
+                            <span class="text-sm font-medium">Keamanan Terjamin</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i class="text-2xl ri-server-line"></i>
-                            <span class="text-sm font-medium">99.9% Uptime</span>
+                            <i class="text-2xl ri-device-line"></i>
+                            <span class="text-sm font-medium">Akses Multi-Perangkat</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="text-2xl ri-customer-service-line"></i>
-                            <span class="text-sm font-medium">24/7 Support</span>
+                            <span class="text-sm font-medium">Dukungan Penuh</span>
                         </div>
                     </div>
                 </div>
@@ -528,7 +413,7 @@
                         <span class="text-3xl font-black text-white">SILAB</span>
                     </div>
                     <p class="max-w-md mb-6 leading-relaxed text-gray-400">
-                        Platform Sistem laporan bulanan berbasis web dengan interface modern dan role-based access control untuk efisiensi maksimal.
+                        Sistem Laporan Bulanan (SILAB) adalah platform berbasis web yang dirancang untuk memudahkan pengelolaan laporan kegiatan dengan cara yang lebih efisien dan terstruktur.
                     </p>
                     <div class="flex gap-3">
                         <a href="#" class="flex items-center justify-center w-12 h-12 text-white transition-transform rounded-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:scale-110">
@@ -552,14 +437,14 @@
                         <li><a href="#beranda" class="flex items-center gap-2 transition-colors hover:text-white">
                             <i class="ri-arrow-right-s-line"></i> Beranda
                         </a></li>
+                        <li><a href="#tentang" class="flex items-center gap-2 transition-colors hover:text-white">
+                            <i class="ri-arrow-right-s-line"></i> Tentang
+                        </a></li>
                         <li><a href="#fitur" class="flex items-center gap-2 transition-colors hover:text-white">
                             <i class="ri-arrow-right-s-line"></i> Fitur
                         </a></li>
-                        <li><a href="#preview" class="flex items-center gap-2 transition-colors hover:text-white">
-                            <i class="ri-arrow-right-s-line"></i> Preview
-                        </a></li>
-                        <li><a href="#" class="flex items-center gap-2 transition-colors hover:text-white">
-                            <i class="ri-arrow-right-s-line"></i> Dokumentasi
+                        <li><a href="#kontak" class="flex items-center gap-2 transition-colors hover:text-white">
+                            <i class="ri-arrow-right-s-line"></i> Kontak
                         </a></li>
                     </ul>
                 </div>
@@ -586,12 +471,11 @@
             <div class="pt-8 border-t border-gray-700">
                 <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
                     <p class="text-sm text-gray-500">
-                        © 2024 SILAB. All rights reserved.
+                        © 2024 SILAB - Sistem Laporan Bulanan. All rights reserved.
                     </p>
                     <div class="flex gap-6 text-sm">
-                        <a href="#" class="transition-colors hover:text-white">Privacy Policy</a>
-                        <a href="#" class="transition-colors hover:text-white">Terms of Service</a>
-                        <a href="#" class="transition-colors hover:text-white">Cookies</a>
+                        <a href="#" class="transition-colors hover:text-white">Kebijakan Privasi</a>
+                        <a href="#" class="transition-colors hover:text-white">Syarat & Ketentuan</a>
                     </div>
                 </div>
             </div>
@@ -617,7 +501,7 @@
 
             // Scroll animations
             function checkVisible() {
-                $('.fade-up, .slide-in-left, .slide-in-right').each(function() {
+                $('.fade-up').each(function() {
                     var elementTop = $(this).offset().top;
                     var elementBottom = elementTop + $(this).outerHeight();
                     var viewportTop = $(window).scrollTop();

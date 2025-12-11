@@ -10,6 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        @laravelPWA
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -69,8 +70,8 @@
                     const insideSidebar = sidebar.has(e.target).length > 0;
                     const onToggle = toggle.has(e.target).length > 0;
 
-                    if (!insideSidebar && !onToggle && !sidebar.hasClass('-translate-x-full')) {
-                        sidebar.removeClass('translate-x-0').addClass('-translate-x-full');
+                    if (!insideSidebar && !onToggle) {
+                        sidebar.css('transform', 'translateX(-100%)');
                         overlay.removeClass('opacity-100').addClass('opacity-0');
                         setTimeout(() => overlay.addClass('hidden'), 300);
                         toggle.removeClass('swap-active');

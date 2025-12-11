@@ -124,10 +124,10 @@
                                     <!-- Textarea for content -->
                                     <div>
                                         <label for="reportContent"
-                                            class="block mb-2 text-sm font-medium text-slate-700">Isi Keterangan</label>
+                                            class="block mb-2 text-sm font-medium text-slate-700">Keterangan Kegiatan</label>
                                         <textarea id="reportContent" name="note" rows="4"
-                                            class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Tulis isi keterangan di sini... (format: 'nama kegiatan - nama area')"></textarea>
+                                            class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none textarea sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan - nama area')"></textarea>
                                     </div>
 
                                     <!-- Hidden fields -->
@@ -141,11 +141,13 @@
                                     <!-- Submit Buttons -->
                                     <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                                         <button type="button" id="saveDraftBtn"
-                                            class="w-full sm:w-auto px-4 py-2.5 text-sm sm:text-base font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                            class="w-full sm:w-auto px-4 py-2.5 text-sm sm:text-base text-center flex items-center justify-center gap-2 font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M18 19H19V6.82843L17.1716 5H16V9H7V5H5V19H6V12H18V19ZM4 3H18L20.7071 5.70711C20.8946 5.89464 21 6.149 21 6.41421V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3ZM8 14V19H16V14H8Z"></path></svg>
                                             Simpan Draft
                                         </button>
                                         <button type="button" id="submitReportBtn"
-                                            class="w-full sm:w-auto px-4 py-2.5 text-sm sm:text-base font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                            class="w-full sm:w-auto px-4 py-2.5 text-sm sm:text-base text-center flex items-center justify-center gap-2 font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M4 19H20V12H22V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V12H4V19ZM13 9V16H11V9H6L12 3L18 9H13Z"></path></svg>
                                             Kirim Laporan
                                         </button>
                                         <button class="hidden btn btnLoading">
@@ -416,7 +418,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <p class="text-sm text-slate-500">Draft Tersedia (${res.data})</p>
-                                        <button id="editDraftBtn" class="px-3 py-1 mt-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">Edit Draft</button>
+                                        <button id="editDraftBtn" class="px-3 py-1 mt-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M20 2C20.5523 2 21 2.44772 21 3V6.757L19 8.757V4H5V20H19V17.242L21 15.242V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V3C3 2.44772 3.44772 2 4 2H20ZM21.7782 8.80761L23.1924 10.2218L15.4142 18L13.9979 17.9979L14 16.5858L21.7782 8.80761ZM13 12V14H8V12H13ZM16 8V10H8V8H16Z"></path></svg> Edit Draft</button>
                                     </div>
                                 </div>
                             `;
@@ -704,7 +706,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-slate-500" id="draftCount">Draft Tersedia</p>
-                                <button id="editDraftBtn" class="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">Edit Draft</button>
+                                <button id="editDraftBtn" class="flex items-center justify-center gap-2 px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M20 2C20.5523 2 21 2.44772 21 3V6.757L19 8.757V4H5V20H19V17.242L21 15.242V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V3C3 2.44772 3.44772 2 4 2H20ZM21.7782 8.80761L23.1924 10.2218L15.4142 18L13.9979 17.9979L14 16.5858L21.7782 8.80761ZM13 12V14H8V12H13ZM16 8V10H8V8H16Z"></path></svg> Edit Draft</button>
                             </div>
                         </div>
                     `;
