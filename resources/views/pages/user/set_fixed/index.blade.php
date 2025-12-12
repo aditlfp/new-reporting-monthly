@@ -333,7 +333,7 @@
             const filterImages = (images, filter) => {
                 if (filter == 'all') return images;
                 if (filter == 'before') return images.filter(img => img.img_before);
-                if (filter == 'process') return images.filter(img => img.img_proccess);
+                if (filter == 'proccess') return images.filter(img => img.img_proccess);
                 if (filter == 'final') return images.filter(img => img.img_final);
                 return images;
             };
