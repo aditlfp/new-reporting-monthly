@@ -20,14 +20,14 @@
         {{-- Stack To Push Styles --}}
         <style>
             @stack('styles')
-
+        </style>
+        <style>
             @media screen and (min-width: 768px) {
                 #sidebar {
                     transform: translateX(0) !important;
                 }
             }
         </style>
-
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
