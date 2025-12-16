@@ -195,7 +195,7 @@
                                                         <p class="text-sm text-slate-500">
                                                             {{ $imgData->created_at->isoformat('d MMMM Y') }}</p>
                                                         <p class="text-xs text-slate-500 truncate max-w-[300px]">Di
-                                                            Upload Oleh : {{ $imgData->user->nama_lengkap }}</p>
+                                                            Upload Oleh : {{ $imgData->user ? $imgData->user->nama_lengkap : 'User Hilang' }}</p>
                                                     </div>
                                                     <svg class="w-5 h-5 transition-transform duration-300 text-slate-400 expand-icon"
                                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +379,6 @@
                 let prevLoading = isLoading;
 
                 // Image limit per month
-                const IMAGE_LIMIT_PER_MONTH = 33;
                 let imagesUploadedThisMonth = {{ $totalImageCount }}; // This would come from your backend
                 let isEditMode = false;
                 let draftData = null;
@@ -393,9 +392,6 @@
                     )[0];
                     showDraftCard(firstDraft)
                 @endif
-
-                // Update remaining images display
-                updateRemainingImages();
 
                 // Fungsi untuk memeriksa dan memperbarui tampilan draft
                 function checkAndUpdateDraftDisplay() {
@@ -598,13 +594,6 @@
                 const debouncedImageHandler = debounce(function(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        if (imagesUploadedThisMonth >= IMAGE_LIMIT_PER_MONTH) {
-                            alert(
-                                `Anda telah mencapai batas upload gambar bulan ini (${IMAGE_LIMIT_PER_MONTH} gambar)`);
-                            e.target.value = '';
-                            return;
-                        }
-
                         const reader = new FileReader();
                         reader.onload = function(event) {
                             const preview = $(`#preview${e.target.id.replace('image', '')}`);
@@ -613,7 +602,6 @@
                             preview.data('is-new-image', true);
 
                             imagesUploadedThisMonth++;
-                            updateRemainingImages();
                         };
                         reader.readAsDataURL(file);
                     }
@@ -622,26 +610,6 @@
                 // Apply debounced handler
                 for (let i = 1; i <= 3; i++) {
                     $(`#image${i}`).on('change', debouncedImageHandler);
-                }
-
-                // Function to update remaining images display
-                function updateRemainingImages() {
-                    const remaining = IMAGE_LIMIT_PER_MONTH - imagesUploadedThisMonth;
-                    const percentage = (imagesUploadedThisMonth / IMAGE_LIMIT_PER_MONTH) * 100;
-
-                    $('#remainingImages').text(remaining);
-                    // Use CSS transitions instead of direct style manipulation
-                    const progressBar = $('#imageProgress');
-                    progressBar.css('width', percentage + '%');
-
-                    // Use class toggling for color changes
-                    if (remaining < 10) {
-                        progressBar.removeClass('bg-purple-500 bg-yellow-500').addClass('bg-red-500');
-                    } else if (remaining < 20) {
-                        progressBar.removeClass('bg-purple-500 bg-red-500').addClass('bg-yellow-500');
-                    } else {
-                        progressBar.removeClass('bg-red-500 bg-yellow-500').addClass('bg-purple-500');
-                    }
                 }
 
                 // Function to load draft data into the form
@@ -1042,7 +1010,6 @@
 
                                 imagesUploadedThisMonth = response.totalImageCount ||
                                     imagesUploadedThisMonth;
-                                updateRemainingImages();
                             }
                         },
                         error: function(xhr) {
@@ -1068,7 +1035,6 @@
                     // Only decrement if it's a newly uploaded image
                     if (preview.data('is-new-image') === true) {
                         imagesUploadedThisMonth--;
-                        updateRemainingImages();
                     }
 
                     input.val('');
