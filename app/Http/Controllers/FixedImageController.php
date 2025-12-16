@@ -96,11 +96,15 @@ class FixedImageController extends Controller
                     ->whereMonth('created_at', now()->month)
                     ->whereYear('created_at', now()->year)
                     ->count();
+        $countToday = FixedImage::where('clients_id', auth()->user()->kerjasama->client_id)
+                    ->whereDate('created_at', now()->toDateString())
+                    ->count();
         return response()->json([
             'status' => true,
             'message' => 'Get Counting FixedImage',
             'data' => [
-                'count' => $count
+                'count' => $count,
+                'count_today' => $countToday
             ],
         ], 200);
     }

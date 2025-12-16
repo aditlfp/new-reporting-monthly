@@ -40,7 +40,7 @@ style="transform: translateX(-100%)"
                 <span class="font-medium">Kirim Foto Laporan</span>
             </a>
             
-            @if (stripos(auth()->user()->jabatan->type_jabatan, 'leader') !== false || stripos(auth()->user()->jabatan->name_jabatan, 'leader') !== false || stripos(auth()->user()->jabatan->type_jabatan, 'MANAJEMEN') !== false)
+            @if (stripos(auth()->user()->jabatan->type_jabatan, 'leader') !== false || stripos(auth()->user()->jabatan->name_jabatan, 'leader') !== false || stripos(auth()->user()->jabatan->type_jabatan, 'MANAJEMEN') !== false || stripos(auth()->user()->jabatan->code_jabatan, 'CO-CS') !== false)
 
                 <a href="{{ route('fixed.index')}}"
                     class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('fixed.*') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100'}}">
