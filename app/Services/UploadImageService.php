@@ -34,10 +34,6 @@ class UploadImageService
                 ->whereYear('created_at', now()->year)
                 ->count();
 
-            if ($uploadCount >= 14) {
-                throw new Exception('Maksimal Upload Data sudah terpenuhi coba lagi bulan depan.');
-            }
-
             foreach (['img_before', 'img_proccess', 'img_final'] as $field) {
                 if ($request->hasFile($field)) {
                     $tempFiles[$field] = $request->file($field)->store('temp');
@@ -93,10 +89,6 @@ class UploadImageService
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
-
-        if ($uploadCount >= 14) {
-            throw new Exception('Maksimal Upload Data sudah terpenuhi coba lagi bulan depan.');
-        }
 
         $images = [
             'img_before' => 'none',
