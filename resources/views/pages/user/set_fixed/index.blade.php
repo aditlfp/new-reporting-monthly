@@ -80,7 +80,7 @@
                                 <i class="mr-2 ri-image-line"></i>
                                 <span class="inline">Before</span>
                             </a>
-                            <a role="tab" class="tab" data-filter="process">
+                            <a role="tab" class="tab" data-filter="proccess">
                                 <i class="mr-2 ri-settings-3-line"></i>
                                 <span class="inline">Proses</span>
                             </a>
@@ -210,6 +210,7 @@
             let selectedImageData = null;
             let currentImageType = 'before';
             let currentFilter = 'all';
+            let countToday = 0;
 
             const getCountData = () => {
                 $.ajax({
@@ -221,11 +222,15 @@
                     },
                     success: function(response) {
                         if (response.status) {
+                            countToday = response.data.count_today;
+                            $('#totalHasFix').text(response.data.count);
 
-                            if (response.data.count >= 0) {
-                                $('#totalHasFix').text(response.data.count);
-                                if(response.data.count <= 11) $('#saveSelectionBtn').prop('disabled', false);
-
+                            if(response.data.count <= 11) {
+                                if(countToday < 2) {
+                                    $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan');
+                                } else {
+                                    $('#saveSelectionBtn').prop('disabled', true).html('<i class="ri-save-2-line"></i> Maksimal 2 Foto/Hari');
+                                }
                             }
                         }
                     },
@@ -367,11 +372,11 @@
                 style="opacity: 0; transition: opacity 0.3s;"
                 onload="this.style.opacity=1"
             >
-            <div class="absolute top-0 right-0 flex flex-col items-end gap-2 p-2">
+            <div class="absolute top-0 right-0 grid grid-cols-1 gap-2 p-2">
                 <div class="flex flex-wrap justify-end gap-1 max-w-[120px]">
                     ${imageBadges}
                 </div>
-                <div class="px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
+                <div class="flex justify-start px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
                     #${image.id}
                 </div>
             </div>
@@ -425,7 +430,12 @@
                         else 
                         {
                             $('#cancelSelectionBtn').addClass('hidden')
-                            $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan');
+                            // Check current count_today before enabling button
+                            if(countToday < 2) {
+                                $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan');
+                            } else {
+                                $('#saveSelectionBtn').prop('disabled', true).html('<i class="ri-save-2-line"></i> Maksimal 2 Foto/Hari');
+                            }
                         }
                     }
                     {{-- if(image.upload_image_id == ) --}}
