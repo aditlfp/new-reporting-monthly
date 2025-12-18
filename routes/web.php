@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FixedImageController;
+use App\Http\Controllers\HandlerCountController;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
@@ -42,10 +43,19 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/settings', [UserNavigateController::class, 'toSettings'])->name('user.settings.index');
     Route::post('/save-settings', [UserSettingsController::class, 'store']);
     // End Tools Route
-    // 
     
+    Route::get('/count-data/data-verifikasi', [HandlerCountController::class, 'index'])->name('counting.data.upload.spv');
+    Route::get('/count-per-user/{id}/{month}/{year}', function () {
+        return view('pages.user.counting.show');
+    })->name('count.per.user.show');
+
+    Route::get('/api/v1/count-data-spv', [HandlerCountController::class, 'getCountJatim'])->name('api.v1.count.data.upload.spv');
+    Route::get('/api/v1/count-per-user/{id}/{month}/{year}', [HandlerCountController::class, 'show'])->name('api.v1.count.per.user');
+
+    //API HANDLE COUNT
     Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
     Route::get('/api/v1/count-fixed-image', [FixedImageController::class, 'getCountFixed'])->name('v1.count.fixed.image');
+    // END HANDLE
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

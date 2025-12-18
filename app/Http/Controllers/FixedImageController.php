@@ -90,7 +90,7 @@ class FixedImageController extends Controller
         }
     }
 
-    public function getCountFixed()
+    public function getCountFixed() // admin checkCount
     {
         $count = FixedImage::where('clients_id', auth()->user()->kerjasama->client_id)
                     ->whereMonth('created_at', now()->month)

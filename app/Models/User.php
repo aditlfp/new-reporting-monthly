@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -67,5 +68,42 @@ class User extends Authenticatable
     public function jabatan()
     {
         return $this->belongsTo(Jabatan::class);
+    }
+
+    public function fixedImages()
+    {
+        return $this->hasMany(FixedImage::class);
+    }
+
+
+    public function isAccess(): bool
+    {
+        $jabatan = $this->jabatan;
+
+        if (!$jabatan) {
+            return false;
+        }
+
+        return Str::contains(
+            strtolower($jabatan->type_jabatan . ' ' . $jabatan->name_jabatan),
+            ['leader', 'manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat']
+        ) || Str::contains(
+            strtoupper($jabatan->code_jabatan),
+            ['CO-CS', 'CO-SCR']
+        );
+    }
+
+    public function canAccess(): bool
+    {
+        $jabatan = $this->jabatan;
+
+        if (!$jabatan) {
+            return false;
+        }
+
+        return Str::contains(
+            strtolower($jabatan->type_jabatan . ' ' . $jabatan->name_jabatan),
+            ['manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat']
+        );
     }
 }

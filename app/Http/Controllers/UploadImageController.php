@@ -7,8 +7,6 @@ use App\Http\Requests\UImageUserRequest;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Http\Requests\UImageUserDraftRequest;
-use App\Models\Clients;
-use App\Models\PendingSync;
 use App\Services\UploadImageService;
 use Carbon\Carbon;
 use Exception;
@@ -24,7 +22,7 @@ class UploadImageController extends Controller
     }
 
     public function index(Request $request)
-    {
+    {        
         $user = auth()->user();
 
         $images = UploadImage::where('clients_id', $user->clients_id)

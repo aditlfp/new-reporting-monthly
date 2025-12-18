@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FixedImage extends Model
 {
     protected $fillable = ['upload_image_id', 'user_id','clients_id'];
+    protected $connection = 'mysql';
 
     public function image()
     {
