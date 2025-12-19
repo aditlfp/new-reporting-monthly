@@ -95,20 +95,10 @@ class HandlerCountController extends Controller
                             ->where('id', $id)
                             ->first();
             $mitra = Kerjasama::select('client_id')->with('client:id,name')->where('client_id', $user->kerjasama->client_id)->first();
-            $data = DB::table('fixed_images')
-                ->join('upload_images', 'upload_images.id', '=', 'fixed_images.upload_image_id')
-                ->select(
-                    'fixed_images.upload_image_id',
-                    'fixed_images.user_id',
-                    'fixed_images.created_at',
-                    'upload_images.img_before',
-                    'upload_images.img_proccess',
-                    'upload_images.img_final',        
-                    'upload_images.note',
-                )
-                ->where('fixed_images.user_id', $id)
-                ->whereBetween('fixed_images.created_at', [$start, $end])
-                ->get();
+            $data = FixedImage::with(['user', 'uploadImage.user:id,nama_lengkap'])
+                    ->where('user_id', $id)
+                    ->whereBetween('created_at', [$start, $end])
+                    ->get();
 
                 return response()->json([
                     'status' => true,
@@ -116,11 +106,11 @@ class HandlerCountController extends Controller
                     'data' => [
                         'fixed' => $data,
                         'user' => $user,
-                        'client' => $mitra
+                        'client' => $mitra,
                     ]
                 ],200);
             } catch (Exception $e) {
-                throw new Exception("Error Processing Request : ", $e->getMessage());
+                throw new \Exception('Terjadi kesalahan', 500);
             }
     }
 }

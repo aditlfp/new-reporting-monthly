@@ -111,7 +111,7 @@
             .replace('/0/', `/${userId}/`)
             .replace('/0/', `/${month}/`)
             .replace('/0', `/${year}`);
-        function createUploadCard(client, upload, index, nama) {
+        function createUploadCard(client, upload, index, nama, userName) {
             const statusBadge = upload.status == 1 
                 ? '<span class="flex items-center gap-1 px-2 py-1 text-xs text-white bg-green-500 rounded-full"><i class="ri-checkbox-circle-line"></i><span class="hidden sm:inline">Completed</span></span>'
                 : upload.status == 0
@@ -160,6 +160,10 @@
                         <div class="flex items-center gap-2">
                             <i class="text-lg md:text-xl ri-building-line"></i>
                             <p class="text-sm font-semibold truncate md:text-base">${client}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="text-lg md:text-xl ri-account-circle-2-line"></i>
+                            <p class="text-xs font-semibold truncate md:text-base">Di Upload ${upload.user.nama_lengkap}</p>
                         </div>
                         <div class="flex items-center justify-between mt-1">
                             <span class="text-xs font-semibold md:text-sm">NO: ${index + 1}</span>
@@ -225,6 +229,7 @@
         }
         // Fungsi utama untuk load data
         function loadDataById() {
+            let userName = '';
             $.ajax({
                 url: finalUrl,
                 method: 'GET',
@@ -249,7 +254,7 @@
 
                         uploads.forEach((upload, index) => {
                             const nama = res.data.user.id == upload.user_id ? res.data.user.nama_lengkap : '';
-                            cardsHTML += createUploadCard(client, upload, index, nama);
+                            cardsHTML += createUploadCard(client, upload.upload_image, index, nama);
                         });
                         
                         $('#uploadCardsContainer').html(cardsHTML);

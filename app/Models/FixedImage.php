@@ -23,4 +23,9 @@ class FixedImage extends Model
     {
         return $this->belongsTo(Clients::class);
     }
+
+    public function uploadImage()
+    {
+        return $this->belongsTo(UploadImage::class);
+    }
 }
