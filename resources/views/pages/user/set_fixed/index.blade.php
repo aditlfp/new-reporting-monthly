@@ -100,7 +100,7 @@
                             <form class="w-full">
                                 <!-- Desktop Layout -->
                                 <div class="flex flex-col md:flex-row items-end gap-3">
-                                    <div class="form-control flex-1">
+                                    <div class="form-control w-full">
                                         <label for="client_id" class="label">
                                             <span class="label-text font-medium required">Mitra</span>
                                         </label>
@@ -213,7 +213,10 @@
                 </div>
             </main>
         </div>
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center my-6" style="display:none;"></div>
     </div>
+
 
     <!-- Image Selection Modal -->
     <dialog id="imageModal" class="p-2 modal">
@@ -309,14 +312,19 @@
             let currentImageType = 'before';
             let currentFilter = 'all';
             let countToday = 0;
+            let currentPage = 1;
+            let lastPage = 1;
+            let lastRequestParams = {};
+
 
             $('.clientFilter').on('click', function () {
                 const clientId = $('.clientId').val();
                 const month = $('.month').val();
                 const year = $('.year').val();
+                currentPage = 1;
 
                 if (!clientId || !month || !year) {
-                    console.log( $('.clientId'), month, year)
+                    {{-- console.log( $('.clientId'), month, year) --}}
                     Notify('Silakan pilih mitra', null, null, 'warning');
                     return;
                 }
@@ -325,9 +333,22 @@
                 $('.tabs .tab').removeClass('tab-active');
                 $('.tabs .tab[data-filter="all"]').addClass('tab-active');
 
-                loadData(clientId, month, year);
+                loadData(clientId, month, year, 1);
                 getCountData(clientId, month, year);
             });
+
+            $(document).on('click', '#pagination button', function () {
+                const page = $(this).data('page');
+                if (!page) return;
+
+                loadData(
+                    lastRequestParams.clientId,
+                    lastRequestParams.month,
+                    lastRequestParams.year,
+                    page
+                );
+            });
+
 
 
             const getCountData = (clientId, month, year) => {
@@ -385,12 +406,16 @@
             };
 
             // Load Data
-            const loadData = (clientId, month, year) => {
+            const loadData = (clientId, month, year, page = 1) => {
                 let data = {};
 
                 if (clientId) data.client_id = clientId;
                 if (month) data.month = month;
                 if (year) data.year = year;
+                data.page = page;
+
+                lastRequestParams = { clientId, month, year };
+
                 $.ajax({
                     url: '{{ route("fixed.create") }}',
                     method: 'GET',
@@ -406,18 +431,21 @@
                     success: function(response) {
                         if (response.status) {
                             clientData = response.data.client;
-                            imagesData = response.data.image;
+                            imagesData = response.data.image.data;
                             fixedData = response.data.fixed;
 
+                            currentPage = response.data.image.current_page;
+                            lastPage = response.data.image.last_page;
                             // Update client info
                             $('#clientName').text(clientData.name || '-');
                             $('#clientDetails').text(clientData.address || '-');
-                            $('#totalImages').text(imagesData.length);
+                            $('#totalImages').text(response.data.image.total);
                             $('#clientInfoCard').fadeIn();
 
                             if (imagesData.length > 0) {
                                 $('#filterTabs').fadeIn();
                                 renderImages(imagesData, currentFilter);
+                                renderPagination(response.data.image.links);
                             } else {
                                 $('#loadingSkeleton').hide();
                                 $('#emptyState').fadeIn();
@@ -493,34 +521,34 @@
                     const imageBadges = getImageBadge(image);
                     
                     const imageCard = `
-    <div class="overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md hover:shadow-xl image-card" data-image-id="${image.id}">
-        <div class="relative overflow-hidden bg-slate-200" style="padding-top: 100%;">
-            <img 
-                data-src="${baseUrl + "/" + primaryImage}" 
-                alt="Image ${index + 1}"
-                class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 lazy-load hover:scale-105"
-                style="opacity: 0; transition: opacity 0.3s;"
-                onload="this.style.opacity=1"
-            >
-            <div class="absolute top-0 right-0 grid grid-cols-1 gap-2 p-2">
-                <div class="flex flex-wrap justify-end gap-1 max-w-[120px]">
-                    ${imageBadges}
-                </div>
-                <div class="flex justify-start px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
-                    #${image.id}
-                </div>
-            </div>
-        </div>
-        <div class="p-3">
-            <div class="flex items-center text-xs text-slate-500">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                ${image.created_at ? new Date(image.created_at).toLocaleDateString('id-ID') : '-'}
-            </div>
-        </div>
-    </div>
-`;
+                        <div class="overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md hover:shadow-xl image-card" data-image-id="${image.id}">
+                            <div class="relative overflow-hidden bg-slate-200" style="padding-top: 100%;">
+                                <img 
+                                    data-src="${baseUrl + "/" + primaryImage}" 
+                                    alt="Image ${index + 1}"
+                                    class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 lazy-load hover:scale-105"
+                                    style="opacity: 0; transition: opacity 0.3s;"
+                                    onload="this.style.opacity=1"
+                                >
+                                <div class="absolute top-0 right-0 grid grid-cols-1 gap-2 p-2">
+                                    <div class="flex flex-wrap justify-end gap-1 max-w-[120px]">
+                                        ${imageBadges}
+                                    </div>
+                                    <div class="flex justify-start px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
+                                        #${image.id}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <div class="flex items-center text-xs text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    ${image.created_at ? new Date(image.created_at).toLocaleDateString('id-ID') : '-'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     gallery.append(imageCard);
                 });
 
@@ -693,6 +721,27 @@
                     }
                 });
             })
+
+            const renderPagination = (links) => {
+                let html = `<div class="join">`;
+
+                links.forEach(link => {
+                    if (link.url === null) return;
+
+                    html += `
+                        <button 
+                            class="join-item btn btn-sm ${link.active ? 'btn-active' : ''}" 
+                            data-page="${new URL(link.url).searchParams.get('page')}">
+                            ${link.label.replace('&laquo;', '«').replace('&raquo;', '»')}
+                        </button>
+                    `;
+                });
+
+                html += `</div>`;
+
+                $('#pagination').html(html).fadeIn();
+            };
+
 
 
             // Initialize

@@ -66,7 +66,8 @@ class FixedImageController extends Controller
                         ->whereYear('created_at', $year ??  now()->year)
                         ->whereIn('user_id', $userIds)
                         ->where("status", 1)
-                        ->get();
+                        ->latest()
+                        ->paginate(2);
             $fixed = FixedImage::where('clients_id', $clientId ??  $user->kerjasama->client_id)
                                 ->whereMonth('created_at', $month ??  now()->month)
                                 ->whereYear('created_at', $year ??  now()->year)

@@ -111,7 +111,7 @@
             .replace('/0/', `/${userId}/`)
             .replace('/0/', `/${month}/`)
             .replace('/0', `/${year}`);
-        function createUploadCard(client, upload, index) {
+        function createUploadCard(client, upload, index, nama) {
             const statusBadge = upload.status == 1 
                 ? '<span class="flex items-center gap-1 px-2 py-1 text-xs text-white bg-green-500 rounded-full"><i class="ri-checkbox-circle-line"></i><span class="hidden sm:inline">Completed</span></span>'
                 : upload.status == 0
@@ -200,7 +200,7 @@
                                 U
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-xs font-semibold text-gray-900 truncate md:text-sm">User ID: ${upload.user_id}</p>
+                                <p class="text-xs font-semibold text-gray-900 truncate md:text-sm">Di Verifikasi: ${nama}</p>
                                 <p class="hidden text-xs text-gray-500 truncate sm:block">Upload ID: ${upload.upload_image_id}</p>
                             </div>
                         </div>
@@ -246,8 +246,10 @@
                         
                         // Generate cards
                         let cardsHTML = '';
+
                         uploads.forEach((upload, index) => {
-                            cardsHTML += createUploadCard(client, upload, index);
+                            const nama = res.data.user.id == upload.user_id ? res.data.user.nama_lengkap : '';
+                            cardsHTML += createUploadCard(client, upload, index, nama);
                         });
                         
                         $('#uploadCardsContainer').html(cardsHTML);

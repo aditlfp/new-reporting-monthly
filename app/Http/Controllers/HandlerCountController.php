@@ -94,7 +94,7 @@ class HandlerCountController extends Controller
             $user = User::select('id', 'nama_lengkap', 'kerjasama_id')
                             ->where('id', $id)
                             ->first();
-            $mitra = Kerjasama::select('client_id')->with('client:id,name')->where('client_id', $user->kerjasama_id)->first();
+            $mitra = Kerjasama::select('client_id')->with('client:id,name')->where('client_id', $user->kerjasama->client_id)->first();
             $data = DB::table('fixed_images')
                 ->join('upload_images', 'upload_images.id', '=', 'fixed_images.upload_image_id')
                 ->select(
