@@ -1,4 +1,31 @@
 <x-app-layout>
+    @push('styles')
+         /* Remove default select arrow and add custom styling */
+            select.select {
+                padding-left: 2.5rem;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 0.75rem center;
+                background-size: 1.25rem;
+            }
+
+            /* Hover effects */
+            .select:hover {
+                border-color: hsl(var(--p));
+            }
+
+            .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Transition effects */
+            .select, .btn {
+                transition: all 0.2s ease-in-out;
+            }
+    @endpush
+
     <div class="flex flex-col h-screen bg-white">
         <!-- Top Navbar -->
         <x-user-navbar />
@@ -36,7 +63,7 @@
                                 
                                 <!-- Stats -->
                                 <div class="flex items-center justify-center gap-2 mx-4">
-                                    <div class="p-3 text-center border shadow-sm min-w-1/3 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-slate-200">
+                                    <div class="p-3 text-center border shadow-sm min-w-1/4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-slate-200">
                                         <div class="text-2xl font-bold text-slate-800" id="totalImages">0</div>
                                         <div class="text-xs font-medium tracking-wide uppercase text-slate-600">Total</div>
                                     </div>
@@ -50,7 +77,7 @@
                                     
                                     <div class="text-xl font-light text-slate-300">|</div>
                                     
-                                    <div class="p-3 text-center border border-purple-200 shadow-sm min-w-1/3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                                    <div class="p-3 text-center border border-purple-200 shadow-sm min-w-1/4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
                                         <div class="text-2xl font-bold text-purple-600">11</div>
                                         <div class="text-xs font-medium tracking-wide text-purple-600 uppercase">Maks</div>
                                     </div>
@@ -67,6 +94,137 @@
                                 <p class="text-xs font-medium text-amber-700">Termasuk foto Before, Progress, dan After</p>
                             </div>
                         </div>
+                    </div>
+                    <div class="mb-6">
+                        <form class="w-full">
+                            <!-- Desktop Layout -->
+                            <div class="hidden md:flex items-end gap-3">
+                                <div class="form-control flex-1">
+                                    <label for="client_id" class="label">
+                                        <span class="label-text font-medium required">Mitra</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select name="client_id" id="clientId" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <option value="">Pilih mitra</option>
+                                            @forelse($clients as $client)
+                                                <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                            @empty
+                                                <option value="">Mitra Kosong</option>
+                                            @endforelse
+                                        </select>
+                                        <i class="ri-building-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <div class="form-control flex-1">
+                                    <label for="month" class="label">
+                                        <span class="label-text font-medium">Bulan <span class="text-error">*</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <option value="">Pilih Bulan</option>
+                                            @foreach (range(1, 12) as $month)
+                                                <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
+                                                    {{ \Carbon\Carbon::create(null, $month, 1)
+                                                        ->locale('id')
+                                                        ->translatedFormat('F') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <i class="ri-calendar-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <div class="form-control flex-1">
+                                    <label for="year" class="label">
+                                        <span class="label-text font-medium">Tahun <span class="text-error">*</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                            @php
+                                                $currentYear = now()->year;
+                                            @endphp
+                                            @foreach (range($currentYear - 5, $currentYear + 5) as $year)
+                                                <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                    {{ $year }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <i class="ri-calendar-2-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white gap-2 clientFilter">
+                                    <i class="ri-filter-3-line text-lg"></i>
+                                    Filter
+                                </button>
+                            </div>
+
+                            <!-- Mobile Layout -->
+                            <div class="md:hidden space-y-4">
+                                <div class="form-control">
+                                    <label for="client_id" class="label required">
+                                        <span class="label-text font-medium flex items-center gap-2">
+                                            <i class="ri-building-line"></i>
+                                            Mitra
+                                        </span>
+                                    </label>
+                                    <select name="client_id" id="clientId" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option value="">Pilih mitra</option>
+                                        @forelse($clients as $client)
+                                            <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                        @empty
+                                            <option value="">Mitra Kosong</option>
+                                        @endforelse
+                                    </select>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="form-control">
+                                        <label for="month" class="label">
+                                            <span class="label-text font-medium flex items-center gap-1">
+                                                <i class="ri-calendar-line"></i>
+                                                Bulan <span class="text-error">*</span>
+                                            </span>
+                                        </label>
+                                        <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <option value="">Pilih Bulan</option>
+                                            @foreach (range(1, 12) as $month)
+                                                <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
+                                                    {{ \Carbon\Carbon::create(null, $month, 1)
+                                                        ->locale('id')
+                                                        ->translatedFormat('F') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-control">
+                                        <label for="year" class="label">
+                                            <span class="label-text font-medium flex items-center gap-1">
+                                                <i class="ri-calendar-2-line"></i>
+                                                Tahun <span class="text-error">*</span>
+                                            </span>
+                                        </label>
+                                        <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                            @php
+                                                $currentYear = now()->year;
+                                            @endphp
+                                            @foreach (range($currentYear - 5, $currentYear + 5) as $year)
+                                                <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                    {{ $year }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white w-full gap-2 clientFilter">
+                                    <i class="ri-filter-3-line text-lg"></i>
+                                    Terapkan Filter
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
                     <!-- Filter Tabs -->
@@ -212,10 +370,36 @@
             let currentFilter = 'all';
             let countToday = 0;
 
-            const getCountData = () => {
+            $('.clientFilter').on('click', function () {
+                const clientId = $('#clientId').val();
+                const month = $('#month').val();
+                const year = $('#year').val();
+                console.log(clientId, month, year)
+
+                if (!clientId || !month || !year) {
+                    Notify('Silakan pilih mitra', null, null, 'warning');
+                    return;
+                }
+
+                currentFilter = 'all';
+                $('.tabs .tab').removeClass('tab-active');
+                $('.tabs .tab[data-filter="all"]').addClass('tab-active');
+
+                loadData(clientId, month, year);
+                getCountData(clientId, month, year);
+            });
+
+
+            const getCountData = (clientId, month, year) => {
+                let data = {};
+
+                if (clientId) data.client_id = clientId;
+                if (month) data.month = month;
+                if (year) data.year = year;
                 $.ajax({
                     url: '{{ route("v1.count.fixed.image")}}',
                     method: 'GET',
+                    data: data,
                     dataType: 'json',
                     beforeSend: function() {
                         $('#totalHasFix').text("loading....");
@@ -261,10 +445,16 @@
             };
 
             // Load Data
-            const loadData = () => {
+            const loadData = (clientId, month, year) => {
+                let data = {};
+
+                if (clientId) data.client_id = clientId;
+                if (month) data.month = month;
+                if (year) data.year = year;
                 $.ajax({
                     url: '{{ route("fixed.create") }}',
                     method: 'GET',
+                    data: data,
                     dataType: 'json',
                     beforeSend: function() {
                         $('#loadingSkeleton').show();
