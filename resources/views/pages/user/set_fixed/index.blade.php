@@ -95,15 +95,81 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <form class="w-full">
-                            <!-- Desktop Layout -->
-                            <div class="hidden md:flex items-end gap-3">
-                                <div class="form-control flex-1">
-                                    <label for="client_id" class="label">
-                                        <span class="label-text font-medium required">Mitra</span>
-                                    </label>
-                                    <div class="relative">
+                    @if(auth()->user()->canAccess())
+                        <div class="mb-6">
+                            <form class="w-full">
+                                <!-- Desktop Layout -->
+                                <div class="hidden md:flex items-end gap-3">
+                                    <div class="form-control flex-1">
+                                        <label for="client_id" class="label">
+                                            <span class="label-text font-medium required">Mitra</span>
+                                        </label>
+                                        <div class="relative">
+                                            <select name="client_id" id="clientId" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <option value="">Pilih mitra</option>
+                                                @forelse($clients as $client)
+                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                                @empty
+                                                    <option value="">Mitra Kosong</option>
+                                                @endforelse
+                                            </select>
+                                            <i class="ri-building-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-control flex-1">
+                                        <label for="month" class="label">
+                                            <span class="label-text font-medium">Bulan <span class="text-error">*</span></span>
+                                        </label>
+                                        <div class="relative">
+                                            <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <option value="">Pilih Bulan</option>
+                                                @foreach (range(1, 12) as $month)
+                                                    <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
+                                                        {{ \Carbon\Carbon::create(null, $month, 1)
+                                                            ->locale('id')
+                                                            ->translatedFormat('F') }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <i class="ri-calendar-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-control flex-1">
+                                        <label for="year" class="label">
+                                            <span class="label-text font-medium">Tahun <span class="text-error">*</span></span>
+                                        </label>
+                                        <div class="relative">
+                                            <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                @php
+                                                    $currentYear = now()->year;
+                                                @endphp
+                                                @foreach (range($currentYear - 5, $currentYear + 5) as $year)
+                                                    <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                        {{ $year }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <i class="ri-calendar-2-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white gap-2 clientFilter">
+                                        <i class="ri-filter-3-line text-lg"></i>
+                                        Filter
+                                    </button>
+                                </div>
+
+                                <!-- Mobile Layout -->
+                                <div class="md:hidden space-y-4">
+                                    <div class="form-control">
+                                        <label for="client_id" class="label required">
+                                            <span class="label-text font-medium flex items-center gap-2">
+                                                <i class="ri-building-line"></i>
+                                                Mitra
+                                            </span>
+                                        </label>
                                         <select name="client_id" id="clientId" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
                                             <option value="">Pilih mitra</option>
                                             @forelse($clients as $client)
@@ -112,120 +178,56 @@
                                                 <option value="">Mitra Kosong</option>
                                             @endforelse
                                         </select>
-                                        <i class="ri-building-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
-                                    </div>
-                                </div>
-
-                                <div class="form-control flex-1">
-                                    <label for="month" class="label">
-                                        <span class="label-text font-medium">Bulan <span class="text-error">*</span></span>
-                                    </label>
-                                    <div class="relative">
-                                        <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                            <option value="">Pilih Bulan</option>
-                                            @foreach (range(1, 12) as $month)
-                                                <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
-                                                    {{ \Carbon\Carbon::create(null, $month, 1)
-                                                        ->locale('id')
-                                                        ->translatedFormat('F') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <i class="ri-calendar-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
-                                    </div>
-                                </div>
-
-                                <div class="form-control flex-1">
-                                    <label for="year" class="label">
-                                        <span class="label-text font-medium">Tahun <span class="text-error">*</span></span>
-                                    </label>
-                                    <div class="relative">
-                                        <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                            @php
-                                                $currentYear = now()->year;
-                                            @endphp
-                                            @foreach (range($currentYear - 5, $currentYear + 5) as $year)
-                                                <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
-                                                    {{ $year }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <i class="ri-calendar-2-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
-                                    </div>
-                                </div>
-
-                                <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white gap-2 clientFilter">
-                                    <i class="ri-filter-3-line text-lg"></i>
-                                    Filter
-                                </button>
-                            </div>
-
-                            <!-- Mobile Layout -->
-                            <div class="md:hidden space-y-4">
-                                <div class="form-control">
-                                    <label for="client_id" class="label required">
-                                        <span class="label-text font-medium flex items-center gap-2">
-                                            <i class="ri-building-line"></i>
-                                            Mitra
-                                        </span>
-                                    </label>
-                                    <select name="client_id" id="clientId" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="">Pilih mitra</option>
-                                        @forelse($clients as $client)
-                                            <option value="{{ $client->id }}">{{ $client->name }}</option>
-                                        @empty
-                                            <option value="">Mitra Kosong</option>
-                                        @endforelse
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="form-control">
-                                        <label for="month" class="label">
-                                            <span class="label-text font-medium flex items-center gap-1">
-                                                <i class="ri-calendar-line"></i>
-                                                Bulan <span class="text-error">*</span>
-                                            </span>
-                                        </label>
-                                        <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                            <option value="">Pilih Bulan</option>
-                                            @foreach (range(1, 12) as $month)
-                                                <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
-                                                    {{ \Carbon\Carbon::create(null, $month, 1)
-                                                        ->locale('id')
-                                                        ->translatedFormat('F') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
                                     </div>
 
-                                    <div class="form-control">
-                                        <label for="year" class="label">
-                                            <span class="label-text font-medium flex items-center gap-1">
-                                                <i class="ri-calendar-2-line"></i>
-                                                Tahun <span class="text-error">*</span>
-                                            </span>
-                                        </label>
-                                        <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                            @php
-                                                $currentYear = now()->year;
-                                            @endphp
-                                            @foreach (range($currentYear - 5, $currentYear + 5) as $year)
-                                                <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
-                                                    {{ $year }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="form-control">
+                                            <label for="month" class="label">
+                                                <span class="label-text font-medium flex items-center gap-1">
+                                                    <i class="ri-calendar-line"></i>
+                                                    Bulan <span class="text-error">*</span>
+                                                </span>
+                                            </label>
+                                            <select name="month" id="month" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <option value="">Pilih Bulan</option>
+                                                @foreach (range(1, 12) as $month)
+                                                    <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
+                                                        {{ \Carbon\Carbon::create(null, $month, 1)
+                                                            ->locale('id')
+                                                            ->translatedFormat('F') }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
 
-                                <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white w-full gap-2 clientFilter">
-                                    <i class="ri-filter-3-line text-lg"></i>
-                                    Terapkan Filter
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                                        <div class="form-control">
+                                            <label for="year" class="label">
+                                                <span class="label-text font-medium flex items-center gap-1">
+                                                    <i class="ri-calendar-2-line"></i>
+                                                    Tahun <span class="text-error">*</span>
+                                                </span>
+                                            </label>
+                                            <select name="year" id="year" class="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                @php
+                                                    $currentYear = now()->year;
+                                                @endphp
+                                                @foreach (range($currentYear - 5, $currentYear + 5) as $year)
+                                                    <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                        {{ $year }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white w-full gap-2 clientFilter">
+                                        <i class="ri-filter-3-line text-lg"></i>
+                                        Terapkan Filter
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
 
                     <!-- Filter Tabs -->
                     <div class="mb-6" id="filterTabs" style="display: none;">
@@ -374,7 +376,6 @@
                 const clientId = $('#clientId').val();
                 const month = $('#month').val();
                 const year = $('#year').val();
-                console.log(clientId, month, year)
 
                 if (!clientId || !month || !year) {
                     Notify('Silakan pilih mitra', null, null, 'warning');
