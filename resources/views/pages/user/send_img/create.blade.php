@@ -190,10 +190,10 @@
                                                 <!-- Collapsed View (Always Visible) -->
                                                 <div class="flex items-center justify-between">
                                                     <div class="flex-1">
-                                                        <h4 class="font-semibold text-md text-slate-900">
+                                                        <h4 class="font-semibold text-md text-slate-900 line-clamp-2">
                                                             {{ $imgData->note }}</h4>
                                                         <p class="text-sm text-slate-500">
-                                                            {{ $imgData->created_at->isoformat('d MMMM Y') }}</p>
+                                                            {{ $imgData->created_at->isoformat('D MMMM Y') }}</p>
                                                         <p class="text-xs text-slate-500 truncate max-w-[300px]">Di
                                                             Upload Oleh : {{ $imgData->user ? $imgData->user->nama_lengkap : 'User Hilang' }}</p>
                                                     </div>
@@ -224,7 +224,7 @@
 
                                                     <!-- Note -->
                                                     <div class="mb-3">
-                                                        <p class="text-sm text-slate-700">{{ $imgData->note }}</p>
+                                                        <p class="text-sm text-slate-700 line-clamp-none">{{ $imgData->note }}</p>
                                                     </div>
 
                                                     <!-- Actions -->
@@ -1013,13 +1013,14 @@
                             }
                         },
                         error: function(xhr) {
-                            let errorMessage = 'Terjadi kesalahan saat mengirim laporan.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                // Handle validation errors
+                            const statusCode = xhr.status; // contoh: 400, 401, 422, 500
+                            let errorMessage = `Terjadi kesalahan (${statusCode}).`;
+
+                            if (xhr.responseJSON?.message) {
+                                errorMessage = `Error ${statusCode}: ${xhr.responseJSON.message}`;
+                            } else if (xhr.responseJSON?.errors) {
                                 const errors = Object.values(xhr.responseJSON.errors).flat();
-                                errorMessage = errors.join('\n');
+                                errorMessage = `Error ${statusCode}:\n` + errors.join('\n');
                             }
 
                             alert(errorMessage);
