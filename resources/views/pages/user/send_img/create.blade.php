@@ -184,7 +184,7 @@
                                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" id="historyGrid">
                                     <!-- Card -->
                                     @forelse ($allImages as $imgData)
-                                        <div class="overflow-hidden transition-all duration-300 ease-in-out bg-white border rounded-lg shadow-sm cursor-pointer border-slate-100 hover:shadow-md card-expandable"
+                                        <div class="overflow-hidden transition-all duration-300 min-h-[110px] ease-in-out bg-white border rounded-lg shadow-sm cursor-pointer border-slate-100 hover:shadow-md card-expandable"
                                             data-card-id="{{ $imgData->id }}">
                                             <div class="p-4">
                                                 <!-- Collapsed View (Always Visible) -->

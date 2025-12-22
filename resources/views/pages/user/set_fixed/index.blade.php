@@ -99,31 +99,31 @@
                         <div class="mb-6">
                             <form class="w-full">
                                 <!-- Desktop Layout -->
-                                <div class="flex flex-col md:flex-row items-end gap-3">
-                                    <div class="form-control w-full">
+                                <div class="flex flex-col items-end gap-3 md:flex-row">
+                                    <div class="w-full form-control">
                                         <label for="client_id" class="label">
-                                            <span class="label-text font-medium required">Mitra</span>
+                                            <span class="font-medium label-text required">Mitra</span>
                                         </label>
                                         <div class="relative">
-                                            <select name="client_id" class="select select-bordered w-full clientId focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <select name="client_id" class="w-full select select-bordered clientId focus:outline-none focus:ring-2 focus:ring-primary">
                                                 <option value="">Pilih mitra</option>
                                                 @forelse($clients as $client)
-                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                                    <option value="{{ $client->id }}">{{ ucwords(strtolower($client->name)) }}</option>
                                                 @empty
                                                     <option value="">Mitra Kosong</option>
                                                 @endforelse
                                             </select>
-                                            <i class="ri-building-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                            <i class="absolute -translate-y-1/2 pointer-events-none ri-building-line left-3 top-1/2 text-base-content/50"></i>
                                         </div>
                                     </div>
 
-                                    <div class="flex md:block w-full sm:w-auto gap-x-2">
-                                        <div class="form-control flex-1">
+                                    <div class="flex w-full md:block sm:w-auto gap-x-2">
+                                        <div class="flex-1 form-control">
                                             <label for="month" class="label">
-                                                <span class="label-text font-medium">Bulan <span class="text-error">*</span></span>
+                                                <span class="font-medium label-text">Bulan <span class="text-error">*</span></span>
                                             </label>
                                             <div class="relative">
-                                                <select name="month" class="month select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <select name="month" class="w-full month select select-bordered focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <option value="">Pilih Bulan</option>
                                                     @foreach (range(1, 12) as $month)
                                                         <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">
@@ -133,16 +133,16 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <i class="ri-calendar-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                                <i class="absolute -translate-y-1/2 pointer-events-none ri-calendar-line left-3 top-1/2 text-base-content/50"></i>
                                             </div>
                                         </div>
 
-                                        <div class="form-control flex-1">
+                                        <div class="flex-1 form-control">
                                             <label for="year" class="label">
-                                                <span class="label-text font-medium">Tahun <span class="text-error">*</span></span>
+                                                <span class="font-medium label-text">Tahun <span class="text-error">*</span></span>
                                             </label>
                                             <div class="relative">
-                                                <select name="year" class="year select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <select name="year" class="w-full year select select-bordered focus:outline-none focus:ring-2 focus:ring-primary">
                                                     @php
                                                         $currentYear = now()->year;
                                                     @endphp
@@ -152,13 +152,13 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <i class="ri-calendar-2-line absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none"></i>
+                                                <i class="absolute -translate-y-1/2 pointer-events-none ri-calendar-2-line left-3 top-1/2 text-base-content/50"></i>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <button type="button" class="btn rounded-sm bg-blue-500/20 text-blue-500 border-0 hover:bg-blue-500 hover:text-white gap-2 clientFilter w-full md:w-auto">
-                                        <i class="ri-filter-3-line text-lg"></i>
+                                    <button type="button" class="w-full gap-2 text-blue-500 border-0 rounded-sm btn bg-blue-500/20 hover:bg-blue-500 hover:text-white clientFilter md:w-auto">
+                                        <i class="text-lg ri-filter-3-line"></i>
                                         Filter
                                     </button>
                                 </div>
@@ -214,13 +214,13 @@
             </main>
         </div>
         <!-- Pagination -->
-        <div id="pagination" class="flex justify-center my-6" style="display:none;"></div>
+        <div id="pagination" class="flex justify-center mt-1 mb-3 drop-shadow-md" style="display:none;"></div>
     </div>
 
 
     <!-- Image Selection Modal -->
-    <dialog id="imageModal" class="p-2 modal">
-        <div class="max-w-5xl p-0 overflow-hidden modal-box">
+    <dialog id="imageModal" class="flex items-center justify-center modal">
+        <div class="max-w-[90%] overflow-hidden md:max-w-5xl modal-box">
             <form method="dialog">
                 <button class="absolute z-10 text-white btn btn-sm btn-circle btn-ghost right-2 top-2 bg-black/50 hover:bg-black/70">
                     <i class="text-xl ri-close-line"></i>
@@ -230,12 +230,15 @@
             <!-- Image Preview Tabs -->
             <div class="p-4 pb-2 sm:p-6">
                 <h3 class="mb-4 text-lg font-bold sm:text-xl" id="modalImageTitle">Pilih Foto</h3>
-                <span class="text-sm name_upload"></span>
+                <div class="flex flex-col">
+                    <span class="text-sm capitalize name_upload"></span>
+                    <span class="text-sm capitalize verified_by" style="display: none;"></span>
+                </div>
                 <div role="tablist" class="tabs tabs-lifted">
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Before" data-type="before" checked />
                     <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
                         <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
-                            <img id="imgBefore" src="" alt="Before" class="object-contain w-full h-auto" style="max-height: 400px;">
+                            <img id="imgBefore" src="" alt="Before" class="object-contain w-full h-auto" style="max-height: 400px; max-width: 300px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyBefore" style="display: none;">
                                 <div class="text-center">
                                     <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
@@ -248,7 +251,7 @@
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Proses" data-type="process" />
                     <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
                         <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
-                            <img id="imgProcess" src="" alt="Process" class="object-contain w-full h-auto" style="max-height: 400px;">
+                            <img id="imgProcess" src="" alt="Process" class="object-contain w-full h-auto" style="max-height: 400px; max-width: 300px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyProcess" style="display: none;">
                                 <div class="text-center">
                                     <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
@@ -261,7 +264,7 @@
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="After" data-type="final" />
                     <div role="tabpanel" class="p-4 tab-content bg-base-100 border-base-300 rounded-box">
                         <figure class="relative w-full overflow-hidden rounded-lg bg-slate-200" style="min-height: 300px;">
-                            <img id="imgFinal" src="" alt="Final" class="object-contain w-full h-auto" style="max-height: 400px;">
+                            <img id="imgFinal" src="" alt="Final" class="object-contain w-full h-auto" style="max-height: 400px; max-width: 300px;">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyFinal" style="display: none;">
                                 <div class="text-center">
                                     <i class="mb-2 text-5xl ri-image-line text-slate-400"></i>
@@ -289,9 +292,6 @@
                 </div>
             </div>
         </div>
-        <form method="dialog" class="modal-backdrop">
-            <button id="modalCloseBtn">close</button>
-        </form>
     </dialog>
 
     <!-- Toast Notification -->
@@ -371,7 +371,7 @@
                             $('#totalHasFix').text(response.data.count);
 
                             if(response.data.count <= 11) {
-                                if(countToday < 2) {
+                                if(countToday < 3) {
                                     $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan');
                                 } else {
                                     $('#saveSelectionBtn').prop('disabled', true).html('<i class="ri-save-2-line"></i> Maksimal 2 Foto/Hari');
@@ -445,7 +445,7 @@
                             if (imagesData.length > 0) {
                                 $('#filterTabs').fadeIn();
                                 renderImages(imagesData, currentFilter);
-                                renderPagination(response.data.image.links);
+                                renderPagination(currentPage, lastPage);
                             } else {
                                 $('#loadingSkeleton').hide();
                                 $('#emptyState').fadeIn();
@@ -530,11 +530,11 @@
                                     style="opacity: 0; transition: opacity 0.3s;"
                                     onload="this.style.opacity=1"
                                 >
-                                <div class="absolute top-0 right-0 grid grid-cols-1 gap-2 p-2">
-                                    <div class="flex flex-wrap justify-end gap-1 max-w-[120px]">
+                                <div class="absolute top-0 right-0 grid min-h-full grid-cols-1 gap-2 p-2">
+                                    <div class="flex flex-wrap justify-end gap-1 h-fit">
                                         ${imageBadges}
                                     </div>
-                                    <div class="flex justify-start px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full backdrop-blur-sm">
+                                    <div class="absolute flex justify-start px-2 py-1 text-xs font-medium text-white bg-black bg-opacity-50 rounded-full left-2 bottom-2 backdrop-blur-sm">
                                         #${image.id}
                                     </div>
                                 </div>
@@ -574,7 +574,12 @@
                 const baseUrl = "{{ URL::asset('/storage/')}}"
                 const image = imagesData.find(img => img.id == imageId);
                 $('.note').text("Keterangan : " + image.note)
-                $('.name_upload').text("Di Upload Oleh : " + image.user.nama_lengkap)
+                $('.name_upload').text("Di Upload Oleh : " + capitalizeEachWord(image.user.nama_lengkap))
+                if(image.fixed_image) {
+                    $('.verified_by').show();
+                    $('.verified_by').text("Di Verifikasi Oleh : " + (image.fixed_image.user ? capitalizeEachWord(image.fixed_image.user.nama_lengkap) : '-'))
+                }
+                console.log(image, imagesData)
                 if (image) {
                     selectedImageData = image;
                     if(fixedData)
@@ -722,25 +727,61 @@
                 });
             })
 
-            const renderPagination = (links) => {
-                let html = `<div class="join">`;
+            const renderPagination = (currentPage, lastPage) => {
+                let html = `
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-xs tracking-wide text-gray-500 uppercase">
+                            halaman
+                        </span>
+                        <div class="join">
+                `;
 
-                links.forEach(link => {
-                    if (link.url === null) return;
+                const createBtn = (page, label = page, active = false) => `
+                    <button
+                        class="join-item btn btn-md ${active ? 'btn-active' : ''}"
+                        data-page="${page}">
+                        ${label}
+                    </button>
+                `;
 
-                    html += `
-                        <button 
-                            class="join-item btn btn-sm ${link.active ? 'btn-active' : ''}" 
-                            data-page="${new URL(link.url).searchParams.get('page')}">
-                            ${link.label.replace('&laquo;', '«').replace('&raquo;', '»')}
-                        </button>
-                    `;
-                });
+                // Halaman pertama
+                html += createBtn(1, 1, currentPage === 1);
 
-                html += `</div>`;
+                // Ellipsis kiri
+                if (currentPage > 3) {
+                    html += `<span class="join-item btn btn-md btn-disabled">...</span>`;
+                }
+
+                // Halaman tengah (current ±1)
+                for (let p = Math.max(2, currentPage - 1); p <= Math.min(lastPage - 1, currentPage + 1); p++) {
+                    html += createBtn(p, p, currentPage === p);
+                }
+
+                // Ellipsis kanan
+                if (currentPage < lastPage - 2) {
+                    html += `<span class="join-item btn btn-md btn-disabled">...</span>`;
+                }
+
+                // Halaman terakhir
+                if (lastPage > 1) {
+                    html += createBtn(lastPage, lastPage, currentPage === lastPage);
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
 
                 $('#pagination').html(html).fadeIn();
             };
+
+
+
+            function capitalizeEachWord(str) {
+                return str
+                    .toLowerCase()
+                    .replace(/\b\w/g, char => char.toUpperCase());
+            }
 
 
 
