@@ -3,13 +3,16 @@
 namespace App\Services;
 
 use App\Helpers\FileHelper;
+use App\Models\Jabatan;
 use App\Models\PendingSync;
 use App\Models\UploadImage;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UploadImageService
 {
@@ -129,6 +132,42 @@ class UploadImageService
 
     public function getUploadImageData(): array
     {
+        $user = auth()->user();
+        $typeJabatanUser = Str::upper($user->jabatan->name_jabatan);
+
+        // normalisasi typo
+        $typeJabatanUser = str_replace('pusat', 'PUSAT', $typeJabatanUser);
+
+        $isSecurity = Str::contains($typeJabatanUser, 'SUPERVISOR PUSAT SECURITY');
+
+        if(!$isSecurity && $typeJabatanUser == 'DANRU SECURITY')
+        {
+            $type = ['SECURITY'];
+        }else{
+            $type = $isSecurity
+                ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
+                : [
+                    'CLEANING SERVICE',
+                    'FRONT OFFICE',
+                    'LEADER',
+                    'FO',
+                    'KASIR',
+                    'KARYAWAN',
+                    'TAMAN',
+                    'TEKNISI'
+                ];    
+        }
+
+        
+
+        $jabId = Jabatan::whereIn(
+                DB::raw('UPPER(type_jabatan)'),
+                $type
+            )
+            ->pluck('id')
+            ->toArray();
+        $userIds = User::select('id')->whereIn('jabatan_id', $jabId)->get();
+
         $uploadDraft = UploadImage::where('user_id', $this->user->id)
             ->where('status', 0)
             ->whereMonth('created_at', $this->now->month)
@@ -139,6 +178,7 @@ class UploadImageService
             ->where('status', 1)
             ->whereMonth('created_at', $this->now->month)
             ->whereYear('created_at', $this->now->year)
+            ->whereIn('user_id', $userIds)
             ->latest()
             ->get();
 
