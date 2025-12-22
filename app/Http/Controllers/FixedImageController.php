@@ -60,14 +60,14 @@ class FixedImageController extends Controller
             $userIds = User::select('id')->whereIn('jabatan_id', $jabId)->get();
 
             $client = Clients::where('id', $clientId ?? $user->kerjasama->client_id)->first();
-            $image = UploadImage::with(['fixedImage', 'user'])
+            $image = UploadImage::with(['fixedImage.user', 'user'])
                         ->where('clients_id', $clientId ??  $client->id)
                         ->whereMonth('created_at', $month ??  now()->month)
                         ->whereYear('created_at', $year ??  now()->year)
                         ->whereIn('user_id', $userIds)
                         ->where("status", 1)
                         ->latest()
-                        ->paginate(2);
+                        ->paginate(6);
             $fixed = FixedImage::where('clients_id', $clientId ??  $user->kerjasama->client_id)
                                 ->whereMonth('created_at', $month ??  now()->month)
                                 ->whereYear('created_at', $year ??  now()->year)
