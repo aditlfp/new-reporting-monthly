@@ -323,9 +323,12 @@
                 const year = $('.year').val();
                 currentPage = 1;
 
-                if (!clientId || !month || !year) {
+                if (!clientId) {
                     {{-- console.log( $('.clientId'), month, year) --}}
-                    Notify('Silakan pilih mitra', null, null, 'warning');
+                    Notify('Silakan Pilih Mitra!', null, null, 'warning');
+                    return;
+                }else if(!month || !year){
+                    Notify('Silakan Pilih Bulan Dan Tahun!', null, null, 'warning');
                     return;
                 }
 

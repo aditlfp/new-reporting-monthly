@@ -36,20 +36,25 @@ class FixedImageController extends Controller
 
             $isSecurity = Str::contains($typeJabatanUser, 'SUPERVISOR PUSAT SECURITY');
 
-            // dd($isSecurity, $typeJabatanUser);
+            if(!$isSecurity && $typeJabatanUser == 'DANRU SECURITY')
+            {
+                $type = ['SECURITY'];
+            }else{
+                $type = $isSecurity
+                    ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
+                    : [
+                        'CLEANING SERVICE',
+                        'FRONT OFFICE',
+                        'LEADER',
+                        'FO',
+                        'KASIR',
+                        'KARYAWAN',
+                        'TAMAN',
+                        'TEKNISI'
+                    ];    
+            }
 
-            $type = $isSecurity
-                ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
-                : [
-                    'CLEANING SERVICE',
-                    'FRONT OFFICE',
-                    'LEADER',
-                    'FO',
-                    'KASIR',
-                    'KARYAWAN',
-                    'TAMAN',
-                    'TEKNISI'
-                ];
+            
 
             $jabId = Jabatan::whereIn(
                     DB::raw('UPPER(type_jabatan)'),
