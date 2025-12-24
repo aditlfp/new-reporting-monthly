@@ -54,8 +54,6 @@ class FixedImageController extends Controller
                     ];    
             }
 
-            
-
             $jabId = Jabatan::whereIn(
                     DB::raw('UPPER(type_jabatan)'),
                     $type
@@ -73,6 +71,7 @@ class FixedImageController extends Controller
                         ->where("status", 1)
                         ->latest()
                         ->paginate(6);
+            // dd($image);
             $fixed = FixedImage::where('clients_id', $clientId ??  $user->kerjasama->client_id)
                                 ->whereMonth('created_at', $month ??  now()->month)
                                 ->whereYear('created_at', $year ??  now()->year)

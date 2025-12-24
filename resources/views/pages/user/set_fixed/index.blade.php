@@ -440,6 +440,7 @@
                             currentPage = response.data.image.current_page;
                             lastPage = response.data.image.last_page;
                             // Update client info
+                            console.log(response.data.image)
                             $('#clientName').text(clientData.name || '-');
                             $('#clientDetails').text(clientData.address || '-');
                             $('#totalImages').text(response.data.image.total);
