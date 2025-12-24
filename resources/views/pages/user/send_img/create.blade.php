@@ -60,8 +60,7 @@
                                 <div class="space-y-6">
                                     <!-- Image Uploads Section -->
                                     <div>
-                                        <label class="block mb-3 text-sm font-medium text-slate-700">Gambar (maks
-                                            3)</label>
+                                        <label class="block mb-3 text-sm font-medium text-slate-700">Gambar (Rasio 1:1)</label>
                                         <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                                             @php
                                                 $imageConfig = [
@@ -365,6 +364,162 @@
         {{-- End Script Modal --}}
 
         <script defer>
+            // Fungsi untuk menambahkan overlay timestamp ke gambar
+            function addTimestampToImage(imageSrc, callback) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+
+                window.userName = {!! json_encode(Auth::user()->nama_lengkap) !!};
+                window.userJob  = {!! json_encode(ucwords(strtolower(Auth::user()->jabatan->name_jabatan))) !!};
+
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    canvas.width  = img.width;
+                    canvas.height = img.height;
+
+                    // FIX: gunakan canvas.height
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+
+                    const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+                    const dateString = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+                    let locationString = "📍 Lokasi tidak tersedia";
+
+                    function drawTimestamp() {
+                        /* ================= STYLE ================= */
+                        const baseFont     = Math.max(canvas.width / 42, 13);
+                        const timeFont     = baseFont * 1.15;
+                        const dateFont     = baseFont * 0.85;
+                        const locationFont = baseFont * 0.75;
+
+                        const nameFont = baseFont * 0.95;
+                        const jobFont  = baseFont * 0.7;
+
+                        const padding = baseFont * 0.55;
+                        const gap     = baseFont * 0.35;
+
+                        /* ================= POSISI ================= */
+                        const leftX  = padding;
+                        const rightX = canvas.width - padding;
+
+                        const locationY = canvas.height - padding;
+                        const dateY     = locationY - locationFont - gap;
+                        const timeY     = dateY - dateFont - gap;
+
+                        const nameY = canvas.height - padding;
+                        const jobY  = nameY - nameFont - gap;
+
+                        /* ================= BACKGROUND ================= */
+                        const topTextY = timeY - timeFont;
+                        const bottomTextY = Math.max(locationY, nameY);
+
+                        const bgTop = topTextY - padding;
+                        const bgHeight = (bottomTextY - bgTop) + padding;
+
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+                        ctx.fillRect(0, bgTop, canvas.width, bgHeight);
+
+                        /* ================= TEKS KIRI ================= */
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.textAlign = 'left';
+
+                        ctx.font = `700 ${timeFont}px 'Helvetica Neue', Arial, sans-serif`;
+                        ctx.fillText(timeString, leftX, timeY);
+
+                        ctx.font = `${dateFont}px 'Helvetica Neue', Arial, sans-serif`;
+                        ctx.fillText(dateString, leftX, dateY);
+
+                        ctx.font = `${locationFont}px 'Helvetica Neue', Arial, sans-serif`;
+                        ctx.globalAlpha = 0.9;
+                        ctx.fillText(locationString, leftX, locationY);
+                        ctx.globalAlpha = 1;
+
+                        /* ================= TEKS KANAN ================= */
+                        ctx.textAlign = 'right';
+
+                        ctx.font = `600 ${nameFont}px 'Helvetica Neue', Arial, sans-serif`;
+                        ctx.fillText(window.userName, rightX, nameY);
+
+                        ctx.font = `${jobFont}px 'Helvetica Neue', Arial, sans-serif`;
+                        ctx.globalAlpha = 0.85;
+                        ctx.fillText(window.userJob, rightX, jobY);
+                        ctx.globalAlpha = 1;
+
+                        ctx.textAlign = 'left';
+
+                        canvas.toBlob(blob => callback(blob), 'image/jpeg', 0.92);
+                    }
+
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            pos => {
+                                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`)
+                                    .then(r => r.json())
+                                    .then(d => {
+                                        if (d?.address) {
+                                            const city  = d.address.city || d.address.town || d.address.village || '';
+                                            const state = d.address.state || '';
+                                            locationString = `📍 ${city ? (state ? `${city}, ${state}` : city) : state || 'Lokasi tidak diketahui'}`;
+                                        }
+                                        drawTimestamp();
+                                    })
+                                    .catch(drawTimestamp);
+                            },
+                            drawTimestamp
+                        );
+                    } else {
+                        drawTimestamp();
+                    }
+                };
+
+                img.src = imageSrc;
+            }
+
+
+            // Fungsi untuk mengubah Blob menjadi File
+            function blobToFile(blob, fileName) {
+                return new File([blob], fileName, {
+                    type: 'image/jpeg',
+                    lastModified: new Date().getTime()
+                });
+            }
+
+            // Fungsi untuk mendeteksi apakah gambar berasal dari kamera menggunakan EXIF
+            function isImageFromCamera(file, callback) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        EXIF.getData(img, function() {
+                            const dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
+                            const make = EXIF.getTag(this, "Make");
+                            const model = EXIF.getTag(this, "Model");
+                            const software = EXIF.getTag(this, "Software");
+                            
+                            // Jika ada informasi DateTimeOriginal, Make, atau Model, kemungkinan besar dari kamera
+                            if (dateTimeOriginal || make || model || software) {
+                                callback(true);
+                            } else {
+                                callback(false);
+                            }
+                        });
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
             $(document).ready(function() {
                 const reportForm = $('#reportForm');
                 const saveDraftBtn = $('#saveDraftBtn');
@@ -591,19 +746,55 @@
                 });
 
                 // Update the image upload handler with debouncing
+                // Objek untuk menyimpan gambar yang sudah dimodifikasi
+                const modifiedImages = {
+                    image1: null,
+                    image2: null,
+                    image3: null
+                };
+
+                // Update the image upload handler with debouncing
                 const debouncedImageHandler = debounce(function(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            const preview = $(`#preview${e.target.id.replace('image', '')}`);
-                            preview.find('img').attr('src', event.target.result);
-                            preview.removeClass('hidden');
-                            preview.data('is-new-image', true);
+                        // Gunakan EXIF untuk mendeteksi apakah gambar dari kamera
+                        isImageFromCamera(file, function(isFromCamera) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                if (isFromCamera) {
+                                    // Tambahkan timestamp ke gambar
+                                    addTimestampToImage(event.target.result, function(blob) {
+                                        // Konversi blob ke file
+                                        const modifiedFile = blobToFile(blob, file.name);
+                                        
+                                        // Simpan gambar yang sudah dimodifikasi
+                                        modifiedImages[e.target.id] = modifiedFile;
+                                        
+                                        // Tampilkan preview
+                                        const preview = $(`#preview${e.target.id.replace('image', '')}`);
+                                        preview.find('img').attr('src', URL.createObjectURL(blob));
+                                        preview.removeClass('hidden');
+                                        preview.data('is-new-image', true);
+                                        preview.data('from-camera', true); // Tandai bahwa gambar dari kamera
 
-                            imagesUploadedThisMonth++;
-                        };
-                        reader.readAsDataURL(file);
+                                        imagesUploadedThisMonth++;
+                                    });
+                                } else {
+                                    // Tampilkan gambar asli tanpa timestamp
+                                    const preview = $(`#preview${e.target.id.replace('image', '')}`);
+                                    preview.find('img').attr('src', event.target.result);
+                                    preview.removeClass('hidden');
+                                    preview.data('is-new-image', true);
+                                    preview.data('from-camera', false); // Tandai bahwa gambar dari galeri
+
+                                    // Simpan file asli
+                                    modifiedImages[e.target.id] = file;
+
+                                    imagesUploadedThisMonth++;
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        });
                     }
                 }, 300);
 
@@ -819,6 +1010,7 @@
                     const content = $('#reportContent').val();
                     if (!content.trim()) {
                         alert('Silakan isi konten laporan');
+                        setLoading(false);
                         return;
                     }
 
@@ -846,9 +1038,13 @@
 
                     // Add files if they exist
                     for (let i = 1; i <= 3; i++) {
-                        const fileInput = $(`#image${i}`)[0];
-                        if (fileInput.files.length > 0) {
-                            formData.append(fileInput.name, fileInput.files[0]);
+                        const inputId = `image${i}`;
+                        const modifiedFile = modifiedImages[inputId];
+                        
+                        if (modifiedFile) {
+                            // Gunakan gambar yang sudah dimodifikasi
+                            const fieldName = $(`#${inputId}`).attr('name');
+                            formData.append(fieldName, modifiedFile);
                         }
                     }
 
@@ -880,9 +1076,11 @@
                             $(`#preview${i} img`).attr('src', '');
                             $(`#preview${i}`).removeData('is-new-image');
                             $(`#preview${i}`).removeData('original-path');
+                            modifiedImages[`image${i}`] = null;
                         }
                     } catch (xhr) {
                         // ... error handling ...
+                        setLoading(false);
                         console.log(xhr)
                         let errorMessage = 'Terjadi kesalahan saat menyimpan draft.';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -908,6 +1106,7 @@
                     // Validate form
                     if (!content.trim()) {
                         alert('Silakan isi konten laporan');
+                        setLoading(false);
                         return;
                     }
 
@@ -923,6 +1122,7 @@
 
                     if (!hasImage) {
                         alert('Silakan upload minimal satu gambar pendukung');
+                        setLoading(false);
                         return;
                     }
 
@@ -950,9 +1150,13 @@
 
                     // Add files if they exist
                     for (let i = 1; i <= 3; i++) {
-                        const fileInput = $(`#image${i}`)[0];
-                        if (fileInput.files.length > 0) {
-                            formData.append(fileInput.name, fileInput.files[0]);
+                        const inputId = `image${i}`;
+                        const modifiedFile = modifiedImages[inputId];
+                        
+                        if (modifiedFile) {
+                            // Gunakan gambar yang sudah dimodifikasi
+                            const fieldName = $(`#${inputId}`).attr('name');
+                            formData.append(fieldName, modifiedFile);
                         }
                     }
 
@@ -995,11 +1199,13 @@
                             reportForm[0].reset();
                             reportId.val('');
                             isEditMode = false;
+
                             for (let i = 1; i <= 3; i++) {
                                 $(`#preview${i}`).addClass('hidden');
                                 $(`#preview${i} img`).attr('src', '');
                                 $(`#preview${i}`).removeData('is-new-image');
                                 $(`#preview${i}`).removeData('original-path');
+                                modifiedImages[`image${i}`] = null;
                             }
 
                             if (response.data) {
@@ -1013,6 +1219,7 @@
                             }
                         },
                         error: function(xhr) {
+                            setLoading(false);
                             const statusCode = xhr.status; // contoh: 400, 401, 422, 500
                             let errorMessage = `Terjadi kesalahan (${statusCode}).`;
 

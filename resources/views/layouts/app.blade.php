@@ -16,6 +16,7 @@
         <script src="/js/jquery3.7.1-min.js"></script>  
 
         <script src="/js/Notify.js"></script> 
+        <script src="https://cdn.jsdelivr.net/npm/exif-js@2.3.0/exif.js"></script>
 
         {{-- Stack To Push Styles --}}
         <style>
