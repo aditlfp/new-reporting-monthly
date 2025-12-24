@@ -175,6 +175,19 @@
 
 		            </div>
 		        </div>
+                <dialog id="uploadModal" class="modal">
+                    <div class="modal-box max-w-3xl">
+                        <h3 class="font-bold text-lg mb-3">Data Upload</h3>
+
+                        <div id="modalContent">
+                            <p class="text-center text-gray-500">Loading...</p>
+                        </div>
+
+                        <div class="modal-action">
+                            <button class="btn" onclick="uploadModal.close()">Tutup</button>
+                        </div>
+                    </div>
+                </dialog>
 
             </main>
        </div>
@@ -304,7 +317,8 @@
                         const totalUploads = verify.length ? (mobile ? verify[0].total + "x" : verify[0].total + "x") : '';
                         
                         $('#calendarDays').append(
-                            `<div class="indicator w-full">
+                            `<div class="tglClick indicator w-full" data-date="${dateStr}"
+                                data-client="{{ auth()->user()->kerjasama->client->id }}">
                               <span class="${verify.length >= 1 ? 'indicator-item indicator-bottom indicator-center badge bg-green-500 text-white border-0' : 'hidden'}">${totalUploads}</span>
 							  <div class="${classes} calendar-day-wrapper ${verify.length >= 1 ? 'bg-blue-100/80 border border-blue-500' : 'hover:bg-blue-100 bg-gray-50'} grid place-items-center w-full" data-date="${dateStr}" data-holiday="${isHoliday ? isHoliday.name : ''}">
                                 	${dayContent}
@@ -330,6 +344,114 @@
                     hideLoading();
                 });
             }
+
+            $(document).on('click', '.tglClick', function () {
+                const date = $(this).data('date');
+                const clientId = $(this).data('client');
+
+                $('#uploadModal')[0].showModal();
+                $('#modalContent').html('<p class="text-center">Loading...</p>');
+
+                $.ajax({
+                    url: "{{ route('api.v1.calender.show') }}", // sesuaikan route
+                    method: 'GET',
+                    data: {
+                        date: date,
+                        client_id: clientId
+                    },
+                    success: function (res) {
+                        if (!res.status) {
+                            $('#modalContent').html(
+                                '<p class="text-red-500 text-center">' + res.message + '</p>'
+                            );
+                            return;
+                        }
+
+                        if (res.data.length === 0) {
+                            $('#modalContent').html(
+                                '<p class="text-center text-gray-500">Tidak ada data</p>'
+                            );
+                            return;
+                        }
+
+                        let html = `
+                          <div class="p-6 max-h-[70vh] overflow-y-auto">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        `;
+
+                        res.data.forEach(imgData => {
+                            html += `
+                            <div class="overflow-hidden transition-all duration-300 min-h-[110px] bg-base-100 border rounded-lg shadow-sm cursor-pointer border-base-300 hover:shadow-md card-expandable"
+                                 data-card-id="${imgData.id}">
+                                <div class="p-4">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-semibold text-base text-base-content line-clamp-2">
+                                                ${imgData.note ?? '-'}
+                                            </h4>
+                                            <p class="text-sm text-base-content/70 mt-1">
+                                                ${imgData.created_at_formatted}
+                                            </p>
+                                            <p class="text-xs text-base-content/60 truncate mt-0.5">
+                                                Upload Oleh: ${imgData.user ? imgData.user.nama_lengkap : 'User Hilang'}
+                                            </p>
+                                        </div>
+                                        <svg class="w-5 h-5 flex-shrink-0 transition-transform duration-300 text-base-content/40 expand-icon"
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="mt-4 hidden expanded-content">
+                                        <div class="grid grid-cols-3 gap-2 mb-3">
+                                            ${renderImage(imgData.img_before, 'Before')}
+                                            ${renderImage(imgData.img_proccess, 'Process')}
+                                            ${renderImage(imgData.img_final, 'Final')}
+                                        </div>
+                                        ${imgData.note ? `<p class="text-sm text-base-content/80 mt-2">${imgData.note}</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        });
+
+                        html += `
+                            </div>
+                          </div>
+                        `;
+
+                        $('#modalContent').html(html);
+                    },
+                    error: function () {
+                        $('#modalContent').html(
+                            '<p class="text-red-500 text-center">Terjadi kesalahan</p>'
+                        );
+                    }
+                });
+            });
+
+
+            function renderImage(path, label) {
+                const src = path
+                    ? `/storage/${path}`
+                    : 'https://placehold.co/400x400?text=Kosong';
+
+                return `
+                <div class="overflow-hidden rounded-lg aspect-square bg-slate-100">
+                    <img src="${src}" alt="${label}"
+                         class="object-cover w-full h-full">
+                </div>
+                `;
+            }
+
+            $(document).on('click', '.card-expandable', function () {
+                $(this).find('.expanded-content').toggleClass('hidden');
+                $(this).find('.expand-icon').toggleClass('rotate-180');
+            });
+
+
+
+
 
             function fetchDateDetails(dateStr, holidayName) {
                 showLoading();

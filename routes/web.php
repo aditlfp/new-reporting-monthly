@@ -49,12 +49,13 @@ Route::middleware(['auth', 'theme'])->group(function () {
         return view('pages.user.counting.show');
     })->name('count.per.user.show');
 
-    Route::get('/api/v1/count-data-spv', [HandlerCountController::class, 'getCountJatim'])->name('api.v1.count.data.upload.spv');
-    Route::get('/api/v1/count-per-user/{id}/{month}/{year}', [HandlerCountController::class, 'show'])->name('api.v1.count.per.user');
 
     //API HANDLE COUNT
+    Route::get('/api/v1/count-data-spv', [HandlerCountController::class, 'getCountJatim'])->name('api.v1.count.data.upload.spv');
+    Route::get('/api/v1/count-per-user/{id}/{month}/{year}', [HandlerCountController::class, 'show'])->name('api.v1.count.per.user');
     Route::get('/api/v1/count-data', [UploadImageController::class, 'countData'])->name('v1.count.data');
     Route::get('/api/v1/count-fixed-image', [FixedImageController::class, 'getCountFixed'])->name('v1.count.fixed.image');
+    Route::get('/api/v1/calender-show', [CalenderApiHandler::class, 'modalShow'])->name('api.v1.calender.show');
     // END HANDLE
 });
 
