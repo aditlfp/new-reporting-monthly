@@ -23,7 +23,8 @@ class HandlerCountController extends Controller
 
     public function index()
     {
-        return view('pages.user.counting.index');
+        $clients = Clients::select(['id', 'name'])->get();
+        return view('pages.user.counting.index', compact('clients'));
     }
 
     public function getCountJatim(Request $request)
@@ -50,6 +51,11 @@ class HandlerCountController extends Controller
 
         $userSpesified = User::with(['jabatan', 'kerjasama.client'])
                                 ->whereIn('id', $usersId)
+                                ->when(!empty($request->client), function ($query) use ($request) {
+                                    $query->whereHas('kerjasama.client', function ($q) use ($request) {
+                                        $q->where('id', $request->client);
+                                    });
+                                })
                                 ->withCount(['fixedImages as total_per_month' => function ($q) use ($request) {
                                     $q->whereMonth('created_at', $request->month ?? now()->month)
                                       ->whereYear('created_at',  $request->year ?? now()->year);

@@ -25,6 +25,20 @@
                 		<div class="card-body">
                 			<span class="text-lg sm:text-xl font-semibold">Filter</span>
                 			<form id="filterForm" class="flex gap-2 items-end w-full">
+
+								<div class="form-control flex flex-col w-full">
+                					<label for="client" class="required">Mitra</label>
+								    <select name="client" id="client" class="select select-sm select-bordered rounded-sm">
+								        <option value="">Pilih Mitra</option>
+
+								       @forelse($clients as $client)
+								       	<option value="{{ $client->id }}">{{ $client->name }}</option>
+								       @empty
+								       	<option value="">Mitra Kosong</option>
+								       @endforelse
+								    </select>
+								</div>
+
                 				<div class="form-control flex flex-col w-full">
                 					<label for="month" class="required">Bulan</label>
 								    <select name="month" id="monthSelect" class="select select-sm select-bordered rounded-sm">
@@ -115,8 +129,9 @@
 
 		    const month = $('#monthSelect').val();
 		    const year = $('#yearSelect').val();
+		    const client = $('#client').val();
 
-		    renderLoadData(month, year);
+		    renderLoadData(client, month, year);
 		});
 
 		const debouncedSearch = debounce(function () {
@@ -155,13 +170,14 @@
 		    `;
 		}
 
-    	function renderLoadData(users, month = null, year = null) {
+    	function renderLoadData(client = null, month = null, year = null) {
 			const tbody = $('#userTableBody');
 
 		    $.ajax({
 		        url: '{{ route('api.v1.count.data.upload.spv') }}',
 		        method: 'GET',
 		        data: {
+		        	client: client,
 		            month: month,
 		            year: year
 		        },
