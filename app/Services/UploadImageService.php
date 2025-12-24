@@ -44,17 +44,11 @@ class UploadImageService
             }
 
             $data = [
-                'img_before' => FileHelper::uploadImage(
-                    $request->file('img_before'),
-                    'upload_images/before'
-                ),
+                'img_before' => FileHelper::uploadImage($request->file('img_before'), 'upload_images/before', null, false),
                 'img_proccess' => $request->hasFile('img_proccess')
-                    ? FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process')
+                    ? FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process', null, false)
                     : null,
-                'img_final' => FileHelper::uploadImage(
-                    $request->file('img_final'),
-                    'upload_images/final'
-                ),
+                'img_final' => FileHelper::uploadImage($request->file('img_final'), 'upload_images/final', null, false),
             ];
 
             return UploadImage::create([
@@ -102,21 +96,27 @@ class UploadImageService
         if ($request->hasFile('img_before')) {
             $images['img_before'] = FileHelper::uploadImage(
                 $request->file('img_before'),
-                'upload_images/before'
+                'upload_images/before',
+                null,
+                false
             );
         }
 
         if ($request->hasFile('img_proccess')) {
             $images['img_proccess'] = FileHelper::uploadImage(
                 $request->file('img_proccess'),
-                'upload_images/process'
+                'upload_images/process',
+                null,
+                false
             );
         }
 
         if ($request->hasFile('img_final')) {
             $images['img_final'] = FileHelper::uploadImage(
                 $request->file('img_final'),
-                'upload_images/final'
+                'upload_images/final',
+                null,
+                false
             );
         }
 

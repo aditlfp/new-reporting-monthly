@@ -7,6 +7,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\Encoders\AutoEncoder;
 use setasign\Fpdi\Fpdi;
 
 
@@ -21,7 +24,13 @@ class FileHelper
      * @param  bool  $useOriginalName
      * @return string|null
      */
-    public static function uploadImage(?UploadedFile $file, string $folder = 'uploads', ?string $oldFile = null, bool $useOriginalName = false)
+    public static function uploadImage(
+        ?UploadedFile $file, 
+        string $folder = 'uploads', 
+        ?string $oldFile = null, 
+        bool $useOriginalName = false,
+        int $quality = 70,
+        )
     {
         if (!$file) {
             return $oldFile;
@@ -32,15 +41,55 @@ class FileHelper
             Storage::disk('public')->delete($oldFile);
         }
 
-        // dynamic filename
-        $filename = $useOriginalName
-            ? $file->getClientOriginalName()
-            : Str::uuid() . '.' . $file->getClientOriginalExtension();
+        try {
+            // Get file extension with multiple fallbacks
+            $ext = strtolower($file->getClientOriginalExtension() ?: 
+                pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
+            
+            if (empty($ext)) {
+                $mime = $file->getMimeType();
+                $ext = [
+                    'image/jpeg' => 'jpg',
+                    'image/jpg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/gif' => 'gif',
+                    'image/webp' => 'webp'
+                ][$mime] ?? 'jpg';
+            }
 
-        // store in public disk
-        $path = $file->storeAs($folder, $filename, 'public');
+            // Generate filename
+            $filename = $useOriginalName
+                ? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $ext
+                : Str::uuid() . '.' . $ext;
 
-        return $path;
+            // Initialize Image Manager
+            $manager = new ImageManager(
+                new Driver()
+            );
+            $image = $manager->read($file->getPathname());
+            
+            $path = $folder . '/' . $filename;
+            Storage::disk('public')->put(
+                $path,
+                $image->encode(new AutoEncoder(quality: $quality))
+            );
+            
+            return $path;
+        } catch (\Exception $e) {
+            Log::error('Image upload failed: ' . $e->getMessage());
+            
+            // Fallback to simple storage if image processing fails
+            try {
+                $filename = $useOriginalName
+                    ? $file->getClientOriginalName()
+                    : Str::uuid() . '.' . $file->getClientOriginalExtension();
+                    
+                return $file->storeAs($folder, $filename, 'public');
+            } catch (\Exception $fallbackException) {
+                Log::error('Image fallback upload failed: ' . $fallbackException->getMessage());
+                return null;
+            }
+        }
     }
 
     /**
