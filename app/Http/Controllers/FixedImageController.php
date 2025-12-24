@@ -139,11 +139,57 @@ class FixedImageController extends Controller
         $clientId = $request->client_id;
         $month = $request->month;
         $year = $request->year;
+        $user = auth()->user();
+            $typeJabatanUser = Str::upper($user->jabatan->name_jabatan);
+
+            // normalisasi typo
+            $typeJabatanUser = str_replace('pusat', 'PUSAT', $typeJabatanUser);
+
+            $isSecurity = Str::contains($typeJabatanUser, 'SUPERVISOR PUSAT SECURITY');
+
+            if(!$isSecurity && $typeJabatanUser == 'DANRU SECURITY')
+            {
+                $type = ['SECURITY'];
+            }else{
+                $type = $isSecurity
+                    ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
+                    : [
+                        'CLEANING SERVICE',
+                        'FRONT OFFICE',
+                        'LEADER',
+                        'FO',
+                        'KASIR',
+                        'KARYAWAN',
+                        'TAMAN',
+                        'TEKNISI'
+                    ];    
+            }
+
+            $jabId = Jabatan::whereIn(
+                    DB::raw('UPPER(type_jabatan)'),
+                    $type
+                )
+                ->pluck('id')
+                ->toArray();
+            $userIds = User::select('id')->whereIn('jabatan_id', $jabId)->get();
+
+            $client = Clients::where('id', $clientId ?? $user->kerjasama->client_id)->first();
+            $image = UploadImage::with(['fixedImage.user', 'user'])
+                        ->where('clients_id', $clientId ??  $client->id)
+                        ->whereMonth('created_at', $month ??  now()->month)
+                        ->whereYear('created_at', $year ??  now()->year)
+                        ->whereIn('user_id', $userIds)
+                        ->where("status", 1)
+                        ->pluck('id')
+                        ->toArray();
+
         $count = FixedImage::where('clients_id', $clientId ?? auth()->user()->kerjasama->client_id)
+                    ->whereIn('upload_image_id', $image)
                     ->whereMonth('created_at', $month ?? now()->month)
                     ->whereYear('created_at', $year ?? now()->year)
                     ->count();
         $countToday = FixedImage::where('clients_id', $clientId ?? auth()->user()->kerjasama->client_id)
+                    ->whereIn('upload_image_id', $image)
                     ->whereDate('created_at', now()->toDateString())
                     ->count();
         return response()->json([

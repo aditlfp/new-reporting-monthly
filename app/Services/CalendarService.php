@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Jabatan;
 use App\Models\UploadImage;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CalendarService
 {
@@ -40,16 +43,58 @@ class CalendarService
             ];
 
         $clientId = $this->user->kerjasama->client_id;
+        $user = auth()->user();
+        $typeJabatanUser = Str::upper($user->jabatan->name_jabatan);
+
+            // normalisasi typo
+        $typeJabatanUser = str_replace('pusat', 'PUSAT', $typeJabatanUser);
+
+        $isSecurity = Str::contains($typeJabatanUser, 'SUPERVISOR PUSAT SECURITY');
+
+        if(!$isSecurity && $typeJabatanUser == 'DANRU SECURITY')
+        {
+            $type = ['SECURITY'];
+        }else{
+            $type = $isSecurity
+                ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
+                : [
+                    'CLEANING SERVICE',
+                    'FRONT OFFICE',
+                    'LEADER',
+                    'FO',
+                    'KASIR',
+                    'KARYAWAN',
+                    'TAMAN',
+                    'TEKNISI'
+                ];    
+        }
+
+            // dd($isSecurity, $type);
+
+        $jabId = Jabatan::whereIn(
+                DB::raw('UPPER(type_jabatan)'),
+                $type
+            )
+            ->pluck('id')
+            ->toArray();
+        $userIds = User::select('id')->whereIn('jabatan_id', $jabId) 
+                        ->whereHas('kerjasama.client', function ($q) use ($clientId) {
+                                    $q->where('id', $clientId);
+                            })->get();
 
         $uploadsByDay = UploadImage::selectRaw("
-                DATE(created_at) as date,
-                COUNT(*) as total
-            ")
-            ->where('clients_id', $clientId)
-            ->where('status', 1)
-            ->groupBy(DB::raw("DATE(created_at)"))
-            ->orderBy(DB::raw("DATE(created_at)"))
-            ->get();
+                        DATE(created_at) as date,
+                        COUNT(*) as total
+                    ")
+                    ->where('clients_id', $clientId)
+                    ->when(!empty($userIds), function ($q) use ($userIds) {
+                        $q->whereIn('user_id', $userIds);
+                    })
+                    ->where('status', 1)
+                    ->groupBy(DB::raw('DATE(created_at)'))
+                    ->orderBy(DB::raw('DATE(created_at)'))
+                    ->get();
+
         return [
             'translate' => $translate,
             'uploadsByDay' => $uploadsByDay

@@ -449,10 +449,6 @@
                 $(this).find('.expand-icon').toggleClass('rotate-180');
             });
 
-
-
-
-
             function fetchDateDetails(dateStr, holidayName) {
                 showLoading();
 
