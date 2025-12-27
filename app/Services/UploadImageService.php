@@ -27,12 +27,11 @@ class UploadImageService
 
     public function store(Request $request)
     {
-        $user = $request->user();
         $tempFiles = [];
 
         try {
-            $uploadCount = UploadImage::where('clients_id', $user->clients_id)
-                ->where('user_id', $user->id)
+            $uploadCount = UploadImage::where('clients_id', $this->user->clients_id)
+                ->where('user_id', $this->user->id)
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count();
@@ -52,7 +51,7 @@ class UploadImageService
             ];
 
             return UploadImage::create([
-                'user_id'      => $user->id,
+                'user_id'      => $this->user->id,
                 'clients_id'   => $request->clients_id,
                 'note'         => $request->note,
                 'status'       => $request->status,
@@ -62,9 +61,9 @@ class UploadImageService
 
         } catch (Exception $e) {
 
-            if ($user && User::where('id', $user->id)->exists()) {
+            if ($this->user && User::where('id', $this->user->id)->exists()) {
                     PendingSync::create([
-                        'user_id' => $user->id,
+                        'user_id' => $this->user->id,
                         'type' => 'create_post',
                         'payload' => [
                             'temp_files' => $tempFiles,
