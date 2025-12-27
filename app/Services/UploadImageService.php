@@ -62,18 +62,21 @@ class UploadImageService
 
         } catch (Exception $e) {
 
-            PendingSync::create([
-                'user_id' => $user->id,
-                'type' => 'create_post',
-                'payload' => [
-                    'temp_files' => $tempFiles,
-                    'clients_id' => $request->clients_id,
-                    'note' => $request->note,
-                    'status' => $request->status,
-                ]
-            ]);
+            if ($user && User::where('id', $user->id)->exists()) {
+                    PendingSync::create([
+                        'user_id' => $user->id,
+                        'type' => 'create_post',
+                        'payload' => [
+                            'temp_files' => $tempFiles,
+                            'clients_id' => $request->clients_id,
+                            'note' => $request->note,
+                            'status' => $request->status,
+                        ]
+                    ]);
+            }
 
             throw $e;
+
         }
     }
 
