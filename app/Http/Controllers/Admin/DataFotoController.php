@@ -27,6 +27,13 @@ class DataFotoController extends Controller
             ])->paginate(14);
         }
 
+        if($request->mitra)
+        {
+            $images = UploadImage::with('clients')->searchFilters([
+                'mitra' => $request->mitra,
+            ])->paginate(14);
+        }
+
         $client = Clients::all();
 
         if ($request->ajax()) {
