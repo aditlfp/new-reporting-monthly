@@ -10,11 +10,66 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\Encoders\AutoEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
 use setasign\Fpdi\Fpdi;
-
+use Imagick;
 
 class FileHelper
 {
+    
+    private static function shouldConvertToWebp(string $path): bool
+    {
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $sizeKB = filesize($path) / 1024;
+
+        [$width, $height] = getimagesize($path);
+
+        if ($sizeKB < 80) return false;
+        if ($width < 400 && $height < 400) return false;
+
+        return true;
+    }
+
+    private static function convertAndReplaceOriginal(string $fullPath, int $quality = 80): bool
+    {
+        if (!self::shouldConvertToWebp($fullPath)) {
+            return false;
+        }
+
+        $tmpWebp = $fullPath . '.tmp.webp';
+
+        try {
+            $img = new Imagick($fullPath);
+            $img->setImageFormat('webp');
+            $img->setImageCompressionQuality($quality);
+            $img->stripImage();
+            $img->writeImage($tmpWebp);
+
+            if (filesize($tmpWebp) >= filesize($fullPath)) {
+                unlink($tmpWebp);
+                return false;
+            }
+
+            unlink($fullPath);
+
+            $newPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $fullPath);
+
+            rename($tmpWebp, $newPath);
+
+            return true;
+
+        } catch (\Throwable $e) {
+            if (file_exists($tmpWebp)) {
+                unlink($tmpWebp);
+            }
+
+            Log::error('WebP convert failed: ' . $e->getMessage());
+            return false;
+        }
+    }
     /**
      * Upload an image dynamically.
      *
@@ -25,72 +80,49 @@ class FileHelper
      * @return string|null
      */
     public static function uploadImage(
-        ?UploadedFile $file, 
-        string $folder = 'uploads', 
-        ?string $oldFile = null, 
+        ?UploadedFile $file,
+        string $folder = 'uploads',
+        ?string $oldFile = null,
         bool $useOriginalName = false,
-        int $quality = 70,
-        )
-    {
+        int $quality = 80,
+    ) {
         if (!$file) {
             return $oldFile;
         }
 
-        // delete old file if exists
+        // hapus file lama
         if ($oldFile && Storage::disk('public')->exists($oldFile)) {
             Storage::disk('public')->delete($oldFile);
         }
 
         try {
-            // Get file extension with multiple fallbacks
-            $ext = strtolower($file->getClientOriginalExtension() ?: 
-                pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
-            
-            if (empty($ext)) {
-                $mime = $file->getMimeType();
-                $ext = [
-                    'image/jpeg' => 'jpg',
-                    'image/jpg' => 'jpg',
-                    'image/png' => 'png',
-                    'image/gif' => 'gif',
-                    'image/webp' => 'webp'
-                ][$mime] ?? 'jpg';
-            }
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
 
-            // Generate filename
             $filename = $useOriginalName
                 ? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $ext
                 : Str::uuid() . '.' . $ext;
 
-            // Initialize Image Manager
-            $manager = new ImageManager(
-                new Driver()
-            );
-            $image = $manager->read($file->getPathname());
-            
-            $path = $folder . '/' . $filename;
-            Storage::disk('public')->put(
-                $path,
-                $image->encode(new AutoEncoder(quality: $quality))
-            );
-            
-            return $path;
-        } catch (\Exception $e) {
-            Log::error('Image upload failed: ' . $e->getMessage());
-            
-            // Fallback to simple storage if image processing fails
-            try {
-                $filename = $useOriginalName
-                    ? $file->getClientOriginalName()
-                    : Str::uuid() . '.' . $file->getClientOriginalExtension();
-                    
-                return $file->storeAs($folder, $filename, 'public');
-            } catch (\Exception $fallbackException) {
-                Log::error('Image fallback upload failed: ' . $fallbackException->getMessage());
-                return null;
+
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            $fullPath = storage_path("app/public/$path");
+
+
+            $converted = self::convertAndReplaceOriginal($fullPath, $quality);
+
+            if ($converted) {
+                return preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $path);
             }
+
+            return $path;
+
+        } catch (\Throwable $e) {
+            Log::error('Upload image failed: ' . $e->getMessage());
+            return null;
         }
     }
+
+
 
     /**
      * Delete an image from storage

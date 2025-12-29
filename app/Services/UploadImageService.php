@@ -30,11 +30,6 @@ class UploadImageService
         $tempFiles = [];
 
         try {
-            $uploadCount = UploadImage::where('clients_id', $this->user->clients_id)
-                ->where('user_id', $this->user->id)
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count();
 
             foreach (['img_before', 'img_proccess', 'img_final'] as $field) {
                 if ($request->hasFile($field)) {
@@ -82,12 +77,6 @@ class UploadImageService
     public function storeDraft(Request $request): UploadImage
     {
         $user = $request->user();
-
-        $uploadCount = UploadImage::where('clients_id', $user->clients_id)
-            ->where('user_id', $user->id)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
 
         $images = [
             'img_before' => 'none',
