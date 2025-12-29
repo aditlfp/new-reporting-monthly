@@ -49,9 +49,6 @@ class UploadImage extends Model
                       ->whereYear('created_at', $filters['year']);
                 }
             )
-            ->when($filters['mitra'] ?? null, function ($q, $mitra) {
-                $q->where('clients_id', $mitra);
-            })
             ->when($filters['client_id'] ?? null, function ($q, $client_id) {
                 $q->where('clients_id', $client_id);
             });

@@ -1,4 +1,68 @@
 <x-app-layout title="Dashboard" subtitle="Selamat Datang Admin">
+@push('styles')
+/* Custom scrollbar using Tailwind-compatible styles */
+#activityContainer {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--bc) / 0.2) transparent;
+}
+
+#activityContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#activityContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#activityContainer::-webkit-scrollbar-thumb {
+  background: hsl(var(--bc) / 0.2);
+  border-radius: 3px;
+}
+
+#activityContainer::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--bc) / 0.3);
+}
+
+/* Smooth animations */
+.activity-item {
+  transition: transform 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .card-body .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .activity-item {
+    padding: 0.75rem 1rem;
+  }
+  
+  #activityContainer {
+    max-height: 20rem;
+  }
+  
+  .activity-item .text-2xl {
+    font-size: 1.25rem;
+  }
+}
+@endpush
 <div class="flex min-h-screen bg-slate-50">
   @include('components.sidebar-component')
 
@@ -122,29 +186,125 @@
 
 
       <!-- Percentage -->
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div class="px-6 py-5 border-b border-slate-200">
-          <h2 class="text-lg font-semibold text-slate-900">Percentage Activity Monthly</h2>
+      <div class="card bg-white shadow-xl border border-base-300">
+        <div class="card-body p-0">
+          <div class="flex justify-between items-center px-6 py-5 border-b border-base-300">
+            <h2 class="card-title text-lg">Percentage Activity Monthly</h2>
+            <button id="toggleView" class="btn btn-sm btn-ghost text-blue-500 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20 border-none gap-2 rounded-sm">
+              <span id="toggleText">Show All (<span id="itemCount">{{ count($result) }}</span>)</span>
+            </button>
+          </div>
+          
+          <div id="activityContainer" class="max-h-96 overflow-y-auto">
+            @foreach ($result as $index => $item)
+            <div class="activity-item p-4 border-b border-base-200 hover:bg-base-200 transition-all duration-200 cursor-pointer {{ $index >= 5 ? 'hidden' : '' }}" data-index="{{ $index }}">
+              <div class="flex justify-between items-start mb-3 gap-4">
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-base-content truncate">{{ $item['client'] }}</p>
+                  <p class="text-sm badge badge-sm text-base-content/60 truncate">{{ $item['jabatan'] }}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl font-bold
+                      @if($item['percentage'] <= 50) text-error
+                      @elseif($item['percentage'] >= 51 && $item['percentage'] <= 85) text-warning
+                      @else text-success
+                      @endif">
+                      {{ $item['percentage'] }}%
+                    </span>
+                    @if($item['percentage'] >= 100)
+                      <span class="badge badge-success badge-sm gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Tercapai
+                      </span>
+                    @else
+                      <span class="badge badge-ghost badge-sm gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Belum
+                      </span>
+                    @endif
+                  </div>
+                </div>
+              </div>
+              
+              <div class="w-full">
+                @if($item['percentage'] <= 50)
+                  <progress class="progress progress-error w-full h-3" value="0" max="100" data-percentage="{{ $item['percentage'] }}"></progress>
+                @elseif($item['percentage'] >= 51 && $item['percentage'] <= 85)
+                  <progress class="progress progress-warning w-full h-3" value="0" max="100" data-percentage="{{ $item['percentage'] }}"></progress>
+                @else
+                  <progress class="progress progress-success w-full h-3" value="0" max="100" data-percentage="{{ $item['percentage'] }}"></progress>
+                @endif
+              </div>
+            </div>
+            @endforeach
+          </div>
+          
+          @if(count($result) > 5)
+          <div class="px-6 py-3 bg-white border-t border-base-300 text-center">
+            <button id="showMoreBtn" class="btn btn-sm btn-ghost text-blue-500 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20 border-none gap-2 rounded-sm">
+              <span>Show More</span>
+              <svg id="chevronIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          @endif
         </div>
-        @foreach ($result as $item)
-        <div class="p-4 rounded-lg my-3">
-            <p class="text-sm text-slate-500">{{ $item['client'] }} — {{ $item['jabatan'] }}</p>
-
-            @if($item['percentage'] <= 50)
-              <progress class="progress progress-error w-full" value="{{ $item['percentage'] }}" max="100"></progress>
-            @elseif($item['percentage'] >= 51 && $item['percentage'] <=85)
-              <progress class="progress progress-warning w-full" value="{{ $item['percentage'] }}" max="100"></progress>
-            @elseif($item['percentage'] >= 86)
-              <progress class="progress progress-success w-full" value="{{ $item['percentage'] }}" max="100"></progress>
-            @endif
-                {{ $item['percentage'] }}%
-                {{ $item['percentage'] >= 100 ? '✓ Tercapai' : '✕ Belum' }}
-        </div>
-        @endforeach
-
       </div>
     </div>
   </main>
 </div>
-
+@push('scripts')
+<script>
+$(document).ready(function() {
+  // Animate progress bars on load
+  setTimeout(function() {
+    $('.progress').each(function() {
+      const percentage = $(this).data('percentage');
+      $(this).val(percentage);
+    });
+  }, 150);
+  
+  // Toggle show all/show less
+  let isExpanded = false;
+  
+  $('#showMoreBtn, #toggleView').on('click', function() {
+    isExpanded = !isExpanded;
+    
+    if (isExpanded) {
+      $('.activity-item').removeClass('hidden').addClass('animate-fadeIn');
+      $('#showMoreBtn span').text('Show Less');
+      $('#chevronIcon').addClass('rotate-180');
+      $('#toggleText').html('Show Less');
+    } else {
+      $('.activity-item').each(function() {
+        if ($(this).data('index') >= 5) {
+          $(this).addClass('hidden').removeClass('animate-fadeIn');
+        }
+      });
+      $('#showMoreBtn span').text('Show More');
+      $('#chevronIcon').removeClass('rotate-180');
+      $('#toggleText').html('Show All (<span id="itemCount">{{ count($result) }}</span>)');
+      
+      // Smooth scroll to top when collapsing
+      $('#activityContainer').animate({ scrollTop: 0 }, 300);
+    }
+  });
+  
+  // Tooltip on hover for truncated text
+  $('.activity-item').on('mouseenter', function() {
+    $(this).find('.truncate').each(function() {
+      if (this.scrollWidth > this.clientWidth) {
+        $(this).attr('title', $(this).text());
+      }
+    });
+  });
+});
+</script>
+@endpush
 </x-app-layout>

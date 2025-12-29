@@ -30,7 +30,7 @@ class DataFotoController extends Controller
         if($request->mitra)
         {
             $images = UploadImage::with('clients')->searchFilters([
-                'mitra' => $request->mitra,
+                'client_id' => $request->mitra,
             ])->paginate(14);
         }
 
