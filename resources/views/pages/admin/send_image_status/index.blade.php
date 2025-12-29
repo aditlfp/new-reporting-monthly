@@ -47,11 +47,11 @@
             <div class="my-6 bg-white shadow-lg card">
                 <div class="card-body">
                     <form method="GET" action="{{ route('check.upload') }}"
-                        class="grid grid-cols-1 md:gap-4 md:grid-cols-4">
+                        class="grid grid-cols-1 md:gap-4 md:grid-cols-3">
                         <div class="form-control">
                             <fieldset class="fieldset">
                                 <legend class="fieldset-legend required">Month</legend>
-                                <select name="month" class="select select-sm rounded-sm">
+                                <select name="month" class="rounded-sm select select-sm">
                                     <option disabled selected>Pick a Month</option>
                                     <option value="">All Months</option>
                                     @foreach ($months as $month)
@@ -67,7 +67,7 @@
                          <div class="form-control">
                             <fieldset class="fieldset">
                                 <legend class="fieldset-legend required">Year</legend>
-                                <select name="year" class="select select-sm rounded-sm">
+                                <select name="year" class="rounded-sm select select-sm">
                                     <option disabled selected>Pick a Year</option>
                                     <option value="">All Year</option>
                                     <option value="2025">2025</option>
@@ -78,7 +78,7 @@
                         <div class="form-control">
                             <fieldset class="fieldset">
                                 <legend class="fieldset-legend required">Mitra</legend>
-                                <select name="client_id" class="select select-sm rounded-sm">
+                                <select name="client_id" class="rounded-sm select select-sm">
                                     <option disabled selected>Pick a Mitra</option>
                                     <option value="">All Mitra</option>
                                     @foreach ($clients as $client)
@@ -95,7 +95,7 @@
                             <div class="form-control">
                                 <fieldset class="fieldset">
                                     <legend class="fieldset-legend required">Upload Count Min</legend>
-                                    <input type="number" class="input input-sm rounded-sm validator" required
+                                    <input type="number" class="rounded-sm input input-sm validator" required
                                         placeholder="Type a number between 1 to 14" min="1" max="14"
                                         title="Must be between be 1 to 14" name="upload_min"
                                         value="{{ request('upload_min') }}" />
@@ -106,7 +106,7 @@
                             <div class="form-control">
                                 <fieldset class="fieldset">
                                     <legend class="fieldset-legend required">Upload Count Max</legend>
-                                    <input type="number" class="input input-sm rounded-sm validator" required
+                                    <input type="number" class="rounded-sm input input-sm validator" required
                                         placeholder="Type a number between 1 to 14" min="1" max="14"
                                         title="Must be between be 1 to 14" name="upload_max"
                                         value="{{ request('upload_max') }}" />
@@ -120,7 +120,7 @@
                             </label>
                             <div class="flex gap-2">
                                 <button type="submit"
-                                    class="btn btn-sm bg-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white rounded-sm border-0">
+                                    class="text-blue-500 border-0 rounded-sm btn btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -129,7 +129,7 @@
                                     Filter
                                 </button>
                                 <a href="{{ route('check.upload') }}"
-                                    class="btn btn-sm bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white rounded-sm border-0">Reset</a>
+                                    class="text-red-500 border-0 rounded-sm btn btn-sm bg-red-500/20 hover:bg-red-500 hover:text-white">Reset</a>
                             </div>
                         </div>
                     </form>
@@ -239,9 +239,9 @@
 
                                         <td class="p-2 text-center md:p-3">
                                             @if ($upload->has_uploaded_today)
-                                                <span class="text-green-600"><i class="ri-checkbox-circle-line text-lg sm:text-2xl"></i></span>
+                                                <span class="text-green-600"><i class="text-lg ri-checkbox-circle-line sm:text-2xl"></i></span>
                                             @else
-                                                <span class="text-red-600"><i class="ri-close-circle-line text-lg sm:text-2xl"></i></span>
+                                                <span class="text-red-600"><i class="text-lg ri-close-circle-line sm:text-2xl"></i></span>
                                             @endif
                                         </td>
 
@@ -292,7 +292,7 @@
                                             </div>
                                         </td>
                                         <td class="p-2 text-center md:p-3">
-                                            <button onclick='openFixedImagesModal(@json($upload))' class="btn btn-sm bg-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white rounded-sm border-0">Detail</button>
+                                            <button onclick='openFixedImagesModal(@json($upload))' class="text-blue-500 border-0 rounded-sm btn btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">Detail</button>
                                         </td>
                                     </tr>
                                 @empty
@@ -356,7 +356,7 @@
                         </div>
 
                         <!-- Content Grid (Hidden initially) -->
-                        <div id="contentGrid" class="hidden grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                        <div id="contentGrid" class="grid hidden grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2 xl:grid-cols-3">
                             <!-- Content will be populated here -->
                         </div>
 
@@ -476,16 +476,16 @@
                         <!-- Card Body -->
                         <div class="p-3 md:p-4">
                             <!-- Info Grid -->
-                            <div class="space-y-2 mb-3">
-                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                            <div class="mb-3 space-y-2">
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
                                     <span class="text-xs font-medium text-gray-600">Upload ID:</span>
                                     <span class="text-xs font-semibold text-gray-900">#${data.upload_image_id}</span>
                                 </div>
-                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
                                     <span class="text-xs font-medium text-gray-600">User ID:</span>
                                     <span class="text-xs font-semibold text-gray-900">#${data.user_id}</span>
                                 </div>
-                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
                                     <span class="text-xs font-medium text-gray-600">Client ID:</span>
                                     <span class="text-xs font-semibold text-gray-900">#${data.clients_id}</span>
                                 </div>

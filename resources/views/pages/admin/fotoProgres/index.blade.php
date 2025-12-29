@@ -12,12 +12,21 @@
 
                             <!-- Filter Section -->
                             <div class="flex flex-col gap-3 rounded-lg">
-                                <div class="form-control flex gap-x-2">
+                                <div class="flex form-control gap-x-2">
+                                    <div>
+                                        <label for="mitra" class="text-xs font-medium label md:text-sm label-text">Mitra</label>
+                                        <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-md">
+                                            <option selected value="">All Mitra</option>
+                                            @foreach ($client as $cl)
+                                                <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div>
                                         <label class="label">
                                             <span class="text-xs font-medium md:text-sm label-text">Filter Bulan</span>
                                         </label>
-                                        <select id="monthFilter" class="select select-bordered select-xs md:select-md rounded-sm">
+                                        <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-md">
                                             <option selected value="">All Months</option>
                                             <option value="1">Januari</option>
                                             <option value="2">Februari</option>
@@ -38,7 +47,7 @@
                                         <label class="label">
                                             <span class="text-xs font-medium md:text-sm label-text">Filter Tahun</span>
                                         </label>
-                                        <select id="yearFilter" class="select select-bordered select-xs md:select-md rounded-sm">
+                                        <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-md">
                                             <option selected value="">All Year</option>
                                             @for ($year = now()->year; $year >= 2024; $year--)
                                             <option value="{{ $year }}">{{ $year }}</option>
@@ -47,10 +56,10 @@
                                     </div>
                                 </div>
                                 <div class="flex gap-2">
-                                    <button id="applyFilter" class="btn btn-xs md:btn-sm bg-blue-500/20 border-0 text-blue-600 rounded-sm hover:bg-blue-600 hover:text-white">Apply Filter</button>
-                                    <button id="clearFilter" class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white">Clear</button>
-                                    <button id="generatePdf" class="btn btn-xs md:btn-sm bg-green-500/20 border-0 text-green-600 rounded-sm hover:bg-green-600 hover:text-white">
-                                       <i class="mr-1 ri-download-cloud-2-line text-xs md:text-sm"></i><span class="hidden sm:inline">Download PDF</span>
+                                    <button id="applyFilter" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Apply Filter</button>
+                                    <button id="clearFilter" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Clear</button>
+                                    <button id="generatePdf" class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
+                                       <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span class="hidden sm:inline">Download PDF</span>
                                     </button>
                                 </div>
                                 <divider class="border-t border-gray-100"/>
@@ -58,8 +67,8 @@
 
                             <!-- Selection Controls -->
                             <div class="flex gap-2">
-                                <button id="selectAll" class="btn btn-xs md:btn-sm bg-blue-500/20 border-0 text-blue-600 rounded-sm hover:bg-blue-600 hover:text-white">Select All</button>
-                                <button id="deselectAll" class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white">Deselect All</button>
+                                <button id="selectAll" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select All</button>
+                                <button id="deselectAll" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect All</button>
                             </div>
                         </div>
 
@@ -291,7 +300,7 @@
                 }
 
                 // Load data (defensive)
-                function loadData(page = 1, month = null, year = null) {
+                function loadData(page = 1, month = null, year = null, mitra = null) {
                     // Abort previous request if any
                     if (currentRequest && currentRequest.readyState !== 4) {
                         currentRequest.abort();
@@ -306,7 +315,8 @@
                         data: {
                             page: page,
                             month,
-                            year
+                            year,
+                            mitra
                         },
                         dataType: 'json',
                         success: function (response) {
@@ -366,10 +376,10 @@
                             <td class="hidden px-2 py-2 md:px-3 sm:table-cell">
                                 ${renderImageCell(item.img_before, 'Before')}
                             </td>
-                            <td class="hidden px-2 py-2 md:px-3 md:table-cell text-center">
+                            <td class="hidden px-2 py-2 text-center md:px-3 md:table-cell">
                                 ${renderImageCell(item.img_proccess, '-')}
                             </td>
-                            <td class="hidden px-2 py-2 md:px-3 lg:table-cell text-center">
+                            <td class="hidden px-2 py-2 text-center md:px-3 lg:table-cell">
                                 ${renderImageCell(item.img_final, '-')}
                             </td>
                             <td class="hidden px-2 py-2 md:px-3 md:table-cell">
@@ -379,10 +389,10 @@
                             </td>
                             <td class="px-2 py-2 md:px-3">
                                 <div class="flex justify-center gap-1 md:gap-2">
-                                    <button class="btn btn-xs md:btn-sm bg-yellow-500/20 border-0 text-yellow-600 rounded-sm hover:bg-yellow-600 hover:text-white btn-edit" data-id="${item.id}">
-                                        <i class="ri-settings-3-line text-xs md:text-sm"></i>
+                                    <button class="text-yellow-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-yellow-500/20 hover:bg-yellow-600 hover:text-white btn-edit" data-id="${item.id}">
+                                        <i class="text-xs ri-settings-3-line md:text-sm"></i>
                                     </button>
-                                    <button class="btn btn-xs md:btn-sm bg-red-500/20 border-0 text-red-600 rounded-sm hover:bg-red-600 hover:text-white btn-delete" data-id="${item.id}">
+                                    <button class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white btn-delete" data-id="${item.id}">
                                         <i class="text-xs md:text-sm ri-delete-bin-line"></i>
                                     </button>
                                 </div>
@@ -445,6 +455,7 @@
                     $('#clearFilter').click(function() {
                         $('#monthFilter').val('');
                         $('#yearFilter').val('');
+                        $('#mitraFilter').val('');
                         currentMonth = '';
                         loadData(1);
                     });
@@ -453,7 +464,8 @@
                  $('#applyFilter').click(function() {
                     const month = $('#monthFilter').val();
                     const year = $('#yearFilter').val();
-                    loadData(1, month, year);
+                    const mitra = $('#mitraFilter').val();
+                    loadData(1, month, year, mitra);
                 });
 
                 // Setup checkbox controls
