@@ -10,6 +10,7 @@ use App\Http\Requests\UImageUserDraftRequest;
 use App\Services\UploadImageService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UploadImageController extends Controller
@@ -81,9 +82,14 @@ class UploadImageController extends Controller
 
         } catch (\Exception $e) {
 
+            Log::error('message: error on UploadImageController ', $e);
             return $request->ajax()
-                ? response()->json(['message' => $e->getMessage()], 403)
-                : back()->with('error', $e->getMessage());
+                ? response()->json([
+                    'status' => false,
+                    'message' => 'Failed to created data.',
+                    'error' => $e->getMessage()
+                ], 422)
+                : back()->with('error', 'Failed to created data.');
         }
     }
 
@@ -106,9 +112,14 @@ class UploadImageController extends Controller
 
         } catch (\Exception $e) {
 
+            Log::error('message: error on UploadImageController::draft ', $e);
             return $request->ajax()
-                ? response()->json(['message' => $e->getMessage()], 403)
-                : back()->with('error', $e->getMessage());
+                ? response()->json([
+                    'status' => false,
+                    'message' => 'Failed to created data.',
+                    'error' => $e->getMessage()
+                ], 422)
+                : back()->with('error', 'Failed to created data.');
         }
     }
 
@@ -282,7 +293,7 @@ class UploadImageController extends Controller
         }
 
         if ($uploadImage->img_before) Storage::disk('public')->delete($uploadImage->img_before);
-        if ($uploadImage->img_proccess) Storage::disk('public')->delete($$uploadImage->img_proccess);
+        if ($uploadImage->img_proccess) Storage::disk('public')->delete($uploadImage->img_proccess);
         if ($uploadImage->img_final) Storage::disk('public')->delete($uploadImage->img_final);
 
         $uploadImage->delete();

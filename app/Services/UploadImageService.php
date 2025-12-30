@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UploadImageService
@@ -69,7 +70,7 @@ class UploadImageService
                     ]);
             }
 
-            throw $e;
+            Log::error('message: error on UploadImageService', $e);
 
         }
     }
