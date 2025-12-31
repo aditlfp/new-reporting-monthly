@@ -1,6 +1,4 @@
 function getFotoPageHtml(data, currentMonth) {
-  console.log(data);
-
   // Format month name in Indonesian
   const monthNames = [
     "Januari",
@@ -57,7 +55,7 @@ function getFotoPageHtml(data, currentMonth) {
     }
 
     // Adjust margin-top for subsequent pages to compensate for missing header
-    const marginTop = pageIndex === 0 ? "50pt" : "20pt";
+    const marginTop = pageIndex === 0 ? "20pt" : "20pt";
 
     html += `
                 <div style="margin-top: ${marginTop}; margin-left: 20pt; margin-right: 20pt; font-stretch: ultra-condensed;">
@@ -99,9 +97,9 @@ function getFotoPageHtml(data, currentMonth) {
       html += `
                 <tr>
                     <td style="border: 1px solid black;">${globalIndex}.</td>
-                    <td style="border: 1px solid black; max-width: 224px; max-height: 224px; min-width: 224px; min-height: 224px;"><img src="${beforeImage}" alt="before" style="max-width: 224px; max-height:100%; object-fit: contain; display: block; margin: auto;"></td>
-                    <td style="border: 1px solid black; max-width: 224px; max-height: 224px; min-width: 224px; min-height: 224px;"><img src="${progressImage}" alt="proses" style="max-width: 224px; max-height:100%; object-fit: contain; display: block; margin: auto;"></td>
-                    <td style="border: 1px solid black; max-width: 224px; max-height: 224px; min-width: 224px; min-height: 224px;"><img src="${afterImage}" alt="after" style="max-width: 224px; max-height:100%; object-fit: contain; display: block; margin: auto;"></td>
+                    <td class="square-cell"><img src="${beforeImage}" alt="before"></td>
+                    <td class="square-cell"><img src="${progressImage}" alt="proses"></td>
+                    <td class="square-cell"><img src="${afterImage}" alt="after"></td>
                     <td style="border: 1px solid black; text-align: left; padding: 0 10pt;">${note}</td>
                 </tr>
             `;

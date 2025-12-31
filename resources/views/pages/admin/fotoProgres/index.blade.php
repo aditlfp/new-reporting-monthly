@@ -22,6 +22,12 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div id="filterUserContainer">
+                                        <label for="userFilter" class="text-xs font-medium label md:text-sm label-text">User</label>
+                                        <select name="userFilter" id="userFilter" class="rounded-sm select select-bordered select-xs md:select-md" disabled>
+                                            <option selected value="">Select Mitra First</option>
+                                        </select>
+                                    </div>
                                     <div>
                                         <label class="label">
                                             <span class="text-xs font-medium md:text-sm label-text">Filter Bulan</span>
@@ -81,6 +87,7 @@
                                         </th>
                                         <th class="p-2 md:p-3">ID</th>
                                         <th class="p-2 md:p-3">Nama Mitra</th>
+                                        <th class="p-2 md:p-3">Nama User</th>
                                         <th class="hidden p-2 md:p-3 sm:table-cell">Before</th>
                                         <th class="hidden p-2 md:p-3 md:table-cell">Progress</th>
                                         <th class="hidden p-2 md:p-3 lg:table-cell">After</th>
@@ -300,7 +307,7 @@
                 }
 
                 // Load data (defensive)
-                function loadData(page = 1, month = null, year = null, mitra = null) {
+                function loadData(page = 1, month = null, year = null, mitra = null, user = null) {
                     // Abort previous request if any
                     if (currentRequest && currentRequest.readyState !== 4) {
                         currentRequest.abort();
@@ -316,7 +323,8 @@
                             page: page,
                             month,
                             year,
-                            mitra
+                            mitra,
+                            user
                         },
                         dataType: 'json',
                         success: function (response) {
@@ -370,7 +378,12 @@
                             <td class="px-2 py-2 md:px-3">${index + 1}</td>
                             <td class="px-2 py-2 md:px-3">
                                 <div class="max-w-[100px] md:max-w-xs truncate" title="${item.clients?.name || '-'}">
-                                    ${item.clients?.name || '-'}
+                                    ${kapitalName(item.clients?.name || '-')}
+                                </div>
+                            </td>
+                            <td class="px-2 py-2 md:px-3">
+                                <div class="max-w-[100px] md:max-w-xs truncate" title="${item.user?.nama_lengkap || '-'}">
+                                    ${kapitalName(item.user?.nama_lengkap || '-')}
                                 </div>
                             </td>
                             <td class="hidden px-2 py-2 md:px-3 sm:table-cell">
@@ -452,20 +465,89 @@
 
                 // Setup filter controls
                 function setupFilterControls() {
+                    // Handle mitra filter change
+                    $('#mitraFilter').change(function() {
+                        const mitraId = $(this).val();
+                        
+                        if (mitraId) {
+                            // Fetch users for selected mitra
+                            $.ajax({
+                                url: '{{ route('admin.upload.get-users') }}',
+                                type: 'GET',
+                                data: { mitra_id: mitraId },
+                                dataType: 'json',
+                                beforeSend: function() {
+                                    // Show loading state
+                                    $('#userFilter').html('<option value="">Loading...</option>');
+                                },
+                                success: function(response) {
+                                    if (response.status) {
+                                        populateUserFilter(response.data);
+                                    } else {
+                                        console.error('Error in response:', response);
+                                        $('#userFilter').html('<option selected value="">Error loading users</option>');
+                                        $('#userFilter').prop('disabled', true);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('AJAX error:', {
+                                        status: status,
+                                        error: error,
+                                        responseText: xhr.responseText
+                                    });
+                                    
+                                    // Reset user filter on error
+                                    $('#userFilter').html('<option selected value="">Error loading users</option>');
+                                    $('#userFilter').prop('disabled', true);
+                                }
+                            });
+                        } else {
+                            // Reset user filter
+                            $('#userFilter').html('<option selected value="">Select Mitra First</option>');
+                            $('#userFilter').prop('disabled', true);
+                        }
+                    });
+
                     $('#clearFilter').click(function() {
                         $('#monthFilter').val('');
                         $('#yearFilter').val('');
                         $('#mitraFilter').val('');
+                        $('#userFilter').html('<option selected value="">Select Mitra First</option>');
+                        $('#userFilter').prop('disabled', true);
                         currentMonth = '';
                         loadData(1);
                     });
                 }
 
-                 $('#applyFilter').click(function() {
+                // Populate user filter dropdown
+                function populateUserFilter(users) {
+                    let html = '<option value="">All Users</option>';
+                    
+                    if (users && users.length > 0) {
+                        users.forEach(user => {
+                            html += `<option value="${user.id}">${kapitalName(user.nama_lengkap)}</option>`;
+                        });
+                    } else {
+                        html += '<option value="">No users found</option>';
+                    }
+                    
+                    $('#userFilter').html(html);
+                    $('#userFilter').prop('disabled', false);
+                }
+
+                $('#applyFilter').click(function() {
                     const month = $('#monthFilter').val();
                     const year = $('#yearFilter').val();
                     const mitra = $('#mitraFilter').val();
-                    loadData(1, month, year, mitra);
+                    const user = $('#userFilter').val();
+                    // Update currentMonth when filter is applied
+                    if (month || year) {
+                        currentMonth = year + '-' + (month ? month.padStart(2, '0') : '01');
+                    } else {
+                        currentMonth = '';
+                    }
+                    
+                    loadData(1, month, year, mitra, user);
                 });
 
                 // Setup checkbox controls
@@ -505,23 +587,44 @@
                             }
                         }
 
+                        // Show loading state
+                        const $button = $(this);
+                        const originalText = $button.html();
+                        $button.prop('disabled', true);
+                        $button.html('<span class="loading loading-spinner loading-sm"></span> Generating PDF...');
+
+                        // Show progress overlay
+                        showPdfProgressOverlay('Fetching data...');
+
                         // Get data for PDF generation
                         $.ajax({
                             url: '{{ route('admin.upload.get-pdf-data') }}',
                             type: 'GET',
                             data: {
                                 ids: selectedIds,
-                                month: currentMonth
+                                month: currentMonth,
                             },
                             dataType: 'json',
                             success: function(response) {
                                 if (response.status) {
-                                    generatePdf(response.data);
+                                    updatePdfProgress('Generating PDF...');
+                                    generatePdf(response.data, currentMonth, function() {
+                                        // Callback when PDF generation is complete
+                                        hidePdfProgressOverlay();
+                                        $button.prop('disabled', false);
+                                        $button.html(originalText);
+                                    });
                                 } else {
+                                    hidePdfProgressOverlay();
+                                    $button.prop('disabled', false);
+                                    $button.html(originalText);
                                     Notify('Error generating PDF', null, null, 'error');
                                 }
                             },
                             error: function(xhr) {
+                                hidePdfProgressOverlay();
+                                $button.prop('disabled', false);
+                                $button.html(originalText);
                                 Notify('Error getting PDF data', null, null, 'error');
                             }
                         });
@@ -529,9 +632,11 @@
                 }
 
                 // Generate PDF using getFotoPageHtml
-                function generatePdf(data) {
+                function generatePdf(data, currentMonth, onComplete) {
                     // Get the array of page HTML strings
                     const pages = getFotoPageHtml(data, currentMonth);
+                    let totalPages = pages.length;
+                    let processedPages = 0;
 
                     // Initialize PDF
                     try {
@@ -557,10 +662,16 @@
                         function processNextPage() {
                             if (currentPageIndex >= pages.length) {
                                 // All pages processed, send PDF to backend
+                                updatePdfProgress('Saving PDF...');
                                 const pdfBlob = pdf.output('blob');
-                                sendPdfToBackend(pdfBlob, currentMonth, data[0].clients_id);
+                                sendPdfToBackend(pdfBlob, currentMonth, data[0].clients_id, function() {
+                                    if (onComplete) onComplete();
+                                });
                                 return;
                             }
+
+                            processedPages++;
+                            updatePdfProgress(`Processing page ${processedPages} of ${totalPages}...`);
 
                             // Create temporary div for current page
                             const pageDiv = document.createElement('div');
@@ -610,6 +721,8 @@
                                 console.error('Error capturing page:', error);
                                 document.body.removeChild(pageDiv);
                                 Notify('Error generating PDF: ' + error.message, null, null, 'error');
+                                hidePdfProgressOverlay();
+                                if (onComplete) onComplete();
                             });
                         }
 
@@ -618,11 +731,13 @@
                     } catch (error) {
                         console.error('Error initializing PDF generator:', error);
                         Notify('Error initializing PDF generator: ' + error.message, null, null, 'error');
+                        hidePdfProgressOverlay();
+                        if (onComplete) onComplete();
                     }
                 }
 
                 // Function to send PDF to backend
-                function sendPdfToBackend(pdfBlob, month, clientIds) {
+                function sendPdfToBackend(pdfBlob, month, clientIds, onComplete) {
                     const formData = new FormData();
                     formData.append('pdf', pdfBlob, `Photo_Progress_Report_${month.replace(/\s+/g, '_')}.pdf`);
                     formData.append('month', month);
@@ -637,9 +752,11 @@
                         contentType: false,
                         success: function(response) {
                             Notify('PDF saved successfully!', null, null, 'success');
+                            if (onComplete) onComplete();
                         },
                         error: function(xhr) {
                             Notify('Error saving PDF: ' + (xhr.responseJSON?.message || 'Unknown error'), null, null, 'error');
+                            if (onComplete) onComplete();
                         }
                     });
                 }
@@ -649,7 +766,11 @@
                     e.preventDefault();
                     const page = $(this).data('page');
                     if (page && !$(this).hasClass('btn-disabled') && !$(this).hasClass('btn-active')) {
-                        loadData(page);
+                        const month = $('#monthFilter').val();
+                        const year = $('#yearFilter').val();
+                        const mitra = $('#mitraFilter').val();
+                        const user = $('#userFilter').val();
+                        loadData(page, month, year, mitra, user);
                     }
                 });
 
@@ -932,6 +1053,44 @@
                         $(`#error-${key}`).removeClass('hidden').find('span').text(value[0]);
                     });
                 }
+
+                function kapitalName(name) {
+                    return name
+                        .toLowerCase()
+                        .trim()
+                        .replace(/\b([a-z])|\'([a-z])/g, match => match.toUpperCase());
+                }
+
+                // Show PDF generation progress overlay
+                function showPdfProgressOverlay(message) {
+                    // Create overlay if it doesn't exist
+                    if (!$('#pdfProgressOverlay').length) {
+                        $('body').append(`
+                            <div id="pdfProgressOverlay" class="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 bg-black/50">
+                                <div class="max-w-sm p-6 mx-4 bg-white rounded-lg">
+                                    <div class="flex flex-col items-center">
+                                        <div class="mb-4 loading loading-spinner loading-lg"></div>
+                                        <p id="pdfProgressMessage" class="text-center">${message}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    } else {
+                        $('#pdfProgressMessage').text(message);
+                        $('#pdfProgressOverlay').removeClass('hidden');
+                    }
+                }
+
+                // Update progress message
+                function updatePdfProgress(message) {
+                    $('#pdfProgressMessage').text(message);
+                }
+
+                // Hide PDF generation progress overlay
+                function hidePdfProgressOverlay() {
+                    $('#pdfProgressOverlay').addClass('hidden');
+                }
+
 
                 // Initial load
                 init();

@@ -322,7 +322,8 @@ class UploadImageController extends Controller
         
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data' => $data,
+            'my' => $request->month,
         ]);
     }
 

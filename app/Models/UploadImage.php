@@ -51,6 +51,9 @@ class UploadImage extends Model
             )
             ->when($filters['client_id'] ?? null, function ($q, $client_id) {
                 $q->where('clients_id', $client_id);
+            })
+            ->when($filters['user_id'] ?? null, function ($q, $user_id) {
+                $q->where('user_id', $user_id);
             });
     }
 
