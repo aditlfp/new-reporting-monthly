@@ -6,6 +6,7 @@ use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Clients;
 use App\Models\UploadImage;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,24 +15,37 @@ class DataFotoController extends Controller
     public function index(Request $request)
     {
         if($request->has('id')){
-            $images = UploadImage::with('clients')->where('id', $request->input('id'))->first();
+            $images = UploadImage::with('clients', 'user.kerjasama')->where('id', $request->input('id'))->first();
         } else {
-            $images = UploadImage::with('clients')->latest()->paginate(20);
+            $images = UploadImage::with('clients', 'user.kerjasama')->latest()->paginate(20);
         }
 
         if($request->month)
         {
-            $images = UploadImage::with('clients')->searchFilters([
+            $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
                 'month' => $request->month,
                 'year' => $request->year
             ])->paginate(14);
         }
 
+        $user = collect();
+
         if($request->mitra)
         {
-            $images = UploadImage::with('clients')->searchFilters([
-                'client_id' => $request->mitra,
-            ])->paginate(14);
+            $user = User::whereHas('kerjasama', function($q) use ($request) {
+                $q->where('client_id', $request->mitra);
+            })->get();
+
+            if($request->user) {
+                $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
+                    'client_id' => $request->mitra,
+                    'user_id' => $request->user,
+                ])->paginate(30);
+            } else {
+                $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
+                    'client_id' => $request->mitra,
+                ])->paginate(14);
+            }
         }
 
         $client = Clients::all();
@@ -40,6 +54,7 @@ class DataFotoController extends Controller
             return response()->json([
                 'status' => true,
                 'data' => $images,
+                'users' => $user,
             ]);
         }
 
@@ -91,5 +106,19 @@ class DataFotoController extends Controller
         }
 
         return redirect()->route('admin.upload.index')->with('success', 'Upload deleted successfully.');
+    }
+
+    public function getUsers(Request $request)
+    {
+        $mitraId = $request->mitra_id;
+        
+        $users = User::whereHas('kerjasama', function($query) use ($mitraId) {
+            $query->where('client_id', $mitraId);
+        })->get();
+        
+        return response()->json([
+            'status' => true,
+            'data' => $users
+        ]);
     }
 }

@@ -74,6 +74,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/admin-foto-progress', [DataFotoController::class, 'index'])->name('admin.upload.index');
     Route::put('/admin-foto-progress-update/{upload_image}', [DataFotoController::class, 'update'])->name('admin.upload.update');
     Route::delete('/admin-foto-progress-delete/{upload_image}', [DataFotoController::class, 'destroy'])->name('admin.upload.destroy');
+    Route::get('/admin/upload/get-users', [DataFotoController::class, 'getUsers'])->name('admin.upload.get-users');
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');
