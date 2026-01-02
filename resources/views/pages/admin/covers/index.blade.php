@@ -2,7 +2,7 @@
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
         <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
-            <div class="flex items-center justify-end mb-6">
+            <div class="flex items-center justify-end my-8">
                 <button id="openCoverModal"
                     class="text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm btn btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                     <i class="ri-add-line"></i> Add New Cover
@@ -185,7 +185,6 @@
     <div class="z-50 toast toast-top toast-end" id="toastContainer"></div>
 
     @push('scripts')
-    <script src="{{ asset('js/Notify.js') }}"></script>
     <script>
     (function($) {
         'use strict';
@@ -278,7 +277,7 @@
                             <span class="badge badge-sm ${badgeClass} w-full whitespace-nowrap">${item.jenis_rekap}</span>
                         </td>
                         <td class="hidden px-3 py-2 md:block">
-                            <span class="badge badge-sm ${badgeClass}">${item.jenis_rekap}</span>
+                             <span class="badge badge-sm mt-6 ${badgeClass}">${item.jenis_rekap}</span>
                         </td>
                         <td class="whitespace-nowrap">
                             <div class="flex space-x-2">

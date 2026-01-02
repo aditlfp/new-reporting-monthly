@@ -12,10 +12,10 @@
 
                             <!-- Filter Section -->
                             <div class="flex flex-col gap-3 rounded-lg">
-                                <div class="flex form-control gap-x-2">
-                                    <div>
+                                <div class="flex items-center form-control gap-x-2">
+                                    <div class="flex flex-col">
                                         <label for="mitra" class="text-xs font-medium label md:text-sm label-text">Mitra</label>
-                                        <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-md">
+                                        <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Mitra</option>
                                             @foreach ($client as $cl)
                                                 <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}</option>
@@ -32,7 +32,7 @@
                                         <label class="label">
                                             <span class="text-xs font-medium md:text-sm label-text">Filter Bulan</span>
                                         </label>
-                                        <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-md">
+                                        <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Months</option>
                                             <option value="1">Januari</option>
                                             <option value="2">Februari</option>
@@ -53,7 +53,7 @@
                                         <label class="label">
                                             <span class="text-xs font-medium md:text-sm label-text">Filter Tahun</span>
                                         </label>
-                                        <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-md">
+                                        <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Year</option>
                                             @for ($year = now()->year; $year >= 2024; $year--)
                                             <option value="{{ $year }}">{{ $year }}</option>
