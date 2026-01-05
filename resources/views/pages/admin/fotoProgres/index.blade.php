@@ -278,7 +278,7 @@
         </div>
     </div>
 
-    <audio id="notify-sound" src="/sound/done.mp3" preload="auto"></audio>
+    <audio id="notify-sound" src="{{ asset('/sound/done.mp3') }}" preload="auto"></audio>
 
     @push('scripts')
         <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
