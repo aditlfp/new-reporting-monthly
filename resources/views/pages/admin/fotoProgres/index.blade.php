@@ -14,7 +14,7 @@
                             <div class="flex flex-col gap-3 rounded-lg">
                                 <div class="flex items-center form-control gap-x-2">
                                     <div class="flex flex-col">
-                                        <label for="mitra" class="text-xs font-medium label md:text-sm label-text">Mitra</label>
+                                        <label for="mitra" class="required text-xs font-medium label md:text-sm label-text">Mitra</label>
                                         <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Mitra</option>
                                             @foreach ($client as $cl)
@@ -23,14 +23,14 @@
                                         </select>
                                     </div>
                                     <div id="filterUserContainer">
-                                        <label for="userFilter" class="text-xs font-medium label md:text-sm label-text">User</label>
-                                        <select name="userFilter" id="userFilter" class="rounded-sm select select-bordered select-xs md:select-md" disabled>
-                                            <option selected value="">Select Mitra First</option>
+                                        <label for="userFilter" class="required text-xs font-medium label md:text-sm label-text">User</label>
+                                        <select name="userFilter" id="userFilter" class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
+                                            <option selected value="">Pilih Mitra Terlebih Dahulu</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="label">
-                                            <span class="text-xs font-medium md:text-sm label-text">Filter Bulan</span>
+                                            <span class="required text-xs font-medium md:text-sm label-text">Filter Bulan</span>
                                         </label>
                                         <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Months</option>
@@ -51,7 +51,7 @@
 
                                     <div>
                                         <label class="label">
-                                            <span class="text-xs font-medium md:text-sm label-text">Filter Tahun</span>
+                                            <span class="required text-xs font-medium md:text-sm label-text">Filter Tahun</span>
                                         </label>
                                         <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Year</option>
@@ -76,6 +76,12 @@
                                 <button id="selectAll" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select All</button>
                                 <button id="deselectAll" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect All</button>
                             </div>
+
+                            <div id="pdf-progress-container" class="hidden" style="font-family: Arial, sans-serif; margin-top: 20px;">
+                                <h3>PDF Generation Progress</h3>
+                                <progress id="pdf-progress" class="progress progress-success w-56" value="0" max="100"></progress>
+                            </div>
+
                         </div>
 
                         <div class="overflow-x-auto">
@@ -272,11 +278,71 @@
         </div>
     </div>
 
+    <audio id="notify-sound" src="/sound/done.mp3" preload="auto"></audio>
+
     @push('scripts')
         <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js"></script>
         <script src="{{ asset('js/fotoPages.js') }}"></script>
         <script>
+
+            function askNotificationPermission() {
+                if (!("Notification" in window)) {
+                    console.warn("This browser does not support notifications.");
+                    return;
+                }
+
+                if (Notification.permission === "granted") {
+                    return;
+                } 
+
+                if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        console.log("Notification permission:", permission);
+                    });
+                }
+            }
+
+            askNotificationPermission();
+
+            function showNotification(title, options) {
+                if (Notification.permission === "granted") {
+                    new Notification(title, options);
+                }
+            }
+
+
+            function queueProgress(pageIndex, totalPages) {
+                const list = document.getElementById('pdf-progress-list');
+                const listItem = document.createElement('li');
+                listItem.id = `pdf-page-${pageIndex}`;
+                listItem.textContent = `Queued page ${pageIndex} of ${totalPages}`;
+                list.appendChild(listItem);
+            }
+
+            function setProgress(percent) {
+                const bar = document.getElementById('pdf-progress');
+                $('#pdf-progress-container').removeClass('hidden');
+                if (bar) {
+                    bar.value = percent;
+                }
+            }
+
+
+            function updateProgress(pageIndex, status) {
+                const listItem = document.getElementById(`pdf-page-${pageIndex}`);
+                $('#pdf-progress-container').removeClass('hidden');
+                if (listItem) {
+                    listItem.textContent = `${status} page ${pageIndex}`;
+                }
+            }
+
+            function clearProgressQueue() {
+                const bar = document.getElementById('pdf-progress');
+                if (bar) {
+                    bar.value = 0;
+                }
+            }
 
 
             $(document).ready(function() {
@@ -594,7 +660,6 @@
                         $button.html('<span class="loading loading-spinner loading-sm"></span> Generating PDF...');
 
                         // Show progress overlay
-                        showPdfProgressOverlay('Fetching data...');
 
                         // Get data for PDF generation
                         $.ajax({
@@ -631,110 +696,96 @@
                     });
                 }
 
-                // Generate PDF using getFotoPageHtml
                 function generatePdf(data, currentMonth, onComplete) {
-                    // Get the array of page HTML strings
-                    const pages = getFotoPageHtml(data, currentMonth);
-                    let totalPages = pages.length;
-                    let processedPages = 0;
+                  const pages = getFotoPageHtml(data, currentMonth);
+                  const totalPages = pages.length;
+                  setProgress(0);
 
-                    // Initialize PDF
-                    try {
-                        const jsPDFConstructor =
-                            (window.jspdf?.jsPDF) ||
-                            (window.jspdf?.default) ||
-                            (window.jsPDF) ||
-                            (typeof jspdf !== 'undefined' && jspdf.jsPDF);
+                  const images = [];
 
-                        if (!jsPDFConstructor) {
-                            throw new Error('jsPDF library not loaded properly.');
-                        }
+                  let index = 0;
 
-                        const pdf = new jsPDFConstructor({
-                            orientation: 'landscape',
-                            unit: 'mm',
-                            format: 'a4'
-                        });
-
-                        // Process each page sequentially
-                        let currentPageIndex = 0;
-
-                        function processNextPage() {
-                            if (currentPageIndex >= pages.length) {
-                                // All pages processed, send PDF to backend
-                                updatePdfProgress('Saving PDF...');
-                                const pdfBlob = pdf.output('blob');
-                                sendPdfToBackend(pdfBlob, currentMonth, data[0].clients_id, function() {
-                                    if (onComplete) onComplete();
-                                });
-                                return;
-                            }
-
-                            processedPages++;
-                            updatePdfProgress(`Processing page ${processedPages} of ${totalPages}...`);
-
-                            // Create temporary div for current page
-                            const pageDiv = document.createElement('div');
-                            pageDiv.style.position = 'absolute';
-                            pageDiv.style.left = '-9999px';
-                            pageDiv.style.width = '297mm'; // A4 width in mm
-                            pageDiv.style.backgroundColor = 'white';
-                            pageDiv.style.margin = '0';
-                            pageDiv.style.boxSizing = 'border-box';
-                            pageDiv.style.fontFamily = 'Arial, sans-serif';
-                            pageDiv.innerHTML = pages[currentPageIndex];
-
-                            // Add to document
-                            document.body.appendChild(pageDiv);
-
-                            // Capture the current page
-                            html2canvas(pageDiv, {
-                                scale: 2,
-                                useCORS: true,
-                                allowTaint: true,
-                                logging: false,
-                                width: pageDiv.offsetWidth,
-                                height: pageDiv.offsetHeight,
-                                backgroundColor: null
-                            }).then(canvas => {
-                                // Remove temporary element
-                                document.body.removeChild(pageDiv);
-
-                                // Convert to image data
-                                const imgData = canvas.toDataURL('image/jpeg', 0.70);
-                                const imgProps = pdf.getImageProperties(imgData);
-                                const pdfWidth = pdf.internal.pageSize.getWidth();
-                                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                                // Add new page if not the first page
-                                if (currentPageIndex > 0) {
-                                    pdf.addPage();
-                                }
-
-                                // Add image to PDF
-                                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-                                // Move to next page
-                                currentPageIndex++;
-                                processNextPage();
-                            }).catch(error => {
-                                console.error('Error capturing page:', error);
-                                document.body.removeChild(pageDiv);
-                                Notify('Error generating PDF: ' + error.message, null, null, 'error');
-                                hidePdfProgressOverlay();
-                                if (onComplete) onComplete();
-                            });
-                        }
-
-                        // Start processing pages
-                        processNextPage();
-                    } catch (error) {
-                        console.error('Error initializing PDF generator:', error);
-                        Notify('Error initializing PDF generator: ' + error.message, null, null, 'error');
-                        hidePdfProgressOverlay();
-                        if (onComplete) onComplete();
+                  function renderNext() {
+                    if (index >= totalPages) {
+                      // sudah selesai render semua jadi image
+                      setProgress(100);
+                      startWorker(images);
+                      return;
                     }
+
+
+                    const pageNum = index + 1;
+                    const progressPercent = Math.round((pageNum - 1) / totalPages * 100);
+
+                    // Update bar for starting this page
+                    setProgress(progressPercent);
+
+                    const div = document.createElement("div");
+                    div.style.position = "absolute";
+                    div.style.left = "-9999px";
+                    div.style.width = "297mm";
+                    div.style.backgroundColor = "white";
+                    div.innerHTML = pages[index];
+                    document.body.appendChild(div);
+
+                    html2canvas(div, {
+                      scale: 2,
+                      useCORS: true,
+                      allowTaint: true,
+                      logging: false,
+                    }).then(canvas => {
+                      document.body.removeChild(div);
+
+                      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                      images.push(dataUrl);
+
+                      // Update after page finished
+                      const newPercent = Math.round(pageNum / totalPages * 100);
+                      setProgress(newPercent);
+
+                      index++;
+                      renderNext();
+
+                    }).catch(err => {
+                      console.error(err);
+                    });
+                  }
+
+                  renderNext();
+
+                  function startWorker(images) {
+                    const worker = new Worker("/js/pdf-worker.js");
+
+                    worker.onmessage = function (e) {
+                      if (e.data.progress !== undefined) {
+                        setProgress(e.data.progress);
+                      }
+
+                      if (e.data.done) {
+                        sendPdfToBackend(e.data.pdfBlob, currentMonth, data[0].clients_id, () => {
+                          if (onComplete) onComplete();
+
+                          showNotification("PDF Generation Complete", {
+                                body: "Proses pembuatan PDF telah selesai!",
+                                icon: "/favicon.ico"
+                            });
+                          document.getElementById("notify-sound").play().catch(console.warn);
+
+                        });
+                        worker.terminate();
+                      }
+
+                      if (e.data.error) {
+                        console.error("Worker Error:", e.data.error);
+                        worker.terminate();
+                      }
+                    };
+
+                    worker.postMessage({ images });
+                  }
                 }
+
+
 
                 // Function to send PDF to backend
                 function sendPdfToBackend(pdfBlob, month, clientIds, onComplete) {
@@ -1061,25 +1112,6 @@
                         .replace(/\b([a-z])|\'([a-z])/g, match => match.toUpperCase());
                 }
 
-                // Show PDF generation progress overlay
-                function showPdfProgressOverlay(message) {
-                    // Create overlay if it doesn't exist
-                    if (!$('#pdfProgressOverlay').length) {
-                        $('body').append(`
-                            <div id="pdfProgressOverlay" class="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 bg-black/50">
-                                <div class="max-w-sm p-6 mx-4 bg-white rounded-lg">
-                                    <div class="flex flex-col items-center">
-                                        <div class="mb-4 loading loading-spinner loading-lg"></div>
-                                        <p id="pdfProgressMessage" class="text-center">${message}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    } else {
-                        $('#pdfProgressMessage').text(message);
-                        $('#pdfProgressOverlay').removeClass('hidden');
-                    }
-                }
 
                 // Update progress message
                 function updatePdfProgress(message) {

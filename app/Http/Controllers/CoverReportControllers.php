@@ -143,12 +143,29 @@ class CoverReportControllers extends Controller
             'srt_id' => 'required'
         ]);
 
-        $dataSrt = Latters::with('cover')->find($request->srt_id);
-        $dataImg = UploadImage::where('clients_id', $dataSrt->cover->clients_id)->whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)->get();
+        $dataSrt = Latters::with(['cover.client'])->find($request->srt_id);
         Carbon::setLocale('id');
 
-        $namePDF = $dataSrt->cover->client->name . ' ' . Carbon::now()->translatedFormat('F Y');
+        // $fileName = $year . '-' . $month . '-' . $clientIds . '.pdf';
+        // $filePath = 'rekap_foto/' . $fileName;
+
+        $periodEn = str_replace(
+            ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
+            ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            $dataSrt->period
+        );
+
+        $periodDate = Carbon::createFromFormat('F Y', $periodEn);
+
+        $period       = $periodDate->format('Y-m');
+        $periodMonth  = $periodDate->month; 
+        $periodYear   = $periodDate->year;
+
+
+        $dataImg = UploadImage::where('clients_id', $dataSrt->cover->clients_id)->whereMonth('created_at', $periodMonth)
+            ->whereYear('created_at', $periodYear)->get();
+
+        $namePDF = $dataSrt->cover->client->name . ' ' . $period;
         $path = $request->file('pdf')->storeAs(
             'covers_to_pdf',
             $namePDF,
@@ -158,21 +175,15 @@ class CoverReportControllers extends Controller
 
         $file1 = storage_path('app/public/' . $path);
         $file2 = storage_path('app/public/' . $dataSrt->signature);
-        $file3 = storage_path('app/public/pdf/rekap_foto/' . Carbon::now()->format('Y-m') . '-' . $dataSrt->cover->clients_id . '.pdf');
+        $file3 = storage_path('app/public/rekap_foto/' . $period . '-' . $dataSrt->cover->clients_id . '.pdf');
 
         $files = [$file1, $file2, $file3];
 
-        FileHelper::mergePdfs($files, storage_path('app/public/pdf/merged.pdf'));
-
-        
-
-        
-
-
+        FileHelper::mergePdfs($files, storage_path('app/public/pdf/laporan-'. $dataSrt->cover->client->name . ' - ' . $period .'.pdf'));
 
         return response()->json([
             'success' => true,
-            'path' => $files
+            'message' => 'PDF successfully to merge and Saved Into Server!'
         ]);
     }
 

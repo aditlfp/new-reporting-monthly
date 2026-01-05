@@ -16,6 +16,7 @@ function getFotoPageHtml(data, currentMonth) {
   ];
   const [year, month] = currentMonth.split("-");
   const monthName = monthNames[parseInt(month) - 1];
+  console.log(monthName);
   const periodString = `PERIODE BULAN ${monthName.toUpperCase()} ${year}`;
 
   // Split data into chunks with different sizes for first page and subsequent pages

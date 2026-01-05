@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Clients;
+use App\Models\FixedImage;
 use App\Models\UploadImage;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,41 +15,39 @@ class DataFotoController extends Controller
 {
     public function index(Request $request)
     {
-        if($request->has('id')){
-            $images = UploadImage::with('clients', 'user.kerjasama')->where('id', $request->input('id'))->first();
-        } else {
-            $images = UploadImage::with('clients', 'user.kerjasama')->latest()->paginate(20);
-        }
-
-        if($request->month)
-        {
-            $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
-                'month' => $request->month,
-                'year' => $request->year
-            ])->paginate(14);
-        }
-
+        $fixedIMG = FixedImage::pluck('upload_image_id')->toArray();
+        // dd($fixedIMG);
+        $query = UploadImage::with('clients', 'user.kerjasama')->whereIn('id', $fixedIMG);
         $user = collect();
 
-        if($request->mitra)
-        {
-            $user = User::whereHas('kerjasama', function($q) use ($request) {
+        if ($request->mitra) {
+            $user = User::whereHas('kerjasama', function ($q) use ($request) {
                 $q->where('client_id', $request->mitra);
             })->get();
 
-            if($request->user) {
-                $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
-                    'client_id' => $request->mitra,
-                    'user_id' => $request->user,
-                ])->paginate(30);
+            $filters = ['client_id' => $request->mitra];
+            
+            if ($request->user) {
+                $filters['user_id'] = $request->user;
+                $perPage = 30;
             } else {
-                $images = UploadImage::with('clients', 'user.kerjasama')->searchFilters([
-                    'client_id' => $request->mitra,
-                ])->paginate(14);
+                $perPage = 14;
             }
-        }
 
-        $client = Clients::all();
+            $images = $query->searchFilters($filters)->paginate($perPage);
+
+        } elseif ($request->month) {
+            $images = $query->searchFilters([
+                'month' => $request->month,
+                'year' => $request->year
+            ])->paginate(14);
+
+        } elseif ($request->has('id')) {
+            $images = $query->where('id', $request->input('id'))->first();
+
+        } else {
+            $images = $query->latest()->paginate(20);
+        }
 
         if ($request->ajax()) {
             return response()->json([
@@ -58,35 +57,43 @@ class DataFotoController extends Controller
             ]);
         }
 
+        $client = Clients::all();
+
         return view('pages.admin.fotoProgres.index', compact('images', 'client'));
     }
 
     public function update(Request $request, UploadImage $uploadImage)
     {
-        
-        if($request->hasFile('img_before') || $request->hasFile('img_proccess') || $request->hasFile('img_final')) {
-            $img_before   = FileHelper::uploadImage($request->file('img_before'), 'upload_images/before');
-            $img_proccess = FileHelper::uploadImage($request->file('img_proccess'), 'upload_images/process');
-            $img_final    = FileHelper::uploadImage($request->file('img_final'), 'upload_images/final');
-        }
-        
-        $updateData = [
+        $data = [
             'clients_id' => $request->client_id,
-            'img_before' => $img_before ?? $uploadImage->img_before,
-            'img_proccess' => $img_proccess ?? $uploadImage->img_proccess,
-            'img_final' => $img_final ?? $uploadImage->img_final,
-            'note' => $request->note,
-            'status' => 1,
+            'note'       => $request->note,
+            'status'     => 1,
         ];
-        // dd($updateData);
 
-        $uploadImage->update($updateData);
+        $fileFields = [
+            'img_before'   => 'upload_images/before',
+            'img_proccess' => 'upload_images/process',
+            'img_final'    => 'upload_images/final',
+        ];
 
-        if ($request->ajax()) {
+        foreach ($fileFields as $field => $path) {
+            if ($request->hasFile($field)) {
+                // Delete old file if exists to keep storage clean
+                if ($uploadImage->{$field}) {
+                    Storage::disk('public')->delete($uploadImage->{$field});
+                }
+                
+                $data[$field] = FileHelper::uploadImage($request->file($field), $path);
+            }
+        }
+
+        $uploadImage->update($data);
+
+        if ($request->expectsJson()) {
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => 'Upload updated successfully',
-                'data' => $uploadImage,
+                'data'    => $uploadImage,
             ]);
         }
 

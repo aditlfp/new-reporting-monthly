@@ -2,11 +2,15 @@
     <div class="flex h-screen bg-slate-50">
         @include('components.sidebar-component')
         <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
-            <div class="flex items-center justify-end mb-4 md:mb-6">
+            <div class="flex items-center justify-end m-4 md:m-6">
                 <button id="btnCreate"
                     class="text-xs text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm md:text-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                     <i class="ri-add-line"></i> <span>Add New Letter</span>
                 </button>
+            </div>
+            <div id="alert-success" class="alert alert-success rounded-sm m-5 flex hidden">
+                <i class="ri-checkbox-circle-line text-3xl text-white"></i>
+                <span id="container" class="text-white text-lg font-semibold"></span>
             </div>
             <div class="m-3 bg-white shadow-xl md:m-5 card">
                 <div class="card-body">
@@ -339,7 +343,6 @@
                         dataType: 'json',
                         success: function(response) {
                             if (response.status) {
-                                console.log(response)
                                 $('#modalTitle').text('Edit Letter');
                                 $('#formMethod').val('PUT');
                                 $('#letterId').val(response.data.id);
@@ -495,7 +498,8 @@
                         contentType: false,
                         success: function(res) {
                             if (res.success) {
-                                console.log('PDFs saved to server:', res.path);
+                                $('#alert-success').removeClass('hidden')
+                                $('#container').append(res.message)
                                 Notify('PDFs saved to server successfully!', null, null, 'success');
                             } else {
                                 console.error('Failed to save PDFs to server:', res.message);

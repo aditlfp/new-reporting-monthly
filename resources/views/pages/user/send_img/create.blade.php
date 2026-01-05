@@ -237,7 +237,7 @@
                                     @empty
                                         <div class="py-8 text-center col-span-full text-slate-500"
                                             id="emptyHistoryMessage">
-                                            Belum ada riwayat laporan
+                                            Belum ada riwayat laporan Bulan Ini
                                         </div>
                                     @endforelse
                                 </div>
