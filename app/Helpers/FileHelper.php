@@ -16,58 +16,56 @@ use Imagick;
 
 class FileHelper
 {
-    
-    private static function shouldConvertToWebp(string $path): bool
+    protected static function imageManager(): ImageManager
     {
-        if (!file_exists($path)) {
+        return new ImageManager(new Driver());
+    }
+
+    protected static function shouldConvertToWebp(string $path): bool
+    {
+        if (!is_file($path)) {
             return false;
         }
 
         $sizeKB = filesize($path) / 1024;
-
         [$width, $height] = getimagesize($path);
 
-        if ($sizeKB < 80) return false;
-        if ($width < 400 && $height < 400) return false;
-
-        return true;
+        return !($sizeKB < 80 || ($width < 400 && $height < 400));
     }
 
-    private static function convertAndReplaceOriginal(string $fullPath, int $quality = 80): bool
+    protected static function convertToWebp(string $fullPath, int $quality): ?string
     {
         if (!self::shouldConvertToWebp($fullPath)) {
-            return false;
+            return null;
         }
 
-        $tmpWebp = $fullPath . '.tmp.webp';
-
         try {
-            $img = new Imagick($fullPath);
-            $img->setImageFormat('webp');
-            $img->setImageCompressionQuality($quality);
-            $img->stripImage();
-            $img->writeImage($tmpWebp);
+            $manager = self::imageManager();
+            $image   = $manager->read($fullPath);
 
-            if (filesize($tmpWebp) >= filesize($fullPath)) {
-                unlink($tmpWebp);
-                return false;
+            $webpPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $fullPath);
+
+            $image
+                ->scale(height: 2048)
+                ->encode(new WebpEncoder(quality: $quality))
+                ->save($webpPath);
+
+            if (filesize($webpPath) >= filesize($fullPath)) {
+                unlink($webpPath);
+                return null;
             }
 
             unlink($fullPath);
 
-            $newPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $fullPath);
-
-            rename($tmpWebp, $newPath);
-
-            return true;
+            return $webpPath;
 
         } catch (\Throwable $e) {
-            if (file_exists($tmpWebp)) {
-                unlink($tmpWebp);
-            }
+            Log::error('WebP conversion failed', [
+                'file' => $fullPath,
+                'error' => $e->getMessage(),
+            ]);
 
-            Log::error('WebP convert failed: ' . $e->getMessage());
-            return false;
+            return null;
         }
     }
     /**
@@ -90,12 +88,13 @@ class FileHelper
             return $oldFile;
         }
 
-        // hapus file lama
-        if ($oldFile && Storage::disk('public')->exists($oldFile)) {
-            Storage::disk('public')->delete($oldFile);
-        }
-
+        
         try {
+            // hapus file lama
+            if ($oldFile && Storage::disk('public')->exists($oldFile)) {
+                Storage::disk('public')->delete($oldFile);
+            }
+
             $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
 
             $filename = $useOriginalName
@@ -104,17 +103,13 @@ class FileHelper
 
 
             $path = $file->storeAs($folder, $filename, 'public');
+            $fullPath = storage_path("app/public/{$path}");
 
-            $fullPath = storage_path("app/public/$path");
+            $webpPath = self::convertToWebp($fullPath, $quality);
 
-
-            $converted = self::convertAndReplaceOriginal($fullPath, $quality);
-
-            if ($converted) {
-                return preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $path);
-            }
-
-            return $path;
+            return $webpPath
+                ? str_replace(storage_path('app/public/') , '', $webpPath)
+                : $path;
 
         } catch (\Throwable $e) {
             Log::error('Upload image failed: ' . $e->getMessage());
