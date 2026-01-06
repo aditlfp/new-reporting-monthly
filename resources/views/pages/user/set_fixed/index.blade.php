@@ -582,7 +582,6 @@
                     $('.verified_by').show();
                     $('.verified_by').text("Di Verifikasi Oleh : " + (image.fixed_image.user ? capitalizeEachWord(image.fixed_image.user.nama_lengkap) : '-'))
                 }
-                console.log(image, imagesData)
                 if (image) {
                     selectedImageData = image;
                     if(fixedData)
@@ -683,7 +682,7 @@
                         $('#saveSelectionBtn').prop('disabled', true).html('<span class="loading loading-spinner"></span> Menyimpan...');
                     },
                     success: function(response) {
-                        if (response.status) {
+                        if (response.success) {
                             Notify('Data berhasil disimpan!',null,null, 'success');
                             selectedImageData = null;
                             loadData();
@@ -692,7 +691,7 @@
                         }
                     },
                     error: function(xhr) {
-                        Notify('Gagal menyimpan data. Silakan coba lagi.',null,null, 'error');
+                        Notify(xhr.responseJSON ? xhr.responseJSON.message : 'Gagal menyimpan data. Silakan coba lagi.',null,null, 'error');
                     },
                     complete: function() {
                         $('#saveSelectionBtn').prop('disabled', false).html('<i class="ri-check-line"></i> Simpan Pilihan');

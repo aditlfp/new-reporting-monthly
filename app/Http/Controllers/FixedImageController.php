@@ -98,17 +98,7 @@ class FixedImageController extends Controller
         try {
             $services = new FixedServices();
             $val = $services->setImage($request->all());
-            if($val['success']){
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data Has Been created successfully',
-                ], 200);
-            }else{
-                return response()->json([
-                    'status' => false,
-                    'message' => $val['message'],
-                ], 300);
-            }
+            return $val;
             
         } catch (Exception $e) {
             throw new Exception("Error Processing Request". $e->getMessage(), 1);

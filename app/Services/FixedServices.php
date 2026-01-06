@@ -26,24 +26,27 @@ class FixedServices
             ])->toArray();
 
             $count_upload = FixedImage::where('clients_id', $payload['clients_id'])
+                ->where('user_id', $payload['user_id'])
                 ->whereMonth('created_at', $this->now->month)
                 ->whereYear('created_at', $this->now->year)
                 ->count();
 
             if ($count_upload >= 11) {
-                return [
+                return response()->json([
                     'success' => false,
-                    'message' => 'Limit Memilih Image Tercapai',
-                ];
+                    'limit' => true,
+                    'message' => 'Limit Memilih Foto Tercapai!',
+                ], 422);
             }
 
             $model = FixedImage::create($payload);
 
-            return [
+            return response()->json([
                 'success' => true,
+                'limit' => false,
                 'message' => 'Data Has Been Saved!',
                 'data' => $model,
-            ];
+            ], 200);
 
         } catch (Exception $e) {
             throw new Exception(
