@@ -179,11 +179,23 @@ class CoverReportControllers extends Controller
 
         $files = [$file1, $file2, $file3];
 
-        FileHelper::mergePdfs($files, storage_path('app/public/pdf/laporan-'. $dataSrt->cover->client->name . ' - ' . $period .'.pdf'));
-
+        // FileHelper::mergePdfs($files, storage_path('app/public/pdf/laporan-'. $dataSrt->cover->client->name . ' - ' . $period .'.pdf'));
+        $finalName = 'laporan-' . 
+            str()->slug($dataSrt->cover->client->name) . 
+            '-' . 
+            str()->slug($period) . 
+            '.pdf';
+        
+        $finalPath = 'full_pdf/' . $finalName;
+        
+        FileHelper::mergePdfs(
+            $files,
+            storage_path('app/public/' . $finalPath)
+        );
         return response()->json([
             'success' => true,
-            'message' => 'PDF successfully to merge and Saved Into Server!'
+            'message' => 'PDF successfully to merge and Saved Into Server!',
+            'url' => asset('storage/' . $finalPath)
         ]);
     }
 
