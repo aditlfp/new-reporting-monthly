@@ -18,7 +18,8 @@ class DataFotoController extends Controller
         $fixedIMG = FixedImage::pluck('upload_image_id')->toArray();
         
         // 1. Inisialisasi Query (Jangan langsung dieksekusi/paginate)
-        $query = UploadImage::with('clients', 'user.kerjasama')->whereIn('id', $fixedIMG);
+        $query = UploadImage::with('clients', 'user.kerjasama');
+        // dd($query->orderBy('clients_id', 'desc')->where('clients_id', '39')->latest()->pluck('clients_id'));
         $user = collect();
         $perPage = 20; // Default pagination
     
@@ -34,8 +35,10 @@ class DataFotoController extends Controller
                     $q->where('client_id', $request->mitra);
                 })->get();
     
-                $query->where('client_id', $request->mitra); // Asumsi searchFilters melakukan ini
+                // dd($query->orderBy('clients_id', 'desc')->pluck('clients_id'), $request->mitra);
+                $query->where('clients_id', $request->mitra); // Asumsi searchFilters melakukan ini
             }
+            
     
             // Filter User
             if ($request->filled('user')) {
