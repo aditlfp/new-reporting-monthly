@@ -186,7 +186,7 @@ class CoverReportControllers extends Controller
             str()->slug($period) . 
             '.pdf';
         
-        $finalPath = 'full_pdf/' . $finalName;
+        $finalPath = 'pdf/' . $finalName;
         
         FileHelper::mergePdfs(
             $files,
