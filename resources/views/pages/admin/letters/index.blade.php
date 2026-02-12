@@ -679,6 +679,7 @@
 
                             // Convert to blob for sending to backend
                             const pdfBlob = pdf.output('blob');
+                            pdf.save(`${latterData.latter_matters}.pdf`);
 
                             // Send PDF to backend
                             sendPDFToBackend(latterId, pdfBlob, latterData);
