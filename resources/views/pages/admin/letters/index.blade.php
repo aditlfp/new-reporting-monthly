@@ -501,6 +501,7 @@
                                 $('#alert-success').removeClass('hidden')
                                 $('#container').append(res.message)
                                 Notify('PDFs saved to server successfully!', null, null, 'success');
+                                window.location.href = res.url;
                             } else {
                                 console.error('Failed to save PDFs to server:', res.message);
                                 Notify('Failed to save PDFs to server: ' + res.message, null, null,
