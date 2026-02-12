@@ -762,6 +762,8 @@
                       }
 
                       if (e.data.done) {
+                       const filename = `Photo_Progress_Report_${currentMonth}.pdf`;
+                        downloadPdfBlob(e.data.pdfBlob, filename);
                         sendPdfToBackend(e.data.pdfBlob, currentMonth, data[0].clients_id, () => {
                           if (onComplete) onComplete();
 
@@ -1081,6 +1083,17 @@
                     // Reset transform
                     imagePreviewState.rotation = 0;
                     imagePreviewState.zoom = 1;
+                }
+
+                function downloadPdfBlob(blob, filename) {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
                 }
 
                 // Helper functions
