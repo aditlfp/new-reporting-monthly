@@ -49,7 +49,7 @@
         <div class="w-11/12 max-w-2xl p-4 modal-box md:w-10/11 md:p-6">
             <h3 class="mb-3 text-lg font-bold md:mb-4 md:text-xl" id="modalTitle">Create Letter</h3>
 
-            <form id="letterForm" method="dialog">
+            <form id="letterForm" method="dialog" enctype="multipart/form-data">
                 <input type="hidden" id="letterId" name="id">
                 <input type="hidden" id="formMethod" value="POST">
 
