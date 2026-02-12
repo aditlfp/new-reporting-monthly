@@ -341,7 +341,7 @@ class UploadImageController extends Controller
         $month = $date->format('m');
         
         // Get client IDs and sort them for consistency
-        $clientIds = $request->client_ids;
+        $clientIds = (int) $request->client_ids;
         
         
         // Format the filename as year-month-client_id
