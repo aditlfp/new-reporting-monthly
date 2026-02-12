@@ -44,7 +44,7 @@ function getFotoPageHtml(data, currentMonth) {
     // Only add header to the first page
     if (pageIndex === 0) {
       html += `
-                <div style="margin-top: 60pt; font-stretch: ultra-condensed;">
+                <div style="margin-top: 60pt; font-stretch: condensed;">
                     <p style="text-align: center; font-weight: bold; font-size: 20pt; text-transform: uppercase;">
                         FOTO KEGIATAN KEBERSIHAN CLEANING SERVICE <br>
                         PT SURYA AMANAH CENDIKIA PONOROGO <br>
@@ -59,7 +59,7 @@ function getFotoPageHtml(data, currentMonth) {
     const marginTop = pageIndex === 0 ? "20pt" : "20pt";
 
     html += `
-                <div style="margin-top: ${marginTop}; margin-left: 20pt; margin-right: 20pt; font-stretch: ultra-condensed;">
+                <div style="margin-top: ${marginTop}; margin-left: 20pt; margin-right: 20pt; font-stretch: condensed;">
                     <table style="width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed;">
                         <colgroup>
                             <col style="width:4%;">
