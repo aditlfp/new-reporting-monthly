@@ -167,7 +167,7 @@ class CoverReportControllers extends Controller
 
         $namePDF = $dataSrt->cover->client->name . ' ' . $period;
         $path = $request->file('pdf')->storeAs(
-            'covers_to_pdf',
+            'pdf',
             $namePDF,
             'public'
         );
