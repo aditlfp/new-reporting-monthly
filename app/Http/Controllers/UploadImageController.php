@@ -318,7 +318,7 @@ class UploadImageController extends Controller
                 ->whereYear('created_at', date('Y', strtotime($request->month)));
         }
         
-        $data = $query->get();
+        $data = $query->oldest()->get();
         
         return response()->json([
             'status' => true,

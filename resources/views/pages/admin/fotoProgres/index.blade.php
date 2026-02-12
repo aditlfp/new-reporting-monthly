@@ -14,7 +14,7 @@
                             <div class="flex flex-col gap-3 rounded-lg">
                                 <div class="flex items-center form-control gap-x-2">
                                     <div class="flex flex-col">
-                                        <label for="mitra" class="required text-xs font-medium label md:text-sm label-text">Mitra</label>
+                                        <label for="mitra" class="text-xs font-medium required label md:text-sm label-text">Mitra</label>
                                         <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Mitra</option>
                                             @foreach ($client as $cl)
@@ -23,14 +23,14 @@
                                         </select>
                                     </div>
                                     <div id="filterUserContainer">
-                                        <label for="userFilter" class="required text-xs font-medium label md:text-sm label-text">User</label>
+                                        <label for="userFilter" class="text-xs font-medium required label md:text-sm label-text">User</label>
                                         <select name="userFilter" id="userFilter" class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
                                             <option selected value="">Pilih Mitra Terlebih Dahulu</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="label">
-                                            <span class="required text-xs font-medium md:text-sm label-text">Filter Bulan</span>
+                                            <span class="text-xs font-medium required md:text-sm label-text">Filter Bulan</span>
                                         </label>
                                         <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Months</option>
@@ -51,7 +51,7 @@
 
                                     <div>
                                         <label class="label">
-                                            <span class="required text-xs font-medium md:text-sm label-text">Filter Tahun</span>
+                                            <span class="text-xs font-medium required md:text-sm label-text">Filter Tahun</span>
                                         </label>
                                         <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Year</option>
@@ -79,7 +79,7 @@
 
                             <div id="pdf-progress-container" class="hidden" style="font-family: Arial, sans-serif; margin-top: 20px;">
                                 <h3>PDF Generation Progress</h3>
-                                <progress id="pdf-progress" class="progress progress-success w-56" value="0" max="100"></progress>
+                                <progress id="pdf-progress" class="w-56 progress progress-success" value="0" max="100"></progress>
                             </div>
 
                         </div>
