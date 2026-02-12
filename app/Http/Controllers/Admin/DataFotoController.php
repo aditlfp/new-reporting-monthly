@@ -16,39 +16,48 @@ class DataFotoController extends Controller
     public function index(Request $request)
     {
         $fixedIMG = FixedImage::pluck('upload_image_id')->toArray();
-        // dd($fixedIMG);
+        
+        // 1. Inisialisasi Query (Jangan langsung dieksekusi/paginate)
         $query = UploadImage::with('clients', 'user.kerjasama')->whereIn('id', $fixedIMG);
         $user = collect();
-
-        if ($request->mitra) {
-            $user = User::whereHas('kerjasama', function ($q) use ($request) {
-                $q->where('client_id', $request->mitra);
-            })->get();
-
-            $filters = ['client_id' => $request->mitra];
-            
-            if ($request->user) {
-                $filters['user_id'] = $request->user;
-                $perPage = 30;
-            } else {
-                $perPage = 14;
-            }
-
-            $images = $query->searchFilters($filters)->paginate($perPage);
-
-        } elseif ($request->month) {
-            $images = $query->searchFilters([
-                'month' => $request->month,
-                'year' => $request->year
-            ])->paginate(14);
-
-        } elseif ($request->has('id')) {
-            $images = $query->where('id', $request->input('id'))->first();
-
+        $perPage = 20; // Default pagination
+    
+        // 2. Filter Berdasarkan ID (Jika ada ID, biasanya ingin data spesifik saja)
+        if ($request->filled('id')) {
+            $images = $query->where('id', $request->id)->first();
         } else {
-            $images = $query->latest()->paginate(20);
+            // 3. Filter Akumulatif (Filter ini tidak saling menimpa)
+            
+            // Filter Mitra
+            if ($request->filled('mitra')) {
+                $user = User::whereHas('kerjasama', function ($q) use ($request) {
+                    $q->where('client_id', $request->mitra);
+                })->get();
+    
+                $query->where('client_id', $request->mitra); // Asumsi searchFilters melakukan ini
+            }
+    
+            // Filter User
+            if ($request->filled('user')) {
+                $query->where('user_id', $request->user);
+                $perPage = 30; // Custom per page jika ada user
+            } else if ($request->filled('mitra')) {
+                $perPage = 14; 
+            }
+    
+            // Filter Bulan & Tahun
+            if ($request->filled('month')) {
+                $query->whereMonth('created_at', $request->month); // Sesuaikan dengan logic searchFilters kamu
+                if ($request->filled('year')) {
+                    $query->whereYear('created_at', $request->year);
+                }
+            }
+    
+            // 4. Eksekusi Query di Akhir
+            $images = $query->latest()->paginate($perPage);
         }
-
+    
+        // 5. Response
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
@@ -56,9 +65,8 @@ class DataFotoController extends Controller
                 'users' => $user,
             ]);
         }
-
+    
         $client = Clients::all();
-
         return view('pages.admin.fotoProgres.index', compact('images', 'client'));
     }
 
