@@ -75,6 +75,9 @@
                             <div class="flex gap-2">
                                 <button id="selectAll" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select All</button>
                                 <button id="deselectAll" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect All</button>
+                                <button id="deleteSelected" class="text-red-700 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-600/20 hover:bg-red-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    <i class="mr-1 text-xs ri-delete-bin-6-line md:text-sm"></i><span class="hidden sm:inline">Delete Selected</span>
+                                </button>
                             </div>
 
                             <div id="pdf-progress-container" class="hidden" style="font-family: Arial, sans-serif; margin-top: 20px;">
@@ -369,6 +372,7 @@
                     setupImagePreviewControls();
                     setupFilterControls();
                     setupCheckboxControls();
+                    setupMassDelete();
                     setupPdfGeneration();
                 }
 
@@ -433,6 +437,7 @@
                         $('#tableBody').html(
                             '<tr><td colspan="8" class="py-8 text-center text-base-content/60">No data available</td></tr>'
                         );
+                        updateDeleteSelectedState();
                         return;
                     }
 
@@ -480,6 +485,7 @@
                     `).join('');
 
                     $('#tableBody').html(html);
+                    updateDeleteSelectedState();
                 }
 
                 // Helper function to render image cell
@@ -622,18 +628,80 @@
                     $('#headerCheckbox').change(function() {
                         const isChecked = $(this).prop('checked');
                         $('.row-checkbox').prop('checked', isChecked);
+                        updateDeleteSelectedState();
                     });
 
                     // Select all button
                     $('#selectAll').click(function() {
                         $('.row-checkbox').prop('checked', true);
                         $('#headerCheckbox').prop('checked', true);
+                        updateDeleteSelectedState();
                     });
 
                     // Deselect all button
                     $('#deselectAll').click(function() {
                         $('.row-checkbox').prop('checked', false);
                         $('#headerCheckbox').prop('checked', false);
+                        updateDeleteSelectedState();
+                    });
+
+                    $(document).on('change', '.row-checkbox', function() {
+                        const total = $('.row-checkbox').length;
+                        const checked = $('.row-checkbox:checked').length;
+                        $('#headerCheckbox').prop('checked', total > 0 && total === checked);
+                        updateDeleteSelectedState();
+                    });
+                }
+
+                function updateDeleteSelectedState() {
+                    const checkedCount = $('.row-checkbox:checked').length;
+                    $('#deleteSelected').prop('disabled', checkedCount === 0);
+                }
+
+                function setupMassDelete() {
+                    $('#deleteSelected').click(function() {
+                        const selectedIds = [];
+                        $('.row-checkbox:checked').each(function() {
+                            selectedIds.push($(this).data('id'));
+                        });
+
+                        if (selectedIds.length === 0) {
+                            Notify('Pilih minimal 1 data untuk dihapus.', null, null, 'warning');
+                            return;
+                        }
+
+                        const confirmed = confirm(`Hapus ${selectedIds.length} data terpilih? Aksi ini tidak bisa dibatalkan.`);
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        const $button = $(this);
+                        const originalText = $button.html();
+                        $button.prop('disabled', true);
+                        $button.html('<span class="loading loading-spinner loading-xs"></span> Deleting...');
+
+                        $.ajax({
+                            url: '{{ route('admin.upload.mass-delete') }}',
+                            type: 'POST',
+                            data: {
+                                ids: selectedIds,
+                                _token: CSRF_TOKEN
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                loadData(currentPage);
+                                $('#headerCheckbox').prop('checked', false);
+                                Notify(response.message || 'Selected uploads deleted successfully', null, null, 'success');
+                            },
+                            error: function(xhr) {
+                                const message = xhr.responseJSON?.message || 'Error deleting selected data';
+                                Notify(message, null, null, 'error');
+                            },
+                            complete: function() {
+                                $button.prop('disabled', false);
+                                $button.html(originalText);
+                            }
+                        });
                     });
                 }
 

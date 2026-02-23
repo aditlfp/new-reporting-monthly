@@ -120,10 +120,40 @@ class DataFotoController extends Controller
         $uploadImage->delete();
 
         if ($request->ajax()) {
-            return response()->json(['message' => 'Upload deleted successfully']);
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload deleted successfully',
+            ]);
         }
 
         return redirect()->route('admin.upload.index')->with('success', 'Upload deleted successfully.');
+    }
+
+    public function massDelete(Request $request)
+    {
+        $ids = $request->ids; // Pastikan ini adalah array ID yang akan dihapus
+
+        if (is_array($ids) && count($ids) > 0) {
+            $uploadImages = UploadImage::whereIn('id', $ids)->get();
+
+            foreach ($uploadImages as $uploadImage) {
+                if ($uploadImage->img_before) Storage::disk('public')->delete($uploadImage->img_before);
+                if ($uploadImage->img_proccess) Storage::disk('public')->delete($uploadImage->img_proccess);
+                if ($uploadImage->img_final) Storage::disk('public')->delete($uploadImage->img_final);
+
+                $uploadImage->delete();
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Selected uploads deleted successfully',
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'No valid IDs provided',
+        ], 400);
     }
 
     public function getUsers(Request $request)
