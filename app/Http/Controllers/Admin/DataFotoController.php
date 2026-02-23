@@ -18,7 +18,8 @@ class DataFotoController extends Controller
         $fixedIMG = FixedImage::pluck('upload_image_id')->toArray();
         
         // 1. Inisialisasi Query (Jangan langsung dieksekusi/paginate)
-        $query = UploadImage::with('clients', 'user.kerjasama')->whereIn('id', $fixedIMG);
+        $query = UploadImage::with('clients', 'user.kerjasama');
+        // dd($query->orderBy('clients_id', 'desc')->where('clients_id', '39')->latest()->pluck('clients_id'));
         $user = collect();
         $perPage = 20; // Default pagination
     
@@ -34,8 +35,10 @@ class DataFotoController extends Controller
                     $q->where('client_id', $request->mitra);
                 })->get();
     
-                $query->where('client_id', $request->mitra); // Asumsi searchFilters melakukan ini
+                // dd($query->orderBy('clients_id', 'desc')->pluck('clients_id'), $request->mitra);
+                $query->where('clients_id', $request->mitra); // Asumsi searchFilters melakukan ini
             }
+            
     
             // Filter User
             if ($request->filled('user')) {
@@ -117,10 +120,40 @@ class DataFotoController extends Controller
         $uploadImage->delete();
 
         if ($request->ajax()) {
-            return response()->json(['message' => 'Upload deleted successfully']);
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload deleted successfully',
+            ]);
         }
 
         return redirect()->route('admin.upload.index')->with('success', 'Upload deleted successfully.');
+    }
+
+    public function massDelete(Request $request)
+    {
+        $ids = $request->ids; // Pastikan ini adalah array ID yang akan dihapus
+
+        if (is_array($ids) && count($ids) > 0) {
+            $uploadImages = UploadImage::whereIn('id', $ids)->get();
+
+            foreach ($uploadImages as $uploadImage) {
+                if ($uploadImage->img_before) Storage::disk('public')->delete($uploadImage->img_before);
+                if ($uploadImage->img_proccess) Storage::disk('public')->delete($uploadImage->img_proccess);
+                if ($uploadImage->img_final) Storage::disk('public')->delete($uploadImage->img_final);
+
+                $uploadImage->delete();
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Selected uploads deleted successfully',
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'No valid IDs provided',
+        ], 400);
     }
 
     public function getUsers(Request $request)

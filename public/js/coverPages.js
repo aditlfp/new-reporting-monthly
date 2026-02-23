@@ -15,7 +15,7 @@ function getCoverPageHtml(latterData, assetUrl) {
                 </div>
 
                 <div style="margin-top: -6mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: ultra-condensed; letter-spacing: -0.025em; padding: 1mm 3mm; font-size: 24pt; font-weight: bold; color: #323C8B; text-transform: uppercase; white-space: nowrap; max-width: 200mm; overflow: hidden;">
+                    <div style="display: inline-block; font-stretch: condensed; letter-spacing: 0.15em; padding: 1mm 3mm; font-size: 24pt; font-weight: bold; color: #323C8B; text-transform: uppercase; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis;">
                         (${
                           latterData.cover.client
                             ? latterData.cover.client.name
@@ -47,7 +47,7 @@ function getCoverPageHtml(latterData, assetUrl) {
                 </div>
 
                 <div style="margin-bottom: 70mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: ultra-condensed; letter-spacing: -0.025em; padding: 1mm 3mm; font-size: 24pt; color: oklch(17% 0 0); font-weight: bold; text-transform: uppercase; white-space: nowrap; max-width: 200mm; overflow: hidden;">
+                    <div style="display: inline-block; font-stretch: condensed; letter-spacing: 0.15em; padding: 1mm 3mm; font-size: 24pt; color: oklch(17% 0 0); font-weight: bold; text-transform: uppercase; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis;">
                         PERIODE ${latterData.period}
                     </div>
                 </div>
