@@ -8,6 +8,7 @@ use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FixedImageController;
 use App\Http\Controllers\HandlerCountController;
+use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
@@ -76,6 +77,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/admin-foto-progress-delete/{upload_image}', [DataFotoController::class, 'destroy'])->name('admin.upload.destroy');
     Route::post('/admin-foto-progress-mass-delete', [DataFotoController::class, 'massDelete'])->name('admin.upload.mass-delete');
     Route::get('/admin/upload/get-users', [DataFotoController::class, 'getUsers'])->name('admin.upload.get-users');
+
+    Route::resource('/admin-qrcode', QrCodeController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');
