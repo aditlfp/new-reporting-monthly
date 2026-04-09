@@ -119,6 +119,18 @@
                                             @endforeach
                                         </div>
                                     </div>
+                                    
+                                    <div>
+                                        <label for="reportArea"
+                                            class="block mb-2 text-sm font-medium text-slate-700">Area</label>
+                                        <input
+                                            type="text"
+                                            id="reportArea"
+                                            name="area"
+                                            value="{{ old('area', request('n')) }}"
+                                            class="w-full px-3 py-2 text-sm bg-white border rounded-lg input sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Tulis area di sini...">
+                                    </div>
 
                                     <!-- Textarea for content -->
                                     <div>
@@ -126,7 +138,7 @@
                                             class="block mb-2 text-sm font-medium text-slate-700">Keterangan Kegiatan</label>
                                         <textarea id="reportContent" name="note" rows="4"
                                             class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none textarea sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan - nama area')">{{ old('note', request('n')) }}</textarea>
+                                            placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan')">{{ old('note') }}</textarea>
                                     </div>
 
                                     <!-- Hidden fields -->
@@ -547,6 +559,30 @@
                     )[0];
                     showDraftCard(firstDraft)
                 @endif
+                
+                // Helper function untuk menggabungkan area ke note
+                function combineNoteWithArea(note, area) {
+                    if (area && area.trim()) {
+                        return note + ' - Area ' + area;
+                    }
+                    return note;
+                }
+                
+                // Helper function untuk memisahkan area dari note
+                function extractAreaFromNote(combinedNote) {
+                    if (!combinedNote) return { note: '', area: '' };
+                    
+                    // Cari pattern "- Area " terakhir
+                    const lastIndex = combinedNote.lastIndexOf(' - Area ');
+                    
+                    if (lastIndex !== -1) {
+                        const note = combinedNote.substring(0, lastIndex);
+                        const area = combinedNote.substring(lastIndex + ' - Area '.length);
+                        return { note: note, area: area };
+                    }
+                    
+                    return { note: combinedNote, area: '' };
+                }
 
                 // Fungsi untuk memeriksa dan memperbarui tampilan draft
                 function checkAndUpdateDraftDisplay() {
@@ -649,9 +685,12 @@
                 });
 
                 function saveDraftOffline() {
+                    const content = $('#reportContent').val();
+                    const area = $('#reportArea').val();
+                    
                     const draft = {
                         id: Date.now(),
-                        note: $('#reportContent').val(),
+                        note: combineNoteWithArea(content, area),
                         img_before: $('#image1')[0].files[0] ? $('#image1')[0].files[0] : null,
                         img_proccess: $('#image2')[0].files[0] ? $('#image2')[0].files[0] : null,
                         img_final: $('#image3')[0].files[0] ? $('#image3')[0].files[0] : null,
@@ -820,7 +859,9 @@
                         reportId.val(draft.id || '');
 
                         // Set the content
-                        $('#reportContent').val(draft.note || '');
+                        const extracted = extractAreaFromNote(draft.note || '');
+                        $('#reportContent').val(extracted.note);
+                        $('#reportArea').val(extracted.area);
 
                         // Store existing image paths in hidden fields
                         $('#existing_img_before').val(draft.img_before || '');
@@ -1005,9 +1046,11 @@
                     setLoading(true);
                     reportStatus.val('0');
                     type.val('draft');
+                    
+                    const content = $('#reportContent').val();
+                    const area = $('#reportArea').val();
 
                     // Validate content
-                    const content = $('#reportContent').val();
                     if (!content.trim()) {
                         alert('Silakan isi konten laporan');
                         setLoading(false);
@@ -1024,7 +1067,7 @@
                     // Add form fields
                     formData.append('status', $('#reportStatus').val());
                     formData.append('id', $('#reportId').val());
-                    formData.append('note', $('#reportContent').val());
+                    formData.append('note', combineNoteWithArea(content, area));
                     formData.append('user_id', $('#user_id').val());
                     formData.append('clients_id', $('#client_id').val());
                     formData.append('type', 'draft');
@@ -1100,8 +1143,9 @@
                     setLoading(true);
                     reportStatus.val('1');
                     type.val('submit');
-
+                    
                     const content = $('#reportContent').val();
+                    const area = $('#reportArea').val();
 
                     // Validate form
                     if (!content.trim()) {
@@ -1128,7 +1172,6 @@
 
                     // Create FormData object manually
                     const formData = new FormData();
-
                     // Add CSRF token
                     formData.append('_token', $('meta[name="csrf-token"]').attr('content') ||
                         '{{ csrf_token() }}');
@@ -1136,7 +1179,7 @@
                     // Add form fields
                     formData.append('status', $('#reportStatus').val());
                     formData.append('id', $('#reportId').val());
-                    formData.append('note', $('#reportContent').val());
+                    formData.append('note', combineNoteWithArea(content, area));
                     formData.append('user_id', $('#user_id').val());
                     formData.append('clients_id', $('#client_id').val());
                     formData.append('type', 'submit');
