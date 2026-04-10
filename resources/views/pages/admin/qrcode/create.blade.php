@@ -22,12 +22,12 @@
 
                         <div class="form-control">
                             <label class="label">
-                                <span class="font-medium label-text">Data</span>
+                                <span class="font-medium label-text">Data Area</span>
                             </label>
                             <textarea
                                 name="data"
                                 rows="5"
-                                placeholder="Masukkan data (format: 'nama kegiatan - nama area')"
+                                placeholder="Masukkan data..."
                                 class="textarea textarea-bordered w-full @error('data') textarea-error @enderror">{{ old('data', $qrCode->data ?? '') }}</textarea>
                             @error('data')
                                 <label class="label">

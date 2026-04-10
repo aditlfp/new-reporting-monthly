@@ -11,7 +11,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 
 class QrCodeController extends Controller
 {
-    private const QR_TARGET_BASE_URL = 'http://laporan.wow/send-img/laporan';
+    private const QR_TARGET_BASE_URL = 'https://laporan-sac.sac-po.com/send-img/laporan';
 
     public function index(Request $request)
     {
@@ -22,7 +22,7 @@ class QrCodeController extends Controller
                 $query->where('data', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(20)
             ->withQueryString();
 
         return view('pages.admin.qrcode.index', compact('qrCodes', 'search'));
