@@ -1,4 +1,7 @@
 function getFotoPageHtml(data, currentMonth) {
+  const normalizedTextStyle =
+    "font-family: Arial, Helvetica, sans-serif; letter-spacing: 0; word-spacing: 0; line-height: 1.2;";
+
   // Format month name in Indonesian
   const monthNames = [
     "Januari",
@@ -44,8 +47,8 @@ function getFotoPageHtml(data, currentMonth) {
     // Only add header to the first page
     if (pageIndex === 0) {
       html += `
-                <div style="margin-top: 60pt; font-stretch: condensed;">
-                    <p style="text-align: center; font-weight: bold; font-size: 20pt; text-transform: uppercase;">
+                <div style="margin-top: 60pt; ${normalizedTextStyle}">
+                    <p style="text-align: center; font-weight: bold; font-size: 20pt; text-transform: uppercase; margin: 0;">
                         FOTO KEGIATAN KEBERSIHAN CLEANING SERVICE <br>
                         PT SURYA AMANAH CENDIKIA PONOROGO <br>
                         AREA ${data[0].clients.name} <br>
@@ -59,7 +62,7 @@ function getFotoPageHtml(data, currentMonth) {
     const marginTop = pageIndex === 0 ? "20pt" : "20pt";
 
     html += `
-                <div style="margin-top: ${marginTop}; margin-left: 20pt; margin-right: 20pt; font-stretch: condensed;">
+                <div style="margin-top: ${marginTop}; margin-left: 20pt; margin-right: 20pt; ${normalizedTextStyle}">
                     <table style="width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed;">
                         <colgroup>
                             <col style="width:4%;">

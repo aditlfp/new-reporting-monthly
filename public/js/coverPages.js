@@ -1,5 +1,10 @@
 // In a separate file or at the top of your script
 function getCoverPageHtml(latterData, assetUrl) {
+  const condensedTitleStyle =
+    "display: inline-block; padding: 1mm 3mm; font-family: Arial, Helvetica, sans-serif; " +
+    "font-size: 24pt; font-weight: bold; text-transform: uppercase; white-space: nowrap; " +
+    "max-width: 90%; overflow: hidden; text-overflow: ellipsis; letter-spacing: 2px; word-spacing: 0; line-height: 1;";
+
   return `
         <section style="width: 210mm; height: 297mm; position: relative; margin: 0; padding: 0; overflow: hidden; page-break-after: always;">
             <!-- Background image as absolute positioned element -->
@@ -15,7 +20,7 @@ function getCoverPageHtml(latterData, assetUrl) {
                 </div>
 
                 <div style="margin-top: -6mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: condensed; letter-spacing: 0.15em; padding: 1mm 3mm; font-size: 24pt; font-weight: bold; color: #323C8B; text-transform: uppercase; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="${condensedTitleStyle} color: #323C8B;">
                         (${
                           latterData.cover.client
                             ? latterData.cover.client.name
@@ -47,7 +52,7 @@ function getCoverPageHtml(latterData, assetUrl) {
                 </div>
 
                 <div style="margin-bottom: 70mm; text-align: center;">
-                    <div style="display: inline-block; font-stretch: condensed; letter-spacing: 0.15em; padding: 1mm 3mm; font-size: 24pt; color: oklch(17% 0 0); font-weight: bold; text-transform: uppercase; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="${condensedTitleStyle} color: oklch(17% 0 0);">
                         PERIODE ${latterData.period}
                     </div>
                 </div>
