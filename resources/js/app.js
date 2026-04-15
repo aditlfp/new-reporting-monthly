@@ -8,3 +8,7 @@ window.Alpine = Alpine;
 window.Chart = Chart;
 
 Alpine.start();
+
+if (document.querySelector('[data-page="send-img-create"]')) {
+  import('./pages/user/send-img/create');
+}

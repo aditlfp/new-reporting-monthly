@@ -40,11 +40,11 @@
                 animation: fadeIn 0.2s ease-out;
             }
     @endpush
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
+        <div class="admin-content flex-1 p-6 overflow-y-auto">
             <!-- Filters -->
-            <div class="my-6 bg-white shadow-lg card">
+            <div class="my-6 bg-white shadow-lg card admin-filter-card">
                 <div class="card-body">
                     <form method="GET" action="{{ route('check.upload') }}"
                         class="grid grid-cols-1 md:gap-4 md:grid-cols-3">
@@ -135,7 +135,7 @@
                     </form>
                     {{-- Start Note --}}
                     <div
-                        class="relative grid gap-2 p-4 mt-4 border-2 border-dashed rounded-md md:flex md:gap-4 grid-col-1 border-info">
+                        class="admin-info-strip relative grid gap-2 p-4 mt-4 border rounded-md md:flex md:gap-4 grid-col-1">
                         <p class="absolute z-10 top-[-12px] left-4 bg-white px-1 font-semibold text-info">Info</p>
                         <div class="flex items-center gap-x-2">
                             <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
@@ -162,12 +162,12 @@
             </div>
 
             <!-- Table -->
-            <div class="bg-white shadow-lg card">
+            <div class="bg-white shadow-lg card admin-panel">
                 <div class="p-0 card-body">
                     <div class="overflow-x-auto">
                         <table class="table w-full text-xs table-zebra md:text-sm">
                             <thead>
-                                <tr class="text-white bg-slate-950">
+                                <tr class="text-slate-700 bg-slate-100">
                                     <th class="p-2 text-center md:p-3">#</th>
                                     <th class="p-2 md:p-3">User / Nama</th>
                                     <th class="hidden p-2 md:p-3 sm:table-cell">Divisi</th>
@@ -452,13 +452,39 @@
                 $('#contentGrid').empty();
             }
 
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '-';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
             function createFixedImageCard(data, index) {
-                const createdDate = new Date(data.created_at);
-                const formattedDate = createdDate.toLocaleDateString('en-US', { 
+                const createdDate = data.created_at ? new Date(data.created_at) : null;
+                const uploadCreatedDate = data.upload_created_at ? new Date(data.upload_created_at) : null;
+                const formattedDate = createdDate ? createdDate.toLocaleDateString('en-US', {
                     year: 'numeric', 
                     month: 'short', 
                     day: 'numeric' 
-                });
+                }) : '-';
+                const formattedUploadDate = uploadCreatedDate ? uploadCreatedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }) : '-';
+
+                const uploadUser = escapeHtml(data.upload_user_name || data.user_name || '-');
+                const userName = escapeHtml(data.user_name || '-');
+                const userEmail = escapeHtml(data.user_email || '-');
+                const clientName = escapeHtml(data.client_name || '-');
+                const note = escapeHtml(data.upload_note || '-');
+
+                const beforeLabel = data.upload_images?.before ? 'Ada' : 'Tidak ada';
+                const processLabel = data.upload_images?.process ? 'Ada' : 'Tidak ada';
+                const finalLabel = data.upload_images?.final ? 'Ada' : 'Tidak ada';
                 
                 return `
                     <div class="overflow-hidden transition-all duration-300 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg">
@@ -478,24 +504,44 @@
                             <!-- Info Grid -->
                             <div class="mb-3 space-y-2">
                                 <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                                    <span class="text-xs font-medium text-gray-600">Upload ID:</span>
-                                    <span class="text-xs font-semibold text-gray-900">#${data.upload_image_id}</span>
+                                    <span class="text-xs font-medium text-gray-600">Nama User:</span>
+                                    <span class="text-xs font-semibold text-right text-gray-900">${userName}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                                    <span class="text-xs font-medium text-gray-600">User ID:</span>
-                                    <span class="text-xs font-semibold text-gray-900">#${data.user_id}</span>
+                                    <span class="text-xs font-medium text-gray-600">Email:</span>
+                                    <span class="text-xs font-semibold text-right text-gray-900">${userEmail}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                                    <span class="text-xs font-medium text-gray-600">Client ID:</span>
-                                    <span class="text-xs font-semibold text-gray-900">#${data.clients_id}</span>
+                                    <span class="text-xs font-medium text-gray-600">Mitra:</span>
+                                    <span class="text-xs font-semibold text-right text-gray-900">${clientName}</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+                                    <span class="text-xs font-medium text-gray-600">Uploader:</span>
+                                    <span class="text-xs font-semibold text-right text-gray-900">${uploadUser}</span>
+                                </div>
+                                <div class="p-2 rounded-lg bg-gray-50">
+                                    <span class="text-xs font-medium text-gray-600">Keterangan Upload:</span>
+                                    <p class="mt-1 text-xs font-semibold text-gray-900">${note}</p>
+                                </div>
+                                <div class="p-2 rounded-lg bg-gray-50">
+                                    <span class="text-xs font-medium text-gray-600">Kelengkapan Foto:</span>
+                                    <div class="grid grid-cols-3 gap-1 mt-1 text-[11px] font-semibold text-gray-900">
+                                        <span>Before: ${beforeLabel}</span>
+                                        <span>Process: ${processLabel}</span>
+                                        <span>After: ${finalLabel}</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Date Info -->
                             <div class="pt-2 border-t border-gray-200">
-                                <div class="flex items-center gap-1 text-xs text-gray-600">
+                                <div class="flex items-center gap-1 text-xs text-gray-600 mb-1">
                                     <i class="ri-calendar-line"></i>
-                                    <span>Created: ${formattedDate}</span>
+                                    <span>Accepted: ${formattedDate}</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs text-gray-600">
+                                    <i class="ri-time-line"></i>
+                                    <span>Uploaded: ${formattedUploadDate}</span>
                                 </div>
                             </div>
                         </div>

@@ -1,59 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SILAB Changelog
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Dokumen ini berisi riwayat perubahan aplikasi SILAB dengan format versioning berbasis **Semantic Versioning (SemVer)**.
 
-## About Laravel
+## Versioning Policy
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- `MAJOR` (`X.0.0`): perubahan besar / breaking changes.
+- `MINOR` (`0.X.0`): fitur baru tanpa breaking changes.
+- `PATCH` (`0.0.X`): perbaikan bug, optimasi kecil, dan polish UI.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Format rilis:
+- `## [vX.Y.Z] - YYYY-MM-DD`
+- Gunakan kategori: `Added`, `Changed`, `Fixed`, `Removed`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## [Unreleased]
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Planned
+- Penyempurnaan pixel-level pada halaman admin agar lebih mendekati referensi.
+- QA visual lintas breakpoint (desktop/tablet/mobile) untuk seluruh modul admin.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## [v2.3.0] - 2026-04-15
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Changed
+- Redesign UI/UX admin ke gaya modern-clean dengan pendekatan high-fidelity (content tetap SILAB).
+- Penyelarasan visual global komponen admin: card, table, form controls, button states, info strip, dan panel.
+- Penataan layout admin agar area sidebar dan content memiliki pola shell yang konsisten.
 
-### Premium Partners
+### Fixed
+- Overlap dan inkonsistensi spacing pada beberapa halaman admin.
+- Scroll behavior admin dipisah: sidebar scroll sendiri dan content scroll sendiri.
+- Footer identity dikembalikan dan diatur agar tetap tampil rapi pada halaman admin.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## [v2.2.0] - 2026-04-15
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Added
+- Endpoint detail fixed image menampilkan data yang lebih informatif (nama user/client, note upload, metadata gambar).
 
-## Code of Conduct
+### Changed
+- Modal detail pada admin check status diperbarui agar tidak hanya menampilkan ID numerik.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Fixed
+- Sanitasi output teks dinamis pada card detail untuk mencegah render HTML tidak aman.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## [v2.1.0] - 2026-04-15
 
-## License
+### Changed
+- Flow FixedImage diperbarui agar save/delete tidak perlu reload penuh halaman.
+- Optimasi query FixedImage dengan date-range filter dan logic scope yang lebih terpusat.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Added
+- Respons API save/delete FixedImage menyertakan `counts` dan `fixed_state` untuk update UI ringan.
+- Penambahan indeks performa pada tabel upload/fixed image.
+
+### Fixed
+- Konsistensi limit harian pada aksi pemilihan gambar.
+
+---
+
+## [v2.0.0] - 2026-04-15
+
+### Changed
+- Refactor domain Upload Image menuju pola Service + Repository.
+- Pemisahan tanggung jawab controller agar lebih tipis dan terstruktur.
+
+### Added
+- Request validation terpisah untuk flow upload/chunk/admin update.
+- Service storage/chunk untuk lifecycle temp upload dan file movement.
+- Unit/feature tests untuk domain Upload Image (repository/service/storage/controller).
+
+### Fixed
+- Perbaikan bug chunk-temp handling dan stabilitas proses save draft/final.
+
+---
+
+## Notes for Next Updates
+
+Saat menambah rilis baru:
+1. Pindahkan item dari `Unreleased` ke versi baru.
+2. Tambahkan section baru di atas versi terbaru.
+3. Gunakan tanggal rilis aktual (`YYYY-MM-DD`).
+4. Pastikan perubahan dikelompokkan sesuai kategori (`Added/Changed/Fixed/Removed`).

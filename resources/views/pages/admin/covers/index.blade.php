@@ -1,15 +1,15 @@
 <x-app-layout title="Data Cover" subtitle="Menampilkan Data Cover Yang Sudah Dibuat">
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
-            <div class="flex items-center justify-end my-8">
+        <div class="admin-content flex-1 p-6 overflow-y-auto">
+            <div class="admin-toolbar flex items-center justify-end my-8">
                 <button id="openCoverModal"
                     class="text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm btn btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                     <i class="ri-add-line"></i> Add New Cover
                 </button>
             </div>
 
-            <div class="bg-white shadow-lg card">
+            <div class="bg-white shadow-lg card admin-panel">
                 <div class="card-body">
                     <div class="overflow-x-auto">
                         <table class="table w-full table-zebra">

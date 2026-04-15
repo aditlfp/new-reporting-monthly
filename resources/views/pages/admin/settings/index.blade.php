@@ -1,12 +1,12 @@
 <x-app-layout title="Settings" subtitle="Settings / Pengaturan">
-	<div class="flex h-screen bg-slate-50">
+	<div class="admin-shell flex min-h-screen bg-slate-50">
 	    @include('components.sidebar-component')
-	    <div class="flex-1 p-6 overflow-y-auto">
-		    <div class="card bg-white">
+	    <div class="admin-content flex-1 p-6 overflow-y-auto">
+		    <div class="card bg-white admin-panel">
 		    	<div class="card-body">
 		    		<div class="font-semibold text-xl">All Settings</div>
 		    		
-		    		<div class="grid grid-cols-2 gap-x-16 border border-slate-100 rounded-md">
+		    		<div class="admin-filter-card grid grid-cols-1 md:grid-cols-2 gap-x-16 border border-slate-100 rounded-md">
 		    			<div class="form-control m-5 w-full">
 			               	<fieldset class="fieldset">
 							  <legend class="fieldset-legend text-[15px] required">API Key</legend>

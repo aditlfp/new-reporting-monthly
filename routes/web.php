@@ -32,6 +32,10 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/upload-img-lap', UploadImageController::class);
     Route::post('/upload-img-lap-draft', [UploadImageController::class, 'draft'])->name('upload-images.draft');
+    Route::post('/upload-img-lap/chunk/init', [UploadImageController::class, 'initChunkUpload'])->name('upload-images.chunk.init');
+    Route::post('/upload-img-lap/chunk/upload', [UploadImageController::class, 'uploadChunk'])->name('upload-images.chunk.upload');
+    Route::post('/upload-img-lap/chunk/finalize', [UploadImageController::class, 'finalizeChunkUpload'])->name('upload-images.chunk.finalize');
+    Route::post('/upload-img-lap/chunk/cancel', [UploadImageController::class, 'cancelChunkUpload'])->name('upload-images.chunk.cancel');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
 
