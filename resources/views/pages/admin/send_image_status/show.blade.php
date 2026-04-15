@@ -1,8 +1,8 @@
 <x-app-layout title="Check Status Upload" subtitle="Monitor upload status - Maximum 14 uploads per month per mitra">
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
 
-        <div class="flex-1 mt-16 overflow-y-auto md:mt-0">
+        <div class="admin-content flex-1 overflow-y-auto">
             <div class="min-h-screen px-3 py-6 bg-gradient-to-br from-slate-50 to-gray-100 sm:px-4 md:px-6 lg:px-8">
                 <div class="mx-auto max-w-7xl">
                     <!-- Header Section -->

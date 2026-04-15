@@ -1,8 +1,8 @@
 <x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
-            <div class="flex items-center justify-end m-4 md:m-6">
+        <div class="admin-content flex-1 p-3 overflow-y-auto md:p-6">
+            <div class="admin-toolbar flex items-center justify-end m-4 md:m-6">
                 <button id="btnCreate"
                     class="text-xs text-blue-500 uppercase transition-all duration-200 ease-in-out border-none rounded-sm md:text-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-500 hover:text-white">
                     <i class="ri-add-line"></i> <span>Add New Letter</span>
@@ -12,7 +12,7 @@
                 <i class="ri-checkbox-circle-line text-3xl text-white"></i>
                 <span id="container" class="text-white text-lg font-semibold"></span>
             </div>
-            <div class="m-3 bg-white shadow-xl md:m-5 card">
+            <div class="m-3 bg-white shadow-xl md:m-5 card admin-panel">
                 <div class="card-body">
                     <div class="overflow-x-auto">
                         <table class="table w-full text-xs table-zebra md:text-sm">

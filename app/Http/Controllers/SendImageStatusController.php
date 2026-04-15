@@ -149,19 +149,49 @@ class SendImageStatusController extends Controller
     public function getDetailFixed($user_id, $month, $year)
     {
         try {
-            $fixed = FixedImage::where('user_id', $user_id)
+            $fixed = FixedImage::with([
+                    'user:id,nama_lengkap,email',
+                    'clients:id,name,address',
+                    'uploadImage:id,user_id,clients_id,note,img_before,img_proccess,img_final,created_at',
+                    'uploadImage.user:id,nama_lengkap,email',
+                ])
+                ->where('user_id', $user_id)
                 ->when($month != 'all', function ($q) use ($month) {
                     $q->whereMonth('created_at', $month);
                 })
                 ->when($year != 'all', function ($q) use ($year) {
                     $q->whereYear('created_at', $year);
                 })
+                ->latest()
                 ->get();
+
+            $data = $fixed->map(function (FixedImage $item) {
+                return [
+                    'id' => $item->id,
+                    'upload_image_id' => $item->upload_image_id,
+                    'user_id' => $item->user_id,
+                    'clients_id' => $item->clients_id,
+                    'created_at' => optional($item->created_at)->toISOString(),
+                    'user_name' => $item->user?->nama_lengkap,
+                    'user_email' => $item->user?->email,
+                    'client_name' => $item->clients?->name,
+                    'client_address' => $item->clients?->address,
+                    'upload_note' => $item->uploadImage?->note,
+                    'upload_created_at' => optional($item->uploadImage?->created_at)->toISOString(),
+                    'upload_user_name' => $item->uploadImage?->user?->nama_lengkap,
+                    'upload_user_email' => $item->uploadImage?->user?->email,
+                    'upload_images' => [
+                        'before' => $item->uploadImage?->img_before,
+                        'process' => $item->uploadImage?->img_proccess,
+                        'final' => $item->uploadImage?->img_final,
+                    ],
+                ];
+            })->values();
 
             return response()->json([
                 'status' => true,
                 'message' => 'Get Data Detail Image Has Accept!',
-                'data' => $fixed
+                'data' => $data,
             ]);
         } catch (Exception $e) {
             throw new Exception("Error Processing Request: ". $e->getMessage(), 1);

@@ -1,11 +1,11 @@
 <x-app-layout title="Data Photo Progress" subtitle="Menampilkan Data Photo Yang Sudah Ada">
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
-        <div class="flex-1 p-3 mt-16 overflow-y-auto md:p-6 md:mt-0">
+        <div class="admin-content flex-1 p-3 overflow-y-auto md:p-6">
             <div class="container px-3 py-6 mx-auto md:px-4 md:py-8">
-                <div class="m-3 bg-white shadow-xl md:m-5 card">
+                <div class="m-3 bg-white shadow-xl md:m-5 card admin-panel">
                     <div class="card-body">
-                        <div class="flex flex-col gap-3 mb-4 md:gap-4 md:mb-6">
+                        <div class="admin-filter-card p-4 md:p-5 flex flex-col gap-3 mb-4 md:gap-4 md:mb-6">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-xl md:text-2xl card-title">Data Photo Progress</h2>
                             </div>
@@ -14,25 +14,32 @@
                             <div class="flex flex-col gap-3 rounded-lg">
                                 <div class="flex items-center form-control gap-x-2">
                                     <div class="flex flex-col">
-                                        <label for="mitra" class="text-xs font-medium required label md:text-sm label-text">Mitra</label>
-                                        <select name="mitraFilter" id="mitraFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
+                                        <label for="mitra"
+                                            class="text-xs font-medium required label md:text-sm label-text">Mitra</label>
+                                        <select name="mitraFilter" id="mitraFilter"
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Mitra</option>
                                             @foreach ($client as $cl)
-                                                <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}</option>
+                                                <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div id="filterUserContainer">
-                                        <label for="userFilter" class="text-xs font-medium required label md:text-sm label-text">User</label>
-                                        <select name="userFilter" id="userFilter" class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
+                                        <label for="userFilter"
+                                            class="text-xs font-medium required label md:text-sm label-text">User</label>
+                                        <select name="userFilter" id="userFilter"
+                                            class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
                                             <option selected value="">Pilih Mitra Terlebih Dahulu</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="label">
-                                            <span class="text-xs font-medium required md:text-sm label-text">Filter Bulan</span>
+                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
+                                                Bulan</span>
                                         </label>
-                                        <select id="monthFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
+                                        <select id="monthFilter"
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Months</option>
                                             <option value="1">Januari</option>
                                             <option value="2">Februari</option>
@@ -51,38 +58,54 @@
 
                                     <div>
                                         <label class="label">
-                                            <span class="text-xs font-medium required md:text-sm label-text">Filter Tahun</span>
+                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
+                                                Tahun</span>
                                         </label>
-                                        <select id="yearFilter" class="rounded-sm select select-bordered select-xs md:select-sm">
+                                        <select id="yearFilter"
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Year</option>
                                             @for ($year = now()->year; $year >= 2024; $year--)
-                                            <option value="{{ $year }}">{{ $year }}</option>
-                                        @endfor
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
                                         </select>
                                     </div>
+                                    <div class="mt-4 flex gap-2">
+                                        <button id="applyFilter"
+                                            class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Apply
+                                            Filter</button>
+                                        <button id="clearFilter"
+                                            class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Clear</button>
+                                        <button id="generatePdf"
+                                            class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
+                                            <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span
+                                                class="hidden sm:inline">Download PDF</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button id="applyFilter" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Apply Filter</button>
-                                    <button id="clearFilter" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Clear</button>
-                                    <button id="generatePdf" class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
-                                       <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span class="hidden sm:inline">Download PDF</span>
-                                    </button>
-                                </div>
-                                <divider class="border-t border-gray-100"/>
+                                <divider class="border-t border-gray-100" />
                             </div>
 
                             <!-- Selection Controls -->
                             <div class="flex gap-2">
-                                <button id="selectAll" class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select All</button>
-                                <button id="deselectAll" class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect All</button>
-                                <button id="deleteSelected" class="text-red-700 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-600/20 hover:bg-red-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                    <i class="mr-1 text-xs ri-delete-bin-6-line md:text-sm"></i><span class="hidden sm:inline">Delete Selected</span>
+                                <button id="selectAll"
+                                    class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select
+                                    All</button>
+                                <button id="deselectAll"
+                                    class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect
+                                    All</button>
+                                <button id="deleteSelected"
+                                    class="text-red-700 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-600/20 hover:bg-red-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled>
+                                    <i class="mr-1 text-xs ri-delete-bin-6-line md:text-sm"></i><span
+                                        class="hidden sm:inline">Delete Selected</span>
                                 </button>
                             </div>
 
-                            <div id="pdf-progress-container" class="hidden" style="font-family: Arial, sans-serif; margin-top: 20px;">
+                            <div id="pdf-progress-container" class="hidden"
+                                style="font-family: Arial, sans-serif; margin-top: 20px;">
                                 <h3>PDF Generation Progress</h3>
-                                <progress id="pdf-progress" class="w-56 progress progress-success" value="0" max="100"></progress>
+                                <progress id="pdf-progress" class="w-56 progress progress-success" value="0"
+                                    max="100"></progress>
                             </div>
 
                         </div>
@@ -132,9 +155,11 @@
 
                 <div class="w-full mb-3 md:mb-4 form-control">
                     <label class="label">
-                        <span class="text-xs label-text md:text-sm">Nama Mitra <span class="text-error">*</span></span>
+                        <span class="text-xs label-text md:text-sm">Nama Mitra <span
+                                class="text-error">*</span></span>
                     </label>
-                    <select name="client_id" id="client_id" class="w-full select select-bordered select-xs md:select-sm" required>
+                    <select name="client_id" id="client_id"
+                        class="w-full select select-bordered select-xs md:select-sm" required>
                         <option value="" disabled selected>Select Client</option>
                         @foreach ($client as $cl)
                             <option value="{{ $cl->id }}">{{ $cl->name }}</option>
@@ -149,8 +174,8 @@
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">Before Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_before"
-                        name="img_before">
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_before" name="img_before">
                     <div id="current-img_before" class="mt-2"></div>
                     <label class="hidden label" id="error-img_before">
                         <span class="label-text-alt text-error"></span>
@@ -161,8 +186,8 @@
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">Progress Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_proccess"
-                        name="img_proccess">
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_proccess" name="img_proccess">
                     <div id="current-img_proccess" class="mt-2"></div>
                     <label class="hidden label" id="error-img_proccess">
                         <span class="label-text-alt text-error"></span>
@@ -173,7 +198,8 @@
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">After Image</span>
                     </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm" id="img_final" name="img_final">
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_final" name="img_final">
                     <div id="current-img_final" class="mt-2"></div>
                     <label class="hidden label" id="error-img_final">
                         <span class="label-text-alt text-error"></span>
@@ -184,7 +210,8 @@
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">Keterangan</span>
                     </label>
-                    <textarea class="w-full h-20 md:h-24 textarea textarea-bordered textarea-xs md:textarea-sm" id="note" name="note"></textarea>
+                    <textarea class="w-full h-20 md:h-24 textarea textarea-bordered textarea-xs md:textarea-sm" id="note"
+                        name="note"></textarea>
                     <label class="hidden label" id="error-note">
                         <span class="label-text-alt text-error"></span>
                     </label>
@@ -213,37 +240,37 @@
                 <div class="flex gap-2 p-1 bg-black rounded-full bg-opacity-70">
                     <button id="closeImagePreview"
                         class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                     <button id="rotateImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
                     <button id="zoomInImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                         </svg>
                     </button>
                     <button id="zoomOutImage" class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                         </svg>
                     </button>
                     <button id="downloadImage"
                         class="p-2 text-white transition-colors rounded-full hover:bg-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -254,16 +281,16 @@
             <!-- Navigation buttons -->
             <button id="prevImage"
                 class="absolute z-10 p-2 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full md:p-3 left-2 md:left-4 top-1/2 hover:bg-opacity-70">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
 
             <button id="nextImage"
                 class="absolute z-10 p-2 text-white transition-all transform -translate-y-1/2 bg-black bg-opacity-50 rounded-full md:p-3 right-2 md:right-4 top-1/2 hover:bg-opacity-70">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
@@ -288,7 +315,6 @@
         <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js"></script>
         <script src="{{ asset('js/fotoPages.js') }}"></script>
         <script>
-
             function askNotificationPermission() {
                 if (!("Notification" in window)) {
                     console.warn("This browser does not support notifications.");
@@ -297,7 +323,7 @@
 
                 if (Notification.permission === "granted") {
                     return;
-                } 
+                }
 
                 if (Notification.permission !== "denied") {
                     Notification.requestPermission().then(permission => {
@@ -397,7 +423,7 @@
                             user
                         },
                         dataType: 'json',
-                        success: function (response) {
+                        success: function(response) {
                             // defensive checks
                             if (!response) {
                                 console.error('Empty JSON response');
@@ -414,7 +440,7 @@
                                 $('#tableContainer').html('<p>No data</p>');
                             }
                         },
-                        error: function (xhr, textStatus, errorThrown) {
+                        error: function(xhr, textStatus, errorThrown) {
                             if (textStatus === 'abort') {
                                 console.log('Previous request aborted');
                                 return;
@@ -540,13 +566,15 @@
                     // Handle mitra filter change
                     $('#mitraFilter').change(function() {
                         const mitraId = $(this).val();
-                        
+
                         if (mitraId) {
                             // Fetch users for selected mitra
                             $.ajax({
                                 url: '{{ route('admin.upload.get-users') }}',
                                 type: 'GET',
-                                data: { mitra_id: mitraId },
+                                data: {
+                                    mitra_id: mitraId
+                                },
                                 dataType: 'json',
                                 beforeSend: function() {
                                     // Show loading state
@@ -557,7 +585,9 @@
                                         populateUserFilter(response.data);
                                     } else {
                                         console.error('Error in response:', response);
-                                        $('#userFilter').html('<option selected value="">Error loading users</option>');
+                                        $('#userFilter').html(
+                                            '<option selected value="">Error loading users</option>'
+                                        );
                                         $('#userFilter').prop('disabled', true);
                                     }
                                 },
@@ -567,9 +597,11 @@
                                         error: error,
                                         responseText: xhr.responseText
                                     });
-                                    
+
                                     // Reset user filter on error
-                                    $('#userFilter').html('<option selected value="">Error loading users</option>');
+                                    $('#userFilter').html(
+                                        '<option selected value="">Error loading users</option>'
+                                    );
                                     $('#userFilter').prop('disabled', true);
                                 }
                             });
@@ -594,7 +626,7 @@
                 // Populate user filter dropdown
                 function populateUserFilter(users) {
                     let html = '<option value="">All Users</option>';
-                    
+
                     if (users && users.length > 0) {
                         users.forEach(user => {
                             html += `<option value="${user.id}">${kapitalName(user.nama_lengkap)}</option>`;
@@ -602,7 +634,7 @@
                     } else {
                         html += '<option value="">No users found</option>';
                     }
-                    
+
                     $('#userFilter').html(html);
                     $('#userFilter').prop('disabled', false);
                 }
@@ -618,7 +650,7 @@
                     } else {
                         currentMonth = '';
                     }
-                    
+
                     loadData(1, month, year, mitra, user);
                 });
 
@@ -670,7 +702,8 @@
                             return;
                         }
 
-                        const confirmed = confirm(`Hapus ${selectedIds.length} data terpilih? Aksi ini tidak bisa dibatalkan.`);
+                        const confirmed = confirm(
+                            `Hapus ${selectedIds.length} data terpilih? Aksi ini tidak bisa dibatalkan.`);
                         if (!confirmed) {
                             return;
                         }
@@ -691,10 +724,12 @@
                             success: function(response) {
                                 loadData(currentPage);
                                 $('#headerCheckbox').prop('checked', false);
-                                Notify(response.message || 'Selected uploads deleted successfully', null, null, 'success');
+                                Notify(response.message || 'Selected uploads deleted successfully',
+                                    null, null, 'success');
                             },
                             error: function(xhr) {
-                                const message = xhr.responseJSON?.message || 'Error deleting selected data';
+                                const message = xhr.responseJSON?.message ||
+                                    'Error deleting selected data';
                                 Notify(message, null, null, 'error');
                             },
                             complete: function() {
@@ -725,7 +760,8 @@
                         const $button = $(this);
                         const originalText = $button.html();
                         $button.prop('disabled', true);
-                        $button.html('<span class="loading loading-spinner loading-sm"></span> Generating PDF...');
+                        $button.html(
+                            '<span class="loading loading-spinner loading-sm"></span> Generating PDF...');
 
                         // Show progress overlay
 
@@ -765,94 +801,96 @@
                 }
 
                 function generatePdf(data, currentMonth, onComplete) {
-                  const pages = getFotoPageHtml(data, currentMonth);
-                  const totalPages = pages.length;
-                  setProgress(0);
+                    const pages = getFotoPageHtml(data, currentMonth);
+                    const totalPages = pages.length;
+                    setProgress(0);
 
-                  const images = [];
+                    const images = [];
 
-                  let index = 0;
+                    let index = 0;
 
-                  function renderNext() {
-                    if (index >= totalPages) {
-                      // sudah selesai render semua jadi image
-                      setProgress(100);
-                      startWorker(images);
-                      return;
+                    function renderNext() {
+                        if (index >= totalPages) {
+                            // sudah selesai render semua jadi image
+                            setProgress(100);
+                            startWorker(images);
+                            return;
+                        }
+
+
+                        const pageNum = index + 1;
+                        const progressPercent = Math.round((pageNum - 1) / totalPages * 100);
+
+                        // Update bar for starting this page
+                        setProgress(progressPercent);
+
+                        const div = document.createElement("div");
+                        div.style.position = "absolute";
+                        div.style.left = "-9999px";
+                        div.style.width = "297mm";
+                        div.style.backgroundColor = "white";
+                        div.innerHTML = pages[index];
+                        document.body.appendChild(div);
+
+                        html2canvas(div, {
+                            scale: 2,
+                            useCORS: true,
+                            allowTaint: true,
+                            logging: false,
+                        }).then(canvas => {
+                            document.body.removeChild(div);
+
+                            const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                            images.push(dataUrl);
+
+                            // Update after page finished
+                            const newPercent = Math.round(pageNum / totalPages * 100);
+                            setProgress(newPercent);
+
+                            index++;
+                            renderNext();
+
+                        }).catch(err => {
+                            console.error(err);
+                        });
                     }
 
+                    renderNext();
 
-                    const pageNum = index + 1;
-                    const progressPercent = Math.round((pageNum - 1) / totalPages * 100);
+                    function startWorker(images) {
+                        const worker = new Worker("/js/pdf-worker.js");
 
-                    // Update bar for starting this page
-                    setProgress(progressPercent);
+                        worker.onmessage = function(e) {
+                            if (e.data.progress !== undefined) {
+                                setProgress(e.data.progress);
+                            }
 
-                    const div = document.createElement("div");
-                    div.style.position = "absolute";
-                    div.style.left = "-9999px";
-                    div.style.width = "297mm";
-                    div.style.backgroundColor = "white";
-                    div.innerHTML = pages[index];
-                    document.body.appendChild(div);
+                            if (e.data.done) {
+                                const filename = `Photo_Progress_Report_${currentMonth}.pdf`;
+                                downloadPdfBlob(e.data.pdfBlob, filename);
+                                sendPdfToBackend(e.data.pdfBlob, currentMonth, data[0].clients_id, () => {
+                                    if (onComplete) onComplete();
 
-                    html2canvas(div, {
-                      scale: 2,
-                      useCORS: true,
-                      allowTaint: true,
-                      logging: false,
-                    }).then(canvas => {
-                      document.body.removeChild(div);
+                                    showNotification("PDF Generation Complete", {
+                                        body: "Proses pembuatan PDF telah selesai!",
+                                        icon: "/favicon.ico"
+                                    });
+                                    document.getElementById("notify-sound").play().catch(console.warn);
 
-                      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-                      images.push(dataUrl);
+                                });
+                                worker.terminate();
+                            }
 
-                      // Update after page finished
-                      const newPercent = Math.round(pageNum / totalPages * 100);
-                      setProgress(newPercent);
+                            if (e.data.error) {
+                                console.error("Worker Error:", e.data.error);
+                                worker.terminate();
+                            }
+                        };
 
-                      index++;
-                      renderNext();
-
-                    }).catch(err => {
-                      console.error(err);
-                    });
-                  }
-
-                  renderNext();
-
-                  function startWorker(images) {
-                    const worker = new Worker("/js/pdf-worker.js");
-
-                    worker.onmessage = function (e) {
-                      if (e.data.progress !== undefined) {
-                        setProgress(e.data.progress);
-                      }
-
-                      if (e.data.done) {
-                       const filename = `Photo_Progress_Report_${currentMonth}.pdf`;
-                        downloadPdfBlob(e.data.pdfBlob, filename);
-                        sendPdfToBackend(e.data.pdfBlob, currentMonth, data[0].clients_id, () => {
-                          if (onComplete) onComplete();
-
-                          showNotification("PDF Generation Complete", {
-                                body: "Proses pembuatan PDF telah selesai!",
-                                icon: "/favicon.ico"
-                            });
-                          document.getElementById("notify-sound").play().catch(console.warn);
-
+                        worker.postMessage({
+                            images
                         });
-                        worker.terminate();
-                      }
-
-                      if (e.data.error) {
-                        console.error("Worker Error:", e.data.error);
-                        worker.terminate();
-                      }
-                    };
-
-                    worker.postMessage({ images });
-                  }
+                    }
                 }
 
 
@@ -876,7 +914,8 @@
                             if (onComplete) onComplete();
                         },
                         error: function(xhr) {
-                            Notify('Error saving PDF: ' + (xhr.responseJSON?.message || 'Unknown error'), null, null, 'error');
+                            Notify('Error saving PDF: ' + (xhr.responseJSON?.message || 'Unknown error'),
+                                null, null, 'error');
                             if (onComplete) onComplete();
                         }
                     });

@@ -21,10 +21,8 @@ class UserNavigateController extends Controller
         $this->now = now();
     }
 
-    public function toUploadImgLaporan()
+    public function toUploadImgLaporan(UploadImageService $service)
     {
-        
-        $service = new UploadImageService($this->auth);
         $data = $service->getUploadImageData();
 
         return view('pages.user.send_img.create', $data);

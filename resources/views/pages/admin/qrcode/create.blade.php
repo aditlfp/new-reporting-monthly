@@ -3,11 +3,11 @@
 @endphp
 
 <x-app-layout :title="$isEdit ? 'Edit QR Code' : 'Tambah QR Code'" :subtitle="$isEdit ? 'Memperbarui data QR code tanpa mengganti path file' : 'Membuat data QR code baru'">
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
 
-        <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
-            <div class="max-w-3xl bg-white shadow-lg card">
+        <div class="admin-content flex-1 p-6 overflow-y-auto">
+            <div class="max-w-3xl bg-white shadow-lg card admin-panel">
                 <div class="card-body">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-semibold text-slate-900">{{ $isEdit ? 'Edit QR Code' : 'Form QR Code' }}</h2>

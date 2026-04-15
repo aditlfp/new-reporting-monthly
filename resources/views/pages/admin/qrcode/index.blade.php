@@ -15,11 +15,11 @@
         </style>
     @endpush
 
-    <div class="flex h-screen bg-slate-50">
+    <div class="admin-shell flex min-h-screen bg-slate-50">
         @include('components.sidebar-component')
 
-        <div class="flex-1 p-6 mt-16 overflow-y-auto md:mt-0">
-            <div class="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+        <div class="admin-content flex-1 p-6 overflow-y-auto">
+            <div class="admin-filter-card flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between p-4">
                 <form method="GET" action="{{ route('admin-qrcode.index') }}" class="flex flex-col gap-3 sm:flex-row">
                     <label class="flex items-center w-full max-w-xl gap-2 bg-white input input-bordered">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
@@ -51,7 +51,7 @@
                 </a>
             </div>
 
-            <div class="p-4 mb-4 bg-white shadow-sm rounded-xl bulk-print-toolbar">
+            <div class="admin-filter-card p-4 mb-4 bulk-print-toolbar">
                 <div class="flex items-center gap-3">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="selectAllQr" class="checkbox checkbox-sm checkbox-primary">
@@ -82,7 +82,7 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-lg card">
+            <div class="bg-white shadow-lg card admin-panel">
                 <div class="card-body">
                     <div class="overflow-x-auto">
                         <table class="table w-full table-zebra">
