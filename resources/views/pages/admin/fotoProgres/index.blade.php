@@ -146,14 +146,18 @@
 
     {{-- Edit Modal --}}
     <dialog id="fotoModal" class="modal">
-        <div class="w-11/12 max-w-2xl p-4 modal-box md:w-10/11 md:p-6">
-            <h3 class="mb-3 text-lg font-bold md:mb-4 md:text-xl" id="modalTitle">Edit Photo Progress</h3>
+        <div class="w-11/12 max-w-4xl p-0 overflow-hidden modal-box md:w-10/11">
+            <div class="px-4 py-3 border-b border-base-200 bg-base-100 md:px-6 md:py-4">
+                <h3 class="text-lg font-bold md:text-xl" id="modalTitle">Edit Photo Progress</h3>
+                <p class="mt-1 text-xs text-base-content/60 md:text-sm">Perbarui data foto progress dan unggah gambar baru bila diperlukan.</p>
+            </div>
 
-            <form id="photoForm" method="dialog">
+            <form id="photoForm" method="dialog" class="max-h-[75vh] overflow-hidden">
                 <input type="hidden" id="photoId" name="id">
                 <input type="hidden" id="formMethod" value="POST">
 
-                <div class="w-full mb-3 md:mb-4 form-control">
+                <div class="p-4 space-y-4 md:p-6 md:space-y-5">
+                <div class="w-full form-control">
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">Nama Mitra <span
                                 class="text-error">*</span></span>
@@ -206,7 +210,7 @@
                     </label>
                 </div>
 
-                <div class="w-full mb-3 md:mb-4 form-control">
+                <div class="w-full form-control">
                     <label class="label">
                         <span class="text-xs label-text md:text-sm">Keterangan</span>
                     </label>
@@ -216,12 +220,13 @@
                         <span class="label-text-alt text-error"></span>
                     </label>
                 </div>
+                </div>
 
-                <div class="modal-action">
-                    <button type="button" class="btn btn-xs md:btn-sm btn-ghost" id="btnClose">Close</button>
+                <div class="sticky bottom-0 px-4 py-3 border-t modal-action border-base-200 bg-base-100 md:px-6 md:py-4">
+                    <button type="button" class="btn btn-xs md:btn-sm btn-ghost" id="btnClose">Batal</button>
                     <button type="submit" class="btn btn-xs md:btn-sm btn-primary" id="btnSave">
                         <span class="hidden loading loading-spinner loading-sm" id="btnSpinner"></span>
-                        Save
+                        Simpan Perubahan
                     </button>
                 </div>
             </form>
@@ -392,6 +397,7 @@
 
                 const ASSET_URL = "{{ asset('storage') }}";
                 const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                const PLACEHOLDER_IMAGE = 'https://placehold.co/600x400?text=Image+Not+Found';
 
                 function init() {
                     loadData();
@@ -517,12 +523,13 @@
                 // Helper function to render image cell
                 function renderImageCell(imagePath, label) {
                     if (!imagePath) {
-                        return `<img src="https://placehold.co/600x400?text=Kosong" class="max-w-[60px] md:max-w-[100px] opacity-50" />`;
+                        return `<img src="https://placehold.co/600x400?text=Kosong" class="max-w-[60px] md:max-w-[100px] opacity-50" alt="Kosong" />`;
                     }
 
                     const fullUrl = window.location.origin + '/storage/' + imagePath;
                     return `<img src="${fullUrl}" 
                              class="max-w-[60px] md:max-w-[100px] cursor-pointer hover:opacity-80 transition-opacity" 
+                             onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"
                              onclick="showImagePreview('${fullUrl}')" 
                              alt="${label}" />`;
                 }
@@ -977,10 +984,13 @@
                     if (imagePath) {
                         const fullUrl = window.location.origin + '/storage/' + imagePath;
                         container.html(
-                            `<img src="${fullUrl}" class="max-w-[150px] md:max-w-[200px] mt-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="showImagePreview('${fullUrl}')" />`
+                            `<div class="flex items-center gap-3">
+                                <img src="${fullUrl}" class="w-20 h-20 rounded-md object-cover border border-base-300 cursor-pointer hover:opacity-80 transition-opacity" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';" onclick="showImagePreview('${fullUrl}')" />
+                                <span class="text-[11px] md:text-xs text-base-content/70">Gambar saat ini</span>
+                            </div>`
                         );
                     } else {
-                        container.html('');
+                        container.html('<span class="text-[11px] md:text-xs text-base-content/50">Belum ada gambar</span>');
                     }
                 }
 
@@ -1150,7 +1160,13 @@
 
                 // Update preview image
                 function updatePreviewImage() {
-                    $('#previewImage').attr('src', imagePreviewState.images[imagePreviewState.currentIndex]);
+                    $('#previewImage')
+                        .off('error')
+                        .on('error', function() {
+                            this.onerror = null;
+                            this.src = PLACEHOLDER_IMAGE;
+                        })
+                        .attr('src', imagePreviewState.images[imagePreviewState.currentIndex]);
                     updatePreviewImageTransform();
                     updateImageCounter();
                     updateNavigationButtons();
@@ -1210,6 +1226,21 @@
                     $('#current-img_before, #current-img_proccess, #current-img_final').html('');
                     clearErrors();
                 }
+
+                ['img_before', 'img_proccess', 'img_final'].forEach(function(field) {
+                    $(`#${field}`).on('change', function() {
+                        const file = this.files[0];
+                        if (!file) return;
+
+                        const objectUrl = URL.createObjectURL(file);
+                        $(`#current-${field}`).html(
+                            `<div class="flex items-center gap-3">
+                                <img src="${objectUrl}" class="w-20 h-20 rounded-md object-cover border border-primary/40 cursor-pointer hover:opacity-80 transition-opacity" onclick="showImagePreview('${objectUrl}')" />
+                                <span class="text-[11px] md:text-xs text-base-content/70">Preview file baru</span>
+                            </div>`
+                        );
+                    });
+                });
 
                 function clearErrors() {
                     $('select, input, textarea').removeClass('input-error select-error textarea-error');

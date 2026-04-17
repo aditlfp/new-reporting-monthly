@@ -8,6 +8,7 @@ use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FixedImageController;
 use App\Http\Controllers\HandlerCountController;
+use App\Http\Controllers\ImageRateController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
@@ -25,6 +26,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'theme'])->name('dashboard');
+Route::resource('/rating-pekerjaan', ImageRateController::class)->only('create', 'store');
 
 Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -83,6 +85,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/admin/upload/get-users', [DataFotoController::class, 'getUsers'])->name('admin.upload.get-users');
 
     Route::resource('/admin-qrcode', QrCodeController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::resource('/admin-rating-image', ImageRateController::class)->only(['index', 'edit', 'update', 'destroy']);
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');
