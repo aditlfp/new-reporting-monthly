@@ -73,6 +73,16 @@
                         <span class="text-sm">Photo Progress</span>
                     </a>
 
+                    <a href="{{ route('admin-rating-image.index') }}"
+                        class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin-rating-image.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM12 6C14.2091 6 16 7.79086 16 10C16 12.2091 14.2091 14 12 14C9.79086 14 8 12.2091 8 10C8 7.79086 9.79086 6 12 6ZM12 16C13.1046 16 14 15.1046 14 14C14 12.8954 13.1046 12 12 12C10.8954 12 10 12.8954 10 14C10 15.1046 10.8954 16 12 16Z"
+                            </path>
+                        </svg>
+                        <span class="text-sm">Rating Image</span>
+                    </a>
+
                     <a href="{{ route('admin-qrcode.index') }}"
                         class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin-qrcode.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">

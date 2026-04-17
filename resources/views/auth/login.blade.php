@@ -63,6 +63,20 @@
                     <p class="text-gray-600">Masukkan Akun Absensi Untuk Masuk.</p>
                 </div>
 
+                <div id="not-operator" class="mb-6">
+                    <div class="rounded-xl border border-indigo-100 bg-indigo-50/70 p-3.5">
+                        <p class="text-sm text-indigo-900 flex flex-wrap items-center gap-2">
+                            <i class="ri-chat-smile-2-line text-base"></i>
+                            <span>Ingin memberikan ulasan pekerjaan?</span>
+                            <a href="{{ route('rating-pekerjaan.create') }}"
+                                class="inline-flex items-center gap-1 rounded-md bg-white px-2.5 py-1 font-semibold text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                                Klik di sini
+                                <i class="ri-arrow-right-line text-sm"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Error Messages -->
                 @if ($errors->any())
                 <div class="alert alert-error mb-6">
@@ -143,10 +157,18 @@
                         </label>
                     </div>
                 </form>
-
             </div>
         </div>
-
     </div>
-
+    <script>
+        $(document).ready(function() {
+            const notOperatorLink = $('#not-operator');
+            const isOperator = localStorage.getItem('SACoperator');
+            if (isOperator) {
+                notOperatorLink.hide();
+            } else {
+                notOperatorLink.show();
+            }
+        });
+    </script>
 </x-guest-layout>

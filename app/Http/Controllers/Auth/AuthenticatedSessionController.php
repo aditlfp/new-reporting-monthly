@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
+use function Pest\Laravel\session;
+
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -30,6 +32,8 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $request->session()->flash('set_operator', true);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
