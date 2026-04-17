@@ -11,13 +11,13 @@
                             </div>
 
                             <!-- Filter Section -->
-                            <div class="flex flex-col gap-4 rounded-lg">
-                                <div class="grid grid-cols-1 gap-3 form-control sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-                                    <div class="min-w-0">
-                                        <label for="mitraFilter"
+                            <div class="flex flex-col gap-3 rounded-lg">
+                                <div class="flex items-center form-control gap-x-2">
+                                    <div class="flex flex-col">
+                                        <label for="mitra"
                                             class="text-xs font-medium required label md:text-sm label-text">Mitra</label>
                                         <select name="mitraFilter" id="mitraFilter"
-                                            class="w-full rounded-sm select select-bordered select-xs md:select-sm">
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Mitra</option>
                                             @foreach ($client as $cl)
                                                 <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}
@@ -25,37 +25,21 @@
                                             @endforeach
                                         </select>
                                     </div>
-
-                                    <div id="filterUserContainer" class="min-w-0">
+                                    <div id="filterUserContainer">
                                         <label for="userFilter"
                                             class="text-xs font-medium required label md:text-sm label-text">User</label>
                                         <select name="userFilter" id="userFilter"
-                                            class="w-full rounded-sm select select-bordered select-xs md:select-sm" disabled>
+                                            class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
                                             <option selected value="">Pilih Mitra Terlebih Dahulu</option>
                                         </select>
                                     </div>
-
-                                    <div class="min-w-0">
-                                        <label for="yearFilter" class="label">
-                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
-                                                Tahun</span>
-                                        </label>
-                                        <select id="yearFilter"
-                                            class="w-full rounded-sm select select-bordered select-xs md:select-sm">
-                                            <option selected value="">All Year</option>
-                                            @for ($year = now()->year; $year >= 2024; $year--)
-                                                <option value="{{ $year }}">{{ $year }}</option>
-                                            @endfor
-                                        </select>
-                                    </div>
-
-                                    <div class="min-w-0">
-                                        <label for="monthFilter" class="label">
+                                    <div>
+                                        <label class="label">
                                             <span class="text-xs font-medium required md:text-sm label-text">Filter
                                                 Bulan</span>
                                         </label>
                                         <select id="monthFilter"
-                                            class="w-full rounded-sm select select-bordered select-xs md:select-sm">
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
                                             <option selected value="">All Months</option>
                                             <option value="1">Januari</option>
                                             <option value="2">Februari</option>
@@ -71,22 +55,32 @@
                                             <option value="12">Desember</option>
                                         </select>
                                     </div>
-                                </div>
 
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <button id="applyFilter"
-                                        class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">
-                                        Apply Filter
-                                    </button>
-                                    <button id="clearFilter"
-                                        class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">
-                                        Clear
-                                    </button>
-                                    <button id="generatePdf"
-                                        class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
-                                        <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span
-                                            class="hidden sm:inline">Download PDF</span>
-                                    </button>
+                                    <div>
+                                        <label class="label">
+                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
+                                                Tahun</span>
+                                        </label>
+                                        <select id="yearFilter"
+                                            class="rounded-sm select select-bordered select-xs md:select-sm">
+                                            <option selected value="">All Year</option>
+                                            @for ($year = now()->year; $year >= 2024; $year--)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="mt-4 flex gap-2">
+                                        <button id="applyFilter"
+                                            class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Apply
+                                            Filter</button>
+                                        <button id="clearFilter"
+                                            class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Clear</button>
+                                        <button id="generatePdf"
+                                            class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
+                                            <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span
+                                                class="hidden sm:inline">Download PDF</span>
+                                        </button>
+                                    </div>
                                 </div>
                                 <divider class="border-t border-gray-100" />
                             </div>
@@ -180,48 +174,40 @@
                     </label>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div class="p-3 border rounded-lg bg-base-100 border-base-200 form-control md:p-4">
-                        <label class="label">
-                            <span class="text-xs font-medium label-text md:text-sm">Before Image</span>
-                        </label>
-                        <input type="file" accept="image/*"
-                            class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                            id="img_before" name="img_before">
-                        <p class="mt-1 text-[10px] md:text-xs text-base-content/60">Biarkan kosong jika tidak diubah.</p>
-                        <div id="current-img_before" class="mt-3"></div>
-                        <label class="hidden label" id="error-img_before">
-                            <span class="label-text-alt text-error"></span>
-                        </label>
-                    </div>
+                <div class="w-full mb-3 md:mb-4 form-control">
+                    <label class="label">
+                        <span class="text-xs label-text md:text-sm">Before Image</span>
+                    </label>
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_before" name="img_before">
+                    <div id="current-img_before" class="mt-2"></div>
+                    <label class="hidden label" id="error-img_before">
+                        <span class="label-text-alt text-error"></span>
+                    </label>
+                </div>
 
-                    <div class="p-3 border rounded-lg bg-base-100 border-base-200 form-control md:p-4">
-                        <label class="label">
-                            <span class="text-xs font-medium label-text md:text-sm">Progress Image</span>
-                        </label>
-                        <input type="file" accept="image/*"
-                            class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                            id="img_proccess" name="img_proccess">
-                        <p class="mt-1 text-[10px] md:text-xs text-base-content/60">Biarkan kosong jika tidak diubah.</p>
-                        <div id="current-img_proccess" class="mt-3"></div>
-                        <label class="hidden label" id="error-img_proccess">
-                            <span class="label-text-alt text-error"></span>
-                        </label>
-                    </div>
+                <div class="w-full mb-3 md:mb-4 form-control">
+                    <label class="label">
+                        <span class="text-xs label-text md:text-sm">Progress Image</span>
+                    </label>
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_proccess" name="img_proccess">
+                    <div id="current-img_proccess" class="mt-2"></div>
+                    <label class="hidden label" id="error-img_proccess">
+                        <span class="label-text-alt text-error"></span>
+                    </label>
+                </div>
 
-                    <div class="p-3 border rounded-lg bg-base-100 border-base-200 form-control md:p-4">
-                        <label class="label">
-                            <span class="text-xs font-medium label-text md:text-sm">After Image</span>
-                        </label>
-                        <input type="file" accept="image/*"
-                            class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                            id="img_final" name="img_final">
-                        <p class="mt-1 text-[10px] md:text-xs text-base-content/60">Biarkan kosong jika tidak diubah.</p>
-                        <div id="current-img_final" class="mt-3"></div>
-                        <label class="hidden label" id="error-img_final">
-                            <span class="label-text-alt text-error"></span>
-                        </label>
-                    </div>
+                <div class="w-full mb-3 md:mb-4 form-control">
+                    <label class="label">
+                        <span class="text-xs label-text md:text-sm">After Image</span>
+                    </label>
+                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
+                        id="img_final" name="img_final">
+                    <div id="current-img_final" class="mt-2"></div>
+                    <label class="hidden label" id="error-img_final">
+                        <span class="label-text-alt text-error"></span>
+                    </label>
                 </div>
 
                 <div class="w-full form-control">

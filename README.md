@@ -17,39 +17,8 @@ Format rilis:
 ## [Unreleased]
 
 ### Planned
-- Penyempurnaan validasi backend pada flow rating (guard untuk kasus `upload_image_id` tidak ditemukan).
-- Penambahan test untuk flow create/store/update/destroy pada modul rating.
-
----
-
-## [v2.4.0] - 2026-04-17
-
-### Added
-- Halaman baru `resources/views/pages/admin/rating_image/index.blade.php` untuk monitoring rating gambar (summary cards, filter, sorting, tabel, pagination).
-- Modal **Edit Rating**, **Delete Confirmation**, dan **Upload Image Preview** pada halaman admin rating.
-- Halaman publik `resources/views/pages/user/rating_image/create.blade.php` dengan UI guest yang lebih menarik dan form rating pelanggan.
-- Preview gambar Before/Progress/After pada form rating pelanggan, termasuk fallback placeholder saat gambar tidak tersedia.
-
-### Changed
-- `app/Http/Controllers/ImageRateController.php`:
-  - Menambahkan `index()` dengan search/filter/sort/pagination dan summary statistik.
-  - Menambahkan eager loading relasi `uploadImage` untuk kebutuhan preview di admin.
-  - Menyesuaikan `update()` dan `destroy()` agar menerima ID langsung dari frontend (`findOrFail` berbasis `$id`).
-  - Menambahkan lookup `UploadImage` berdasarkan pola `note` (`... - Area xxx`) dengan pencocokan strict pada bagian setelah kata `Area`.
-- `resources/views/auth/login.blade.php`:
-  - Menambahkan CTA ke form rating pekerjaan dan memindahkan posisinya agar lebih terlihat di atas form login.
-- `resources/views/pages/admin/fotoProgres/index.blade.php`:
-  - Penyempurnaan layout filter section (lebih responsif).
-  - Redesign edit modal (struktur lebih rapi, sticky action bar, preview file baru, helper text).
-  - Fallback placeholder image `placehold.co` untuk kasus gambar gagal dimuat.
-- `routes/web.php`:
-  - Resource route admin rating menggunakan `ImageRateController`.
-  - Penambahan route resource user untuk `rating-pekerjaan` (`create`, `store`).
-
-### Fixed
-- Aksi hapus/edit rating dari modal admin kini mengarah ke endpoint resource yang benar (template URL route JS diperbaiki).
-- Redirect setelah update/hapus rating dikembalikan ke halaman index admin rating (`admin-rating-image.index`), bukan ke root.
-- Stabilitas pencarian data upload terkait rating ditingkatkan agar tidak lagi bergantung ke field `name`, tetapi ke field `note` sesuai format area.
+- Penyempurnaan pixel-level pada halaman admin agar lebih mendekati referensi.
+- QA visual lintas breakpoint (desktop/tablet/mobile) untuk seluruh modul admin.
 
 ---
 

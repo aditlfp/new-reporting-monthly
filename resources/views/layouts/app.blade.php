@@ -85,12 +85,6 @@
             });
         });
     </script>
-    @if(session('set_operator'))
-        <script>
-            // Set ke localStorage jika session flash ada
-            localStorage.setItem('SACoperator', 'true');
-        </script>
-    @endif
 </body>
 
 </html>
