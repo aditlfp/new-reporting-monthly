@@ -22,6 +22,19 @@ Format rilis:
 
 ---
 
+## [v2.3.1] - 2026-04-19
+
+### Changed
+- Merapikan layout filter halaman admin Photo Progress agar lebih compact, responsif, dan tidak memanjang penuh.
+- Menyempurnakan modal edit Photo Progress dengan layout form dan preview gambar yang lebih mudah dipindai.
+- Mengganti konfirmasi hapus browser default dengan modal delete custom untuk delete single dan delete selected.
+
+### Fixed
+- Memperbaiki binding pilihan mitra saat edit Photo Progress agar kompatibel dengan field `clients_id`.
+- Menambahkan ringkasan jumlah data terpilih dan badge filter aktif untuk memperjelas state halaman.
+
+---
+
 ## [v2.3.0] - 2026-04-15
 
 ### Changed
