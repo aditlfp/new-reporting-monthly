@@ -5,42 +5,50 @@
             <div class="container px-3 py-6 mx-auto md:px-4 md:py-8">
                 <div class="m-3 bg-white shadow-xl md:m-5 card admin-panel">
                     <div class="card-body">
-                        <div class="admin-filter-card p-4 md:p-5 flex flex-col gap-3 mb-4 md:gap-4 md:mb-6">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-xl md:text-2xl card-title">Data Photo Progress</h2>
+                        <div class="admin-filter-card px-4 py-3 md:px-5 flex flex-col gap-3 mb-4 md:mb-6">
+                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <h2 class="text-xl font-semibold md:text-2xl text-slate-900">Data Photo Progress</h2>
+                                    <p class="text-xs text-slate-500 md:text-sm">Filter data, pilih foto, lalu export atau hapus sesuai kebutuhan.</p>
+                                </div>
+                                <span id="activeFilterBadge"
+                                    class="hidden px-3 py-1 text-xs font-medium border rounded-full w-fit border-blue-100 bg-blue-50 text-blue-700">
+                                    Filter aktif
+                                </span>
                             </div>
 
                             <!-- Filter Section -->
-                            <div class="flex flex-col gap-3 rounded-lg">
-                                <div class="flex items-center form-control gap-x-2">
-                                    <div class="flex flex-col">
-                                        <label for="mitra"
-                                            class="text-xs font-medium required label md:text-sm label-text">Mitra</label>
+                            <div class="rounded-lg bg-white/45">
+                                <div class="flex flex-wrap items-end gap-2 md:gap-3">
+                                    <div class="form-control w-full sm:w-52 lg:w-56">
+                                        <label for="mitraFilter" class="min-h-0 px-0 py-1 label">
+                                            <span class="text-xs font-medium label-text">Mitra</span>
+                                        </label>
                                         <select name="mitraFilter" id="mitraFilter"
-                                            class="rounded-sm select select-bordered select-xs md:select-sm">
-                                            <option selected value="">All Mitra</option>
+                                            class="w-full rounded-md select select-bordered select-sm">
+                                            <option selected value="">Semua Mitra</option>
                                             @foreach ($client as $cl)
                                                 <option value="{{ $cl->id }}">{{ ucwords(strtolower($cl->name)) }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div id="filterUserContainer">
-                                        <label for="userFilter"
-                                            class="text-xs font-medium required label md:text-sm label-text">User</label>
+                                    <div id="filterUserContainer" class="form-control w-full sm:w-52 lg:w-56">
+                                        <label for="userFilter" class="min-h-0 px-0 py-1 label">
+                                            <span class="text-xs font-medium label-text">User</span>
+                                        </label>
                                         <select name="userFilter" id="userFilter"
-                                            class="rounded-sm select select-bordered select-xs md:select-sm" disabled>
+                                            class="w-full rounded-md select select-bordered select-sm" disabled>
                                             <option selected value="">Pilih Mitra Terlebih Dahulu</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label class="label">
-                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
-                                                Bulan</span>
+                                    <div class="form-control w-[calc(50%-0.25rem)] sm:w-36">
+                                        <label for="monthFilter" class="min-h-0 px-0 py-1 label">
+                                            <span class="text-xs font-medium label-text">Bulan</span>
                                         </label>
                                         <select id="monthFilter"
-                                            class="rounded-sm select select-bordered select-xs md:select-sm">
-                                            <option selected value="">All Months</option>
+                                            class="w-full rounded-md select select-bordered select-sm">
+                                            <option selected value="">Semua Bulan</option>
                                             <option value="1">Januari</option>
                                             <option value="2">Februari</option>
                                             <option value="3">Maret</option>
@@ -56,49 +64,58 @@
                                         </select>
                                     </div>
 
-                                    <div>
-                                        <label class="label">
-                                            <span class="text-xs font-medium required md:text-sm label-text">Filter
-                                                Tahun</span>
+                                    <div class="form-control w-[calc(50%-0.25rem)] sm:w-28">
+                                        <label for="yearFilter" class="min-h-0 px-0 py-1 label">
+                                            <span class="text-xs font-medium label-text">Tahun</span>
                                         </label>
                                         <select id="yearFilter"
-                                            class="rounded-sm select select-bordered select-xs md:select-sm">
-                                            <option selected value="">All Year</option>
+                                            class="w-full rounded-md select select-bordered select-sm">
+                                            <option selected value="">Semua Tahun</option>
                                             @for ($year = now()->year; $year >= 2024; $year--)
                                                 <option value="{{ $year }}">{{ $year }}</option>
                                             @endfor
                                         </select>
                                     </div>
-                                    <div class="mt-4 flex gap-2">
+                                    <div class="flex w-full gap-2 sm:w-auto">
                                         <button id="applyFilter"
-                                            class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Apply
-                                            Filter</button>
+                                            class="flex-1 border-0 rounded-md btn btn-sm sm:flex-none bg-blue-500/20 hover:bg-blue-600 hover:text-white">
+                                            <i class="text-sm ri-filter-3-line"></i>
+                                            Terapkan
+                                        </button>
                                         <button id="clearFilter"
-                                            class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Clear</button>
+                                            class="flex-1 border-0 rounded-md btn btn-sm sm:flex-none bg-red-500/20 hover:bg-red-600 hover:text-white">
+                                            <i class="text-sm ri-refresh-line"></i>
+                                            Reset
+                                        </button>
                                         <button id="generatePdf"
-                                            class="text-green-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-green-500/20 hover:bg-green-600 hover:text-white">
-                                            <i class="mr-1 text-xs ri-download-cloud-2-line md:text-sm"></i><span
-                                                class="hidden sm:inline">Download PDF</span>
+                                            class="flex-1 border-0 rounded-md btn btn-sm sm:flex-none bg-green-500/20 hover:bg-green-600 hover:text-white">
+                                            <i class="text-sm ri-download-cloud-2-line"></i><span>PDF</span>
                                         </button>
                                     </div>
                                 </div>
-                                <divider class="border-t border-gray-100" />
                             </div>
 
                             <!-- Selection Controls -->
-                            <div class="flex gap-2">
-                                <button id="selectAll"
-                                    class="text-blue-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">Select
-                                    All</button>
-                                <button id="deselectAll"
-                                    class="text-red-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">Deselect
-                                    All</button>
-                                <button id="deleteSelected"
-                                    class="text-red-700 border-0 rounded-sm btn btn-xs md:btn-sm bg-red-600/20 hover:bg-red-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                    disabled>
-                                    <i class="mr-1 text-xs ri-delete-bin-6-line md:text-sm"></i><span
-                                        class="hidden sm:inline">Delete Selected</span>
-                                </button>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <p id="selectionSummary" class="text-xs text-slate-500 md:text-sm">Belum ada data dipilih.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button id="selectAll"
+                                        class="border-0 rounded-md btn btn-xs md:btn-sm bg-blue-500/20 hover:bg-blue-600 hover:text-white">
+                                        <i class="ri-checkbox-multiple-line"></i>
+                                        Select All
+                                    </button>
+                                    <button id="deselectAll"
+                                        class="border-0 rounded-md btn btn-xs md:btn-sm bg-red-500/20 hover:bg-red-600 hover:text-white">
+                                        <i class="ri-checkbox-blank-line"></i>
+                                        Deselect All
+                                    </button>
+                                    <button id="deleteSelected"
+                                        class="text-red-700 border-0 rounded-md btn btn-xs md:btn-sm bg-red-600/20 hover:bg-red-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled>
+                                        <i class="mr-1 text-xs ri-delete-bin-6-line md:text-sm"></i><span
+                                            class="hidden sm:inline">Delete Selected</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <div id="pdf-progress-container" class="hidden"
@@ -146,80 +163,94 @@
 
     {{-- Edit Modal --}}
     <dialog id="fotoModal" class="modal">
-        <div class="w-11/12 max-w-4xl p-0 overflow-hidden modal-box md:w-10/11">
-            <div class="px-4 py-3 border-b border-base-200 bg-base-100 md:px-6 md:py-4">
-                <h3 class="text-lg font-bold md:text-xl" id="modalTitle">Edit Photo Progress</h3>
-                <p class="mt-1 text-xs text-base-content/60 md:text-sm">Perbarui data foto progress dan unggah gambar baru bila diperlukan.</p>
+        <div class="w-11/12 max-w-5xl p-0 overflow-hidden modal-box md:w-10/11">
+            <div class="flex items-start justify-between gap-3 px-4 py-3 border-b border-base-200 bg-slate-50 md:px-6 md:py-4">
+                <div>
+                    <h3 class="text-lg font-bold md:text-xl text-slate-900" id="modalTitle">Edit Photo Progress</h3>
+                    <p class="mt-1 text-xs text-base-content/60 md:text-sm">Perbarui mitra, catatan, atau unggah gambar pengganti.</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-circle btn-ghost" id="btnCloseTop" aria-label="Tutup modal">
+                    <i class="ri-close-line"></i>
+                </button>
             </div>
 
-            <form id="photoForm" method="dialog" class="max-h-[75vh] overflow-hidden">
+            <form id="photoForm" method="dialog" class="max-h-[78vh] overflow-hidden">
                 <input type="hidden" id="photoId" name="id">
                 <input type="hidden" id="formMethod" value="POST">
 
-                <div class="p-4 space-y-4 md:p-6 md:space-y-5">
-                <div class="w-full form-control">
-                    <label class="label">
-                        <span class="text-xs label-text md:text-sm">Nama Mitra <span
-                                class="text-error">*</span></span>
-                    </label>
-                    <select name="client_id" id="client_id"
-                        class="w-full select select-bordered select-xs md:select-sm" required>
-                        <option value="" disabled selected>Select Client</option>
-                        @foreach ($client as $cl)
-                            <option value="{{ $cl->id }}">{{ $cl->name }}</option>
-                        @endforeach
-                    </select>
-                    <label class="hidden label" id="error-client_id">
-                        <span class="label-text-alt text-error"></span>
-                    </label>
-                </div>
+                <div class="p-4 overflow-y-auto max-h-[calc(78vh-132px)] md:p-6">
+                    <div class="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                        <div class="space-y-4">
+                            <div class="w-full form-control">
+                                <label class="py-1 label">
+                                    <span class="text-xs font-medium label-text md:text-sm">Nama Mitra <span
+                                            class="text-error">*</span></span>
+                                </label>
+                                <select name="client_id" id="client_id"
+                                    class="w-full rounded-md select select-bordered select-sm" required>
+                                    <option value="" disabled selected>Select Client</option>
+                                    @foreach ($client as $cl)
+                                        <option value="{{ $cl->id }}">{{ $cl->name }}</option>
+                                    @endforeach
+                                </select>
+                                <label class="hidden label" id="error-client_id">
+                                    <span class="label-text-alt text-error"></span>
+                                </label>
+                            </div>
 
-                <div class="w-full mb-3 md:mb-4 form-control">
-                    <label class="label">
-                        <span class="text-xs label-text md:text-sm">Before Image</span>
-                    </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                        id="img_before" name="img_before">
-                    <div id="current-img_before" class="mt-2"></div>
-                    <label class="hidden label" id="error-img_before">
-                        <span class="label-text-alt text-error"></span>
-                    </label>
-                </div>
+                            <div class="w-full form-control">
+                                <label class="py-1 label">
+                                    <span class="text-xs font-medium label-text md:text-sm">Keterangan</span>
+                                </label>
+                                <textarea class="w-full min-h-32 rounded-md textarea textarea-bordered textarea-sm" id="note"
+                                    name="note" placeholder="Tambahkan catatan progress..."></textarea>
+                                <label class="hidden label" id="error-note">
+                                    <span class="label-text-alt text-error"></span>
+                                </label>
+                            </div>
+                        </div>
 
-                <div class="w-full mb-3 md:mb-4 form-control">
-                    <label class="label">
-                        <span class="text-xs label-text md:text-sm">Progress Image</span>
-                    </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                        id="img_proccess" name="img_proccess">
-                    <div id="current-img_proccess" class="mt-2"></div>
-                    <label class="hidden label" id="error-img_proccess">
-                        <span class="label-text-alt text-error"></span>
-                    </label>
-                </div>
+                        <div class="space-y-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Foto Progress</p>
+                            <div class="grid gap-3 md:grid-cols-3">
+                                <div class="p-3 border rounded-lg form-control border-slate-200 bg-slate-50/70">
+                                    <label class="py-1 label">
+                                        <span class="text-xs font-medium label-text md:text-sm">Before</span>
+                                    </label>
+                                    <div id="current-img_before" class="mb-3"></div>
+                                    <input type="file" class="w-full file-input file-input-bordered file-input-sm"
+                                        id="img_before" name="img_before" accept="image/*">
+                                    <label class="hidden label" id="error-img_before">
+                                        <span class="label-text-alt text-error"></span>
+                                    </label>
+                                </div>
 
-                <div class="w-full mb-3 md:mb-4 form-control">
-                    <label class="label">
-                        <span class="text-xs label-text md:text-sm">After Image</span>
-                    </label>
-                    <input type="file" class="w-full file-input file-input-bordered file-input-xs md:file-input-sm"
-                        id="img_final" name="img_final">
-                    <div id="current-img_final" class="mt-2"></div>
-                    <label class="hidden label" id="error-img_final">
-                        <span class="label-text-alt text-error"></span>
-                    </label>
-                </div>
+                                <div class="p-3 border rounded-lg form-control border-slate-200 bg-slate-50/70">
+                                    <label class="py-1 label">
+                                        <span class="text-xs font-medium label-text md:text-sm">Progress</span>
+                                    </label>
+                                    <div id="current-img_proccess" class="mb-3"></div>
+                                    <input type="file" class="w-full file-input file-input-bordered file-input-sm"
+                                        id="img_proccess" name="img_proccess" accept="image/*">
+                                    <label class="hidden label" id="error-img_proccess">
+                                        <span class="label-text-alt text-error"></span>
+                                    </label>
+                                </div>
 
-                <div class="w-full form-control">
-                    <label class="label">
-                        <span class="text-xs label-text md:text-sm">Keterangan</span>
-                    </label>
-                    <textarea class="w-full h-20 md:h-24 textarea textarea-bordered textarea-xs md:textarea-sm" id="note"
-                        name="note"></textarea>
-                    <label class="hidden label" id="error-note">
-                        <span class="label-text-alt text-error"></span>
-                    </label>
-                </div>
+                                <div class="p-3 border rounded-lg form-control border-slate-200 bg-slate-50/70">
+                                    <label class="py-1 label">
+                                        <span class="text-xs font-medium label-text md:text-sm">After</span>
+                                    </label>
+                                    <div id="current-img_final" class="mb-3"></div>
+                                    <input type="file" class="w-full file-input file-input-bordered file-input-sm"
+                                        id="img_final" name="img_final" accept="image/*">
+                                    <label class="hidden label" id="error-img_final">
+                                        <span class="label-text-alt text-error"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sticky bottom-0 px-4 py-3 border-t modal-action border-base-200 bg-base-100 md:px-6 md:py-4">
@@ -230,6 +261,38 @@
                     </button>
                 </div>
             </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    {{-- Delete Confirmation Modal --}}
+    <dialog id="deleteConfirmModal" class="modal">
+        <div class="w-11/12 max-w-md p-0 overflow-hidden modal-box">
+            <div class="px-5 py-4 border-b bg-red-50 border-red-100">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-700">
+                        <i class="text-xl ri-delete-bin-6-line"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900" id="deleteModalTitle">Hapus Photo Progress</h3>
+                        <p class="text-xs text-slate-500">Aksi ini tidak bisa dibatalkan.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-4">
+                <p class="text-sm text-slate-600" id="deleteModalMessage">Yakin ingin menghapus data ini?</p>
+            </div>
+            <div class="px-5 py-4 border-t modal-action border-base-200 bg-base-100">
+                <button type="button" class="btn btn-sm btn-ghost" id="cancelDelete">Batal</button>
+                <button type="button"
+                    class="text-white border-0 rounded-md btn btn-sm min-w-24 bg-red-600 hover:bg-red-700"
+                    id="confirmDelete">
+                    <span class="hidden loading loading-spinner loading-xs" id="deleteSpinner"></span>
+                    Hapus
+                </button>
+            </div>
         </div>
         <form method="dialog" class="modal-backdrop">
             <button>close</button>
@@ -383,7 +446,12 @@
                 let currentPage = 1;
                 let currentMonth = '';
                 let currentRequest = null;
+                let pendingDelete = {
+                    type: null,
+                    ids: []
+                };
                 const modal = document.getElementById('fotoModal');
+                const deleteModal = document.getElementById('deleteConfirmModal');
                 const imageModal = document.getElementById('imagePreviewModal');
                 const pdfViewerModal = document.getElementById('pdfViewerModal');
 
@@ -405,6 +473,7 @@
                     setupFilterControls();
                     setupCheckboxControls();
                     setupMassDelete();
+                    setupDeleteModal();
                     setupPdfGeneration();
                 }
 
@@ -626,8 +695,23 @@
                         $('#userFilter').html('<option selected value="">Select Mitra First</option>');
                         $('#userFilter').prop('disabled', true);
                         currentMonth = '';
+                        updateFilterSummary();
                         loadData(1);
                     });
+                }
+
+                function updateFilterSummary() {
+                    const filters = [
+                        $('#mitraFilter').val(),
+                        $('#userFilter').val(),
+                        $('#monthFilter').val(),
+                        $('#yearFilter').val(),
+                    ];
+                    const activeCount = filters.filter(Boolean).length;
+
+                    $('#activeFilterBadge')
+                        .toggleClass('hidden', activeCount === 0)
+                        .text(`${activeCount} filter aktif`);
                 }
 
                 // Populate user filter dropdown
@@ -658,6 +742,7 @@
                         currentMonth = '';
                     }
 
+                    updateFilterSummary();
                     loadData(1, month, year, mitra, user);
                 });
 
@@ -694,7 +779,12 @@
 
                 function updateDeleteSelectedState() {
                     const checkedCount = $('.row-checkbox:checked').length;
+                    const totalCount = $('.row-checkbox').length;
                     $('#deleteSelected').prop('disabled', checkedCount === 0);
+                    $('#selectionSummary').text(checkedCount > 0 ?
+                        `${checkedCount} dari ${totalCount} data di halaman ini dipilih.` :
+                        'Belum ada data dipilih.'
+                    );
                 }
 
                 function setupMassDelete() {
@@ -709,41 +799,88 @@
                             return;
                         }
 
-                        const confirmed = confirm(
-                            `Hapus ${selectedIds.length} data terpilih? Aksi ini tidak bisa dibatalkan.`);
-                        if (!confirmed) {
+                        openDeleteModal('mass', selectedIds);
+                    });
+                }
+
+                function setupDeleteModal() {
+                    $('#cancelDelete').click(function() {
+                        deleteModal.close();
+                        resetPendingDelete();
+                    });
+
+                    $('#confirmDelete').click(function() {
+                        if (!pendingDelete.type || pendingDelete.ids.length === 0) {
+                            deleteModal.close();
                             return;
                         }
 
-                        const $button = $(this);
-                        const originalText = $button.html();
-                        $button.prop('disabled', true);
-                        $button.html('<span class="loading loading-spinner loading-xs"></span> Deleting...');
+                        setDeleteLoading(true);
 
-                        $.ajax({
-                            url: '{{ route('admin.upload.mass-delete') }}',
-                            type: 'POST',
-                            data: {
-                                ids: selectedIds,
-                                _token: CSRF_TOKEN
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                loadData(currentPage);
-                                $('#headerCheckbox').prop('checked', false);
-                                Notify(response.message || 'Selected uploads deleted successfully',
-                                    null, null, 'success');
-                            },
-                            error: function(xhr) {
-                                const message = xhr.responseJSON?.message ||
-                                    'Error deleting selected data';
-                                Notify(message, null, null, 'error');
-                            },
-                            complete: function() {
-                                $button.prop('disabled', false);
-                                $button.html(originalText);
-                            }
-                        });
+                        if (pendingDelete.type === 'mass') {
+                            deleteMassUploads(pendingDelete.ids);
+                            return;
+                        }
+
+                        deleteSingleUpload(pendingDelete.ids[0]);
+                    });
+                }
+
+                function openDeleteModal(type, ids) {
+                    pendingDelete = {
+                        type,
+                        ids
+                    };
+
+                    const total = ids.length;
+                    $('#deleteModalTitle').text(type === 'mass' ? 'Hapus Data Terpilih' : 'Hapus Photo Progress');
+                    $('#deleteModalMessage').text(type === 'mass' ?
+                        `Yakin ingin menghapus ${total} data photo progress terpilih? Semua foto terkait juga akan dihapus.` :
+                        'Yakin ingin menghapus data photo progress ini? Semua foto terkait juga akan dihapus.'
+                    );
+                    setDeleteLoading(false);
+                    deleteModal.showModal();
+                }
+
+                function resetPendingDelete() {
+                    pendingDelete = {
+                        type: null,
+                        ids: []
+                    };
+                    setDeleteLoading(false);
+                }
+
+                function setDeleteLoading(isLoading) {
+                    $('#confirmDelete').prop('disabled', isLoading);
+                    $('#cancelDelete').prop('disabled', isLoading);
+                    $('#deleteSpinner').toggleClass('hidden', !isLoading);
+                }
+
+                function deleteMassUploads(ids) {
+                    $.ajax({
+                        url: '{{ route('admin.upload.mass-delete') }}',
+                        type: 'POST',
+                        data: {
+                            ids: ids,
+                            _token: CSRF_TOKEN
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            deleteModal.close();
+                            resetPendingDelete();
+                            loadData(currentPage);
+                            $('#headerCheckbox').prop('checked', false);
+                            Notify(response.message || 'Selected uploads deleted successfully',
+                                null, null, 'success');
+                        },
+                        error: function(xhr) {
+                            const message = xhr.responseJSON?.message ||
+                                'Error deleting selected data';
+                            Notify(message, null, null, 'error');
+                        },
+                        complete: function() {
+                            setDeleteLoading(false);
+                        }
                     });
                 }
 
@@ -942,8 +1079,9 @@
                 });
 
                 // Close button for edit modal
-                $('#btnClose').click(function() {
+                $('#btnClose, #btnCloseTop').click(function() {
                     modal.close();
+                    resetForm();
                 });
 
                 // Edit button
@@ -961,7 +1099,7 @@
                                 $('#modalTitle').text('Edit Photo Progress');
                                 $('#formMethod').val('PUT');
                                 $('#photoId').val(response.data.id);
-                                $('#client_id').val(response.data.client_id || '');
+                                $('#client_id').val(response.data.client_id || response.data.clients_id || '');
                                 $('#note').val(response.data.note || '');
 
                                 // Display current images
@@ -984,13 +1122,19 @@
                     if (imagePath) {
                         const fullUrl = window.location.origin + '/storage/' + imagePath;
                         container.html(
-                            `<div class="flex items-center gap-3">
-                                <img src="${fullUrl}" class="w-20 h-20 rounded-md object-cover border border-base-300 cursor-pointer hover:opacity-80 transition-opacity" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';" onclick="showImagePreview('${fullUrl}')" />
-                                <span class="text-[11px] md:text-xs text-base-content/70">Gambar saat ini</span>
+                            `<div class="space-y-2">
+                                <button type="button" class="block w-full overflow-hidden border rounded-md border-base-300 bg-white" onclick="showImagePreview('${fullUrl}')">
+                                    <img src="${fullUrl}" class="object-cover w-full h-28 transition-opacity hover:opacity-80" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';" />
+                                </button>
+                                <span class="block text-[11px] md:text-xs text-base-content/70">Gambar saat ini</span>
                             </div>`
                         );
                     } else {
-                        container.html('<span class="text-[11px] md:text-xs text-base-content/50">Belum ada gambar</span>');
+                        container.html(
+                            `<div class="flex items-center justify-center w-full h-28 border border-dashed rounded-md border-slate-300 bg-white text-slate-400">
+                                <span class="text-[11px] md:text-xs">Belum ada gambar</span>
+                            </div>`
+                        );
                     }
                 }
 
@@ -1063,28 +1207,34 @@
                 // Delete button
                 $(document).on('click', '.btn-delete', function() {
                     const id = $(this).data('id');
-
-                    if (confirm('Are you sure you want to delete this photo progress?')) {
-                        $.ajax({
-                            url: `{{ route('admin.upload.destroy', ':id') }}`.replace(':id', id),
-                            type: 'POST',
-                            data: {
-                                _method: 'DELETE',
-                                _token: CSRF_TOKEN
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.status) {
-                                    loadData(currentPage);
-                                    Notify(response.message, null, null, 'success');
-                                }
-                            },
-                            error: function(xhr) {
-                                Notify('Error deleting data', null, null, 'error');
-                            }
-                        });
-                    }
+                    openDeleteModal('single', [id]);
                 });
+
+                function deleteSingleUpload(id) {
+                    $.ajax({
+                        url: `{{ route('admin.upload.destroy', ':id') }}`.replace(':id', id),
+                        type: 'POST',
+                        data: {
+                            _method: 'DELETE',
+                            _token: CSRF_TOKEN
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status) {
+                                deleteModal.close();
+                                resetPendingDelete();
+                                loadData(currentPage);
+                                Notify(response.message, null, null, 'success');
+                            }
+                        },
+                        error: function(xhr) {
+                            Notify('Error deleting data', null, null, 'error');
+                        },
+                        complete: function() {
+                            setDeleteLoading(false);
+                        }
+                    });
+                }
 
                 // Image preview functionality
                 window.showImagePreview = function(imageSrc) {
@@ -1234,9 +1384,11 @@
 
                         const objectUrl = URL.createObjectURL(file);
                         $(`#current-${field}`).html(
-                            `<div class="flex items-center gap-3">
-                                <img src="${objectUrl}" class="w-20 h-20 rounded-md object-cover border border-primary/40 cursor-pointer hover:opacity-80 transition-opacity" onclick="showImagePreview('${objectUrl}')" />
-                                <span class="text-[11px] md:text-xs text-base-content/70">Preview file baru</span>
+                            `<div class="space-y-2">
+                                <button type="button" class="block w-full overflow-hidden border rounded-md border-primary/40 bg-white" onclick="showImagePreview('${objectUrl}')">
+                                    <img src="${objectUrl}" class="object-cover w-full h-28 transition-opacity hover:opacity-80" />
+                                </button>
+                                <span class="block text-[11px] md:text-xs text-base-content/70">Preview file baru</span>
                             </div>`
                         );
                     });
