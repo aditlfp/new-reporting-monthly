@@ -1,5 +1,5 @@
 <x-app-layout title="Data Photo Progress" subtitle="Menampilkan Data Photo Yang Sudah Ada">
-    <div class="flex min-h-screen admin-shell bg-slate-50">
+    <div class="flex min-h-screen pb-10 admin-shell bg-slate-50">
         @include('components.sidebar-component')
         <div class="flex-1 p-3 overflow-y-auto admin-content md:p-6">
             <div class="container px-3 py-6 mx-auto md:px-4 md:py-8">
@@ -513,8 +513,18 @@
                             }
 
                             if (response.status) {
-                                renderTable(response.data.data);
-                                renderPagination(response.data);
+                                const paginator = normalizePaginator(response.data);
+
+                                try {
+                                    renderTable(paginator.items);
+                                } catch (error) {
+                                    console.error('Error rendering table:', error);
+                                    $('#tableBody').html(
+                                        '<tr><td colspan="9" class="py-8 text-center text-error">Error rendering table data.</td></tr>'
+                                    );
+                                }
+
+                                renderPagination(paginator);
                                 currentPage = page;
                             } else {
                                 // server returned JSON but with status false
@@ -536,6 +546,21 @@
                             // inspect xhr.responseText in devtools
                         }
                     });
+                }
+
+                function normalizePaginator(data) {
+                    const meta = data?.meta || {};
+                    const perPage = Number(data?.per_page || meta.per_page || 0);
+                    const total = Number(data?.total || meta.total || 0);
+
+                    return {
+                        items: Array.isArray(data?.data) ? data.data : [],
+                        currentPage: Number(data?.current_page || meta.current_page || 1),
+                        perPage,
+                        total,
+                        lastPage: Number(data?.last_page || meta.last_page || (perPage && total ?
+                            Math.ceil(total / perPage) : 1)),
+                    };
                 }
 
                 function getSelectedFilters() {
@@ -649,22 +674,19 @@
                 }
 
                 // Render pagination
-                function renderPagination(data) {
-                    const currentPageNumber = Number(data?.current_page || data?.meta?.current_page || 1);
-                    const perPage = Number(data?.per_page || data?.meta?.per_page || 0);
-                    const total = Number(data?.total || data?.meta?.total || 0);
-                    const lastPage = Number(data?.last_page || data?.meta?.last_page || (perPage && total ?
-                        Math.ceil(total / perPage) : 1));
+                function renderPagination(paginator) {
+                    const currentPageNumber = paginator.currentPage;
+                    const lastPage = paginator.lastPage;
 
                     if (!lastPage || lastPage <= 1) {
                         $('#pagination').html('');
                         return;
                     }
 
-                    let html = '<div class="flex flex-wrap justify-center gap-1 join">';
+                    let html = '<nav class="flex flex-wrap items-center justify-center gap-1" aria-label="Pagination">';
 
                     // Previous button
-                    html += `<button type="button" class="join-item btn btn-xs pagination-btn ${currentPageNumber === 1 ? 'btn-disabled' : ''}" data-page="${currentPageNumber - 1}">
+                    html += `<button type="button" class="btn btn-xs pagination-btn ${currentPageNumber === 1 ? 'btn-disabled' : ''}" data-page="${currentPageNumber - 1}" aria-label="Halaman sebelumnya">
                         <i class="ri-arrow-left-s-line"></i>
                     </button>`;
 
@@ -673,18 +695,18 @@
                         if (i === 1 || i === lastPage || (i >= currentPageNumber - 2 && i <= currentPageNumber +
                                 2)) {
                             html +=
-                                `<button type="button" class="join-item btn btn-xs pagination-btn ${i === currentPageNumber ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
+                                `<button type="button" class="btn btn-xs pagination-btn ${i === currentPageNumber ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
                         } else if (i === currentPageNumber - 3 || i === currentPageNumber + 3) {
-                            html += '<button type="button" class="join-item btn btn-xs btn-disabled">...</button>';
+                            html += '<button type="button" class="btn btn-xs btn-disabled">...</button>';
                         }
                     }
 
                     // Next button
-                    html += `<button type="button" class="join-item btn btn-xs pagination-btn ${currentPageNumber === lastPage ? 'btn-disabled' : ''}" data-page="${currentPageNumber + 1}">
+                    html += `<button type="button" class="btn btn-xs pagination-btn ${currentPageNumber === lastPage ? 'btn-disabled' : ''}" data-page="${currentPageNumber + 1}" aria-label="Halaman berikutnya">
                         <i class="ri-arrow-right-s-line"></i>
                     </button>`;
 
-                    html += '</div>';
+                    html += '</nav>';
                     $('#pagination').html(html);
                 }
 
@@ -1151,10 +1173,7 @@
                 $(document).on('click', '.btn-edit', function() {
                     const id = $(this).data('id');
                     $.ajax({
-                        url: `{{ route('admin.upload.index') }}`,
-                        data: {
-                            id: id
-                        },
+                        url: `{{ route('admin.upload.show', ':id') }}`.replace(':id', id),
                         type: 'GET',
                         dataType: 'json',
                         success: function(response) {

@@ -81,6 +81,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/admin-settings', [SettingsController::class, 'store'])->name('admin.set.settings');
 
     Route::get('/admin-foto-progress', [DataFotoController::class, 'index'])->name('admin.upload.index');
+    Route::get('/admin-foto-progress/{upload_image}', [DataFotoController::class, 'show'])->name('admin.upload.show');
     Route::put('/admin-foto-progress-update/{upload_image}', [DataFotoController::class, 'update'])->name('admin.upload.update');
     Route::delete('/admin-foto-progress-delete/{upload_image}', [DataFotoController::class, 'destroy'])->name('admin.upload.destroy');
     Route::post('/admin-foto-progress-mass-delete', [DataFotoController::class, 'massDelete'])->name('admin.upload.mass-delete');
