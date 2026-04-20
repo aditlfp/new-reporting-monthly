@@ -14,8 +14,11 @@ use App\Http\Controllers\ReportLettersControllers;
 use App\Http\Controllers\SendImageStatusController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UploadImageController;
+use App\Http\Controllers\UploadTambahanCheckController;
+use App\Http\Controllers\UploadTambahanController;
 use App\Http\Controllers\UserNavigateController;
 use App\Http\Controllers\UserSettingsController;
+use App\Http\Controllers\Admin\UploadTambahanAdminController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
 use App\Models\UploadImage;
@@ -42,6 +45,17 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::post('/upload-img-lap/chunk/cancel', [UploadImageController::class, 'cancelChunkUpload'])->name('upload-images.chunk.cancel');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
+    Route::get('/upload-file-tambahan', [UploadTambahanController::class, 'index'])->name('upload-tambahan.index');
+    Route::post('/upload-file-tambahan', [UploadTambahanController::class, 'store'])->name('upload-tambahan.store');
+    Route::get('/upload-file-tambahan/detail', [UploadTambahanController::class, 'show'])->name('upload-tambahan.show');
+    Route::get('/upload-file-tambahan/detail/show/{id}', [UploadTambahanController::class, 'detail'])->name('upload-tambahan.detail');
+    Route::post('/upload-file-tambahan/chunk/init', [UploadTambahanController::class, 'initChunkUpload'])->name('upload-tambahan.chunk.init');
+    Route::post('/upload-file-tambahan/chunk/upload', [UploadTambahanController::class, 'uploadChunk'])->name('upload-tambahan.chunk.upload');
+    Route::post('/upload-file-tambahan/chunk/finalize', [UploadTambahanController::class, 'finalizeChunkUpload'])->name('upload-tambahan.chunk.finalize');
+    Route::post('/upload-file-tambahan/chunk/cancel', [UploadTambahanController::class, 'cancelChunkUpload'])->name('upload-tambahan.chunk.cancel');
+    Route::get('/check-upload-tambahan', [UploadTambahanCheckController::class, 'index'])->name('upload-tambahan.check.index');
+    Route::get('/api/v1/check-upload-tambahan', [UploadTambahanCheckController::class, 'summary'])->name('api.v1.upload-tambahan.check.summary');
+    Route::get('/api/v1/check-upload-tambahan/{userId}', [UploadTambahanCheckController::class, 'detail'])->name('api.v1.upload-tambahan.check.detail');
 
     Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store', 'destroy');
 
@@ -52,7 +66,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/settings', [UserNavigateController::class, 'toSettings'])->name('user.settings.index');
     Route::post('/save-settings', [UserSettingsController::class, 'store']);
     // End Tools Route
-    
+
     Route::get('/count-data/data-verifikasi', [HandlerCountController::class, 'index'])->name('counting.data.upload.spv');
     Route::get('/count-per-user/{id}/{month}/{year}', function () {
         return view('pages.user.counting.show');
@@ -90,6 +104,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-qrcode', QrCodeController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::resource('/admin-rating-image', ImageRateController::class)->only(['index', 'edit', 'update', 'destroy']);
+    Route::get('/admin-upload-tambahan', [UploadTambahanAdminController::class, 'index'])->name('admin.upload-tambahan.index');
+    Route::get('/admin-upload-tambahan/{id}', [UploadTambahanAdminController::class, 'show'])->name('admin.upload-tambahan.show');
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');
@@ -98,4 +114,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 Route::view('/testPage', 'pages.admin.tesPages');
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

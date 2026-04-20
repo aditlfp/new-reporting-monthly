@@ -73,6 +73,14 @@
                         <span class="text-sm">Photo Progress</span>
                     </a>
 
+                    <a href="{{ route('admin.upload-tambahan.index') }}"
+                        class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin.upload-tambahan.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 3V5H19V19H5V5H10V3H3V21H21V3H14ZM12 15L8 11H11V7H13V11H16L12 15ZM7 17H17V19H7V17Z"></path>
+                        </svg>
+                        <span class="text-sm">Upload Tambahan</span>
+                    </a>
+
                     <a href="{{ route('admin-rating-image.index') }}"
                         class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin-rating-image.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">

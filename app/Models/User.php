@@ -75,6 +75,11 @@ class User extends Authenticatable
         return $this->hasMany(FixedImage::class);
     }
 
+    public function uploadTambahans()
+    {
+        return $this->hasMany(UploadTambahan::class);
+    }
+
     public function getConnectionName()
     {
         if (app()->runningUnitTests()) {
@@ -95,7 +100,7 @@ class User extends Authenticatable
 
         return Str::contains(
             strtolower($jabatan->type_jabatan . ' ' . $jabatan->name_jabatan),
-            ['leader', 'manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat']
+            ['leader', 'manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat', 'spv wilayah', 'spv area', 'spv pusat']
         ) || Str::contains(
             strtoupper($jabatan->code_jabatan),
             ['CO-CS', 'CO-SCR']
@@ -105,6 +110,19 @@ class User extends Authenticatable
     public function canAccess(): bool
     {
         $jabatan = $this->jabatan;
+        if (!$jabatan) {
+            return false;
+        }
+
+        return Str::contains(
+            strtolower($jabatan->type_jabatan . ' ' . $jabatan->name_jabatan),
+            ['manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat', 'spv wilayah', 'spv area', 'spv pusat']
+        );
+    }
+
+    public function isSupervisorPusatOrManajemen(): bool
+    {
+        $jabatan = $this->jabatan;
 
         if (!$jabatan) {
             return false;
@@ -112,7 +130,7 @@ class User extends Authenticatable
 
         return Str::contains(
             strtolower($jabatan->type_jabatan . ' ' . $jabatan->name_jabatan),
-            ['manajemen', 'supervisor wilayah', 'supervisor area', 'supervisor pusat']
+            ['manajemen', 'supervisor pusat', 'spv pusat']
         );
     }
 }

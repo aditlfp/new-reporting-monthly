@@ -11,6 +11,7 @@ use App\Repositories\Contracts\QrCodeRepositoryInterface;
 use App\Repositories\Contracts\RoleScopeRepositoryInterface;
 use App\Repositories\Contracts\SettingsRepositoryInterface;
 use App\Repositories\Contracts\UploadImageRepositoryInterface;
+use App\Repositories\Contracts\UploadTambahanRepositoryInterface;
 use App\Repositories\Contracts\UserSettingsRepositoryInterface;
 use App\Repositories\DbAbsensiUserRepository;
 use App\Repositories\EloquentCoverRepository;
@@ -21,6 +22,7 @@ use App\Repositories\EloquentQrCodeRepository;
 use App\Repositories\EloquentRoleScopeRepository;
 use App\Repositories\EloquentSettingsRepository;
 use App\Repositories\EloquentUploadImageRepository;
+use App\Repositories\EloquentUploadTambahanRepository;
 use App\Repositories\EloquentUserSettingsRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MonitoringRepositoryInterface::class, EloquentMonitoringRepository::class);
         $this->app->bind(RoleScopeRepositoryInterface::class, EloquentRoleScopeRepository::class);
         $this->app->bind(AbsensiUserRepositoryInterface::class, DbAbsensiUserRepository::class);
+        $this->app->bind(UploadTambahanRepositoryInterface::class, EloquentUploadTambahanRepository::class);
     }
 
     /**

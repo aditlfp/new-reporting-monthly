@@ -49,6 +49,51 @@
                     </svg>
                     <span class="font-medium">Pilih Gambar Laporan</span>
                 </a>
+
+                @php
+                    $uploadTambahanOpen =
+                        request()->routeIs('upload-tambahan.index') || request()->routeIs('upload-tambahan.show');
+                @endphp
+                <details class="rounded-lg group {{ $uploadTambahanOpen ? 'bg-blue-50 border border-blue-100' : '' }}"
+                    {{ $uploadTambahanOpen ? 'open' : '' }}>
+                    <summary
+                        class="flex items-center justify-between px-4 py-3 transition-all rounded-lg cursor-pointer list-none {{ $uploadTambahanOpen ? 'text-blue-700' : 'text-slate-600 hover:bg-slate-100' }}">
+                        <span class="flex items-center space-x-3">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M14 3V5H19V19H5V5H10V3H3V21H21V3H14ZM12 15L8 11H11V7H13V11H16L12 15ZM7 17H17V19H7V17Z">
+                                </path>
+                            </svg>
+                            <span class="font-medium">Upload Tambahan (beta)</span>
+                        </span>
+                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <div class="px-3 pb-3 space-y-1">
+                        <a href="{{ route('upload-tambahan.index') }}"
+                            class="flex items-center px-3 py-2 space-x-2 text-sm transition rounded-lg {{ request()->routeIs('upload-tambahan.index') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path d="M12 2L3.5 20h17L12 2Zm1 12v3h-2v-3H8l4-4 4 4h-3Z"></path>
+                            </svg>
+                            <span>Tambah File</span>
+                        </a>
+                        <a href="{{ route('upload-tambahan.show') }}"
+                            class="flex items-center px-3 py-2 space-x-2 text-sm transition rounded-lg {{ request()->routeIs('upload-tambahan.show') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M13 3a9 9 0 1 0 5.292 16.292l3.707 3.708 1.414-1.414-3.708-3.707A9 9 0 0 0 13 3Zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm-1 3v6l5.25 3.15 1-1.66L13 12.25V8h-1Z">
+                                </path>
+                            </svg>
+                            <span>Riwayat Upload</span>
+                        </a>
+                    </div>
+                </details>
             @endif
             @if (auth()->user()->canAccess())
                 <a href="{{ route('counting.data.upload.spv') }}"
@@ -59,6 +104,18 @@
                         </path>
                     </svg>
                     <span class="font-medium">Check Verif Gambar</span>
+                </a>
+            @endif
+
+            @if (auth()->user()->canAccess() && auth()->user()->isSupervisorPusatOrManajemen())
+                <a href="{{ route('upload-tambahan.check.index') }}"
+                    class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('upload-tambahan.check.*') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M11 2C15.9683 2 20 6.03172 20 11C20 15.9683 15.9683 20 11 20C6.03172 20 2 15.9683 2 11C2 6.03172 6.03172 2 11 2ZM11 4C7.13604 4 4 7.13604 4 11C4 14.864 7.13604 18 11 18C14.864 18 18 14.864 18 11C18 7.13604 14.864 4 11 4ZM10 7H12V12H10V7ZM10 14H12V16H10V14ZM20.4853 19.0711L22.6066 21.1924L21.1924 22.6066L19.0711 20.4853L20.4853 19.0711Z">
+                        </path>
+                    </svg>
+                    <span class="font-medium">Check Upload Tambahan (beta)</span>
                 </a>
             @endif
         </div>

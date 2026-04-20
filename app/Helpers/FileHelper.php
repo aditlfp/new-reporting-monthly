@@ -679,6 +679,130 @@ class FileHelper
         return 'jpg';
     }
 
+    public static function finalizeChunkUploadWithMimeMap(int $userId, string $uploadId, array $allowedMimeToExtension): array
+    {
+        $basePath = self::tempBasePath($userId, $uploadId);
+        $meta = self::getChunkMetadata($userId, $uploadId);
+        $extension = self::safeExtensionByMimeMap($meta['mime_type'] ?? null, $meta['original_name'] ?? null, $allowedMimeToExtension);
+        $mergedRelativePath = $basePath . '/merged.' . $extension;
+        $mergedAbsolutePath = storage_path('app/' . $mergedRelativePath);
+        File::ensureDirectoryExists(dirname($mergedAbsolutePath));
+        $handle = @fopen($mergedAbsolutePath, 'wb');
+
+        if ($handle === false) {
+            throw new RuntimeException('Gagal membuat file temporary hasil upload di path: ' . $mergedAbsolutePath);
+        }
+
+        try {
+            for ($i = 0; $i < (int) $meta['total_chunks']; $i++) {
+                $chunkPath = $basePath . '/chunks/' . $i . '.part';
+
+                if (!self::tempDisk()->exists($chunkPath)) {
+                    throw new RuntimeException("Chunk {$i} belum lengkap.");
+                }
+
+                fwrite($handle, self::tempDisk()->get($chunkPath));
+            }
+        } finally {
+            fclose($handle);
+        }
+
+        self::deleteTempRelativePath($basePath . '/chunks');
+
+        $finalizedAt = now()->toIso8601String();
+        self::tempDisk()->put($basePath . '/finalized.json', json_encode([
+            'merged_relative_path' => $mergedRelativePath,
+            'finalized_at' => $finalizedAt,
+        ], JSON_PRETTY_PRINT));
+        self::touchChunkActivity($basePath, [
+            'finalized_at' => $finalizedAt,
+        ]);
+
+        $token = Crypt::encryptString(json_encode([
+            'user_id' => $userId,
+            'upload_id' => $uploadId,
+            'field' => $meta['field'],
+            'path' => $mergedRelativePath,
+            'original_name' => $meta['original_name'],
+            'mime_type' => $meta['mime_type'],
+            'size' => filesize($mergedAbsolutePath),
+        ]));
+
+        return [
+            'temp_token' => $token,
+            'temp_path' => $mergedRelativePath,
+            'original_name' => $meta['original_name'],
+            'size' => filesize($mergedAbsolutePath),
+            'field' => $meta['field'],
+        ];
+    }
+
+    public static function moveTempUploadToPublicWithMimeMap(string $token, string $folder, array $allowedMimeToExtension, ?string $oldFile = null): ?string
+    {
+        $payload = self::decodeTempUploadToken($token);
+        $tempPath = self::resolveTempUploadPath($payload);
+
+        if ($tempPath === null || !self::tempPathExists($tempPath)) {
+            throw new RuntimeException('File temporary upload hasil chunk tidak ditemukan.');
+        }
+
+        $extension = self::safeExtensionByMimeMap($payload['mime_type'] ?? null, $payload['original_name'] ?? $payload['path'], $allowedMimeToExtension);
+        $targetName = Str::uuid() . '.' . $extension;
+        $targetRelativePath = trim($folder, '/') . '/' . $targetName;
+        $publicDisk = Storage::disk('public');
+
+        $readStream = self::openTempReadStream($tempPath);
+        $writeResult = false;
+
+        if (is_resource($readStream)) {
+            try {
+                $writeResult = $publicDisk->writeStream($targetRelativePath, $readStream);
+            } finally {
+                fclose($readStream);
+            }
+        } else {
+            $tempContents = self::readTempFileContents($tempPath);
+            if ($tempContents === null) {
+                throw new RuntimeException('Gagal membaca file temporary upload.');
+            }
+
+            $writeResult = $publicDisk->put($targetRelativePath, $tempContents);
+        }
+
+        if ($writeResult === false || !$publicDisk->exists($targetRelativePath)) {
+            throw new RuntimeException('Gagal menyimpan file ke storage final.');
+        }
+
+        if (!$publicDisk->exists($targetRelativePath) || ($publicDisk->size($targetRelativePath) ?? 0) <= 0) {
+            throw new RuntimeException('File final tidak valid setelah proses upload.');
+        }
+
+        self::deleteTempUploadByUploadId((int) $payload['user_id'], (string) $payload['upload_id']);
+        self::deletePublicFileIfExists($oldFile, [$targetRelativePath]);
+
+        return $targetRelativePath;
+    }
+
+    protected static function safeExtensionByMimeMap(?string $mimeType, ?string $fallbackName, array $allowedMimeToExtension): string
+    {
+        $normalizedMime = strtolower((string) $mimeType);
+        $normalizedMap = [];
+        foreach ($allowedMimeToExtension as $mime => $extension) {
+            $normalizedMap[strtolower((string) $mime)] = strtolower((string) $extension);
+        }
+
+        if (isset($normalizedMap[$normalizedMime])) {
+            return $normalizedMap[$normalizedMime];
+        }
+
+        $fallbackExt = strtolower((string) pathinfo((string) $fallbackName, PATHINFO_EXTENSION));
+        if (in_array($fallbackExt, array_values($normalizedMap), true)) {
+            return $fallbackExt;
+        }
+
+        return 'bin';
+    }
+
 
 
     /**

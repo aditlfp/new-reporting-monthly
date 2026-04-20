@@ -22,6 +22,30 @@ Format rilis:
 
 ---
 
+## [v2.5.0] - 2026-04-20
+
+### Added
+- Modul **Upload Tambahan** end-to-end: upload multi-item (maks 30) dengan struktur header-item, riwayat upload user, halaman check upload, dan monitoring admin.
+- Pipeline chunk upload khusus upload tambahan (`init/upload/finalize/cancel`) untuk file PDF dan gambar.
+- Sidebar user grouping menu `Upload Tambahan` (dropdown) dengan sub-menu `Tambah File` dan `Riwayat Upload`.
+- Filter dan pencarian pada halaman monitoring admin upload tambahan (`mitra`, `bulan`, `tahun`, `nama_lengkap`).
+
+### Changed
+- Rule scope check upload tambahan untuk viewer **SPV Pusat** berbasis `jabatan.code_jabatan`:
+  - `SPV` menampilkan target `LEADER CS` dan `LEADER` (global lintas mitra).
+  - `SPV-W` menampilkan target `DANRU SECURITY` (global lintas mitra).
+  - Matching target jabatan menggunakan exact match ignore-case.
+- Halaman user/admin upload tambahan di-redesign mengikuti tema SILAB (non-SaaS) dengan perbaikan hierarchy, CTA, dan readability.
+- Kolom `MIME` pada modal detail diubah menjadi `Jenis` (extension file) agar lebih mudah dipahami user non-teknis.
+
+### Fixed
+- Perbaikan bug footer/layout saat jumlah item upload bertambah (hilangkan bentrok `h-screen` vs scroll internal).
+- Perbaikan responsive lintas halaman baru (mobile/tablet/desktop), termasuk tabel, filter bar, tombol aksi, dan ukuran modal.
+- Perbaikan modal detail yang “mendelep” di mobile dengan pendekatan centered modal + internal scroll (`max-h`).
+- Perbaikan deteksi jabatan alias `SPV` vs `Supervisor` pada akses dan scope check upload tambahan.
+
+---
+
 ## [v2.4.1] - 2026-04-20
 
 ### Changed
