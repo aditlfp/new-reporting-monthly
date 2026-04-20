@@ -2,51 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Latter;
-use App\Models\Cover;
-use App\Http\Requests\LatterRequest;
 use App\Http\Requests\LattersRequest;
-use App\Models\Latters;
+use App\Services\Media\LattersService;
 use Exception;
 use Illuminate\Http\Request;
 
 class ReportLettersControllers extends Controller
 {
+    public function __construct(
+        private readonly LattersService $service,
+    ) {}
+
     public function index(Request $request)
     {
-        $letters = Latters::with(['cover.client'])->latest()->paginate(10);
-        $covers = Cover::get();
+        $data = $this->service->indexData();
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'data' => $letters,
+                'data' => $data['letters'],
             ]);
         }
 
-        return view('pages.admin.letters.index', compact('letters', 'covers'));
+        return view('pages.admin.letters.index', [
+            'letters' => $data['letters'],
+            'covers' => $data['covers'],
+        ]);
     }
 
     public function create()
     {
-        $covers = Cover::pluck('id', 'id');
+        $covers = $this->service->indexData()['covers']->pluck('id', 'id');
+
         return view('latters.create', compact('covers'));
     }
 
     public function store(LattersRequest $request)
     {
-
-        $validated = $request->validated();
-        // Handle file upload
-        if ($request->hasFile('signature')) {
-            $file = $request->file('signature');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('report_files', $filename, 'public');
-            $validated['signature'] = $path;
-        }
-
-        // Create the letter record
-        $latter = Latters::create($validated);
+        $latter = $this->service->store($request->validated(), $request->file('signature'));
 
         if ($request->ajax()) {
             return response()->json([
@@ -61,8 +54,8 @@ class ReportLettersControllers extends Controller
 
     public function edit(Request $request, $id)
     {
-        $latter = Latters::with(['cover.client'])->findOrFail($id);
-        $covers = Cover::pluck('id', 'id');
+        $latter = $this->service->showById((int) $id);
+
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
@@ -74,7 +67,8 @@ class ReportLettersControllers extends Controller
 
     public function show(Request $request, $id)
     {
-        $latter = Latters::with(['cover.client'])->findOrFail($id);
+        $latter = $this->service->showById((int) $id);
+
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
@@ -86,8 +80,7 @@ class ReportLettersControllers extends Controller
 
     public function update(LattersRequest $request, $id)
     {
-        $latter = Latters::findOrFail($id);
-        $latter->update($request->validated());
+        $latter = $this->service->update((int) $id, $request->validated());
 
         if ($request->ajax()) {
             return response()->json([
@@ -103,7 +96,8 @@ class ReportLettersControllers extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            Latters::find($id)->delete();
+            $this->service->destroy((int) $id);
+
             if ($request->ajax()) {
                 return response()->json([
                     'status' => true,

@@ -19,6 +19,11 @@ use RuntimeException;
 class FileHelper
 {
     protected const TEMP_UPLOAD_ROOT = 'temp_uploads';
+    protected const ALLOWED_IMAGE_MIME_TO_EXTENSION = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
 
     protected static function imageManager(): ImageManager
     {
@@ -169,7 +174,7 @@ class FileHelper
     {
         $basePath = self::tempBasePath($userId, $uploadId);
         $meta = self::getChunkMetadata($userId, $uploadId);
-        $extension = strtolower(pathinfo($meta['original_name'], PATHINFO_EXTENSION) ?: 'jpg');
+        $extension = self::safeImageExtension($meta['mime_type'] ?? null, $meta['original_name'] ?? null);
         $mergedRelativePath = $basePath . '/merged.' . $extension;
         $mergedAbsolutePath = storage_path('app/' . $mergedRelativePath);
         File::ensureDirectoryExists(dirname($mergedAbsolutePath));
@@ -233,7 +238,7 @@ class FileHelper
             throw new \RuntimeException('File temporary upload hasil chunk tidak ditemukan.');
         }
 
-        $extension = strtolower(pathinfo($payload['original_name'] ?? $payload['path'], PATHINFO_EXTENSION) ?: 'jpg');
+        $extension = self::safeImageExtension($payload['mime_type'] ?? null, $payload['original_name'] ?? $payload['path']);
         $targetName = Str::uuid() . '.' . $extension;
         $targetRelativePath = trim($folder, '/') . '/' . $targetName;
         $publicDisk = Storage::disk('public');
@@ -657,6 +662,21 @@ class FileHelper
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    protected static function safeImageExtension(?string $mimeType, ?string $fallbackName = null): string
+    {
+        $normalizedMime = strtolower((string) $mimeType);
+        if (isset(self::ALLOWED_IMAGE_MIME_TO_EXTENSION[$normalizedMime])) {
+            return self::ALLOWED_IMAGE_MIME_TO_EXTENSION[$normalizedMime];
+        }
+
+        $fallbackExt = strtolower((string) pathinfo((string) $fallbackName, PATHINFO_EXTENSION));
+        if (in_array($fallbackExt, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+            return $fallbackExt === 'jpeg' ? 'jpg' : $fallbackExt;
+        }
+
+        return 'jpg';
     }
 
 

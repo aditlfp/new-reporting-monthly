@@ -16,9 +16,9 @@ class InitChunkUploadRequest extends FormRequest
         return [
             'field' => ['required', 'in:img_before,img_proccess,img_final'],
             'file_name' => ['required', 'string'],
-            'file_size' => ['required', 'integer', 'min:1'],
-            'mime_type' => ['required', 'string'],
-            'total_chunks' => ['required', 'integer', 'min:1'],
+            'file_size' => ['required', 'integer', 'min:1', 'max:12582912'],
+            'mime_type' => ['required', 'in:image/jpeg,image/png,image/webp'],
+            'total_chunks' => ['required', 'integer', 'min:1', 'max:100'],
         ];
     }
 }

@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Settings;
-use Illuminate\Http\Request;
+use App\Http\Requests\SettingsStoreRequest;
+use App\Services\Settings\SettingsService;
 
 class SettingsController extends Controller
 {
+    public function __construct(
+        private readonly SettingsService $service,
+    ) {}
+
     public function index()
     {
         return view('pages.admin.settings.index');
     }
 
-    public function store(Request $request)
+    public function store(SettingsStoreRequest $request)
     {
-        $data = $request->only(['api_key', 'theme', 'login_by']);
-        Settings::updateOrCreate(
-            ['id' => 1],
-            [
-                'api_key' => $data['api_key'],
-                'theme' => $data['theme'],
-                'login_by' => $data['login_by']
-            ]
-        );
+        $this->service->store($request->validated());
 
         return response()->json([
             'status' => true,

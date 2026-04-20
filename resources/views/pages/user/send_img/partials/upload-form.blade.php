@@ -43,7 +43,7 @@
 
                         @foreach ($imageConfig as $index => $config)
                             <div class="relative">
-                                <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}" accept="{{ $acceptedTypes }}" class="hidden">
+                                <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}" accept="{{ $acceptedTypes }}" class="hidden" {{ in_array($config['name'], ['img_before', 'img_final']) ? 'required' : '' }}>
                                 <label for="{{ $config['id'] }}"
                                     class="flex flex-col items-center justify-center w-full h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer sm:h-28 md:h-32 lg:h-36 border-slate-300 bg-slate-50 hover:bg-slate-100"
                                     data-upload-label="{{ $config['id'] }}">
@@ -86,14 +86,14 @@
                     <label for="reportArea" class="block mb-2 text-sm font-medium text-slate-700">Area</label>
                     <input type="text" id="reportArea" name="area" value="{{ old('area', request('n')) }}"
                         class="w-full px-3 py-2 text-sm bg-white border rounded-lg input sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Tulis area di sini...">
+                        placeholder="Tulis area di sini..." required>
                 </div>
 
                 <div>
                     <label for="reportContent" class="block mb-2 text-sm font-medium text-slate-700">Keterangan Kegiatan</label>
                     <textarea id="reportContent" name="note" rows="4"
                         class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none textarea sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan')">{{ old('note') }}</textarea>
+                        placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan')" required>{{ old('note') }}</textarea>
                 </div>
 
                 <div class="hidden">

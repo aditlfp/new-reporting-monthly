@@ -2,123 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImageRateStoreRequest;
+use App\Http\Requests\ImageRateUpdateRequest;
 use App\Models\ImageRate;
-use App\Models\UploadImage;
+use App\Services\Media\ImageRateService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ImageRateController extends Controller
 {
+    public function __construct(
+        private readonly ImageRateService $service,
+    ) {}
+
     public function index(Request $request)
     {
-        $search = trim((string) $request->query('search', ''));
-        $rate = $request->query('rate');
-        $sort = $request->query('sort', '');
+        $data = $this->service->indexData($request->only(['search', 'rate', 'sort']));
 
-        $query = ImageRate::query();
-
-        if ($search !== '') {
-            $query->where(function ($builder) use ($search) {
-                $builder
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('comment', 'like', "%{$search}%");
-            });
-        }
-
-        if ($rate !== null && $rate !== '' && in_array((int) $rate, [1, 2, 3, 4, 5], true)) {
-            $query->where('rate', (int) $rate);
-        }
-
-        $summary = (clone $query)
-            ->selectRaw('COUNT(*) as total, COALESCE(AVG(rate), 0) as avg_rate')
-            ->first();
-        $fiveStarCount = (clone $query)->where('rate', 5)->count();
-        $lowRateCount = (clone $query)->where('rate', '<=', 2)->count();
-
-        match ($sort) {
-            'oldest' => $query->oldest(),
-            'highest' => $query->orderByDesc('rate')->latest(),
-            'lowest' => $query->orderBy('rate')->latest(),
-            default => $query->latest(),
-        };
-
-        $rates = $query->with('uploadImage')->paginate(15)->withQueryString();
-
-        return view('pages.admin.rating_image.index', [
-            'rates' => $rates,
-            'summary' => [
-                'total' => (int) ($summary->total ?? 0),
-                'avg_rate' => round((float) ($summary->avg_rate ?? 0), 2),
-                'five_star' => $fiveStarCount,
-                'low_rate' => $lowRateCount,
-            ],
-        ]);
+        return view('pages.admin.rating_image.index', $data);
     }
 
     public function create(Request $request)
     {
-        // --- AMBIL PARAMETER DARI URL INTENDED ---
         $intendedUrl = session()->get('url.intended');
-        $nValue = null; // Inisialisasi
-        $uploadPreview = null;
+        $nValue = null;
 
         if ($intendedUrl) {
             $parsedUrl = parse_url($intendedUrl);
             if (isset($parsedUrl['query'])) {
-                $queryParams = [];
                 parse_str($parsedUrl['query'], $queryParams);
                 $nValue = $queryParams['n'] ?? null;
             }
         }
 
-        if (!empty($nValue)) {
-            $normalizedImageName = strtolower(trim((string) $nValue));
-
-            $uploadPreview = UploadImage::query()
-                ->whereNotNull('note')
-                ->whereRaw("LOCATE('area', LOWER(note)) > 0")
-                ->whereRaw(
-                    "TRIM(LOWER(SUBSTRING(note, LOCATE('area', LOWER(note)) + 4))) = ?",
-                    [$normalizedImageName]
-                )
-                ->latest()
-                ->first();
-        }
+        $uploadPreview = $this->service->findUploadPreviewByName($nValue);
 
         return view('pages.user.rating_image.create', compact('nValue', 'uploadPreview'));
     }
 
-    public function store(Request $request)
+    public function store(ImageRateStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        try {
+            $this->service->store($request->validated());
 
-        $imageName = trim((string) $request->input('n', ''));
-        $normalizedImageName = strtolower($imageName);
+            return redirect('/')->with('success', 'Rating berhasil disimpan');
+        } catch (\RuntimeException $e) {
+            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        } catch (QueryException $e) {
+            Log::warning('Failed to store image rating due to DB constraint.', [
+                'error' => $e->getMessage(),
+            ]);
 
-        $image = UploadImage::query()
-            ->whereNotNull('note')
-            // Strict match: only compare text after "Area" from note.
-            ->whereRaw("LOCATE('area', LOWER(note)) > 0")
-            ->whereRaw(
-                "TRIM(LOWER(SUBSTRING(note, LOCATE('area', LOWER(note)) + 4))) = ?",
-                [$normalizedImageName]
-            )
-            ->latest()
-            ->first();
-            
-        $data = [
-            'upload_image_id' => $image->id,
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'rate' => $request->input('rate'),
-            'comment' => $request->input('comment')
-        ];
+            return back()->withInput()->withErrors([
+                'error' => 'Data rating tidak valid. Silakan cek form dan coba lagi.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while storing image rating.', [
+                'error' => $e->getMessage(),
+            ]);
 
-        ImageRate::create($data);
-
-        return redirect('/')->with('success', 'Rating berhasil disimpan');
+            return back()->withInput()->withErrors([
+                'error' => 'Terjadi kesalahan saat menyimpan rating. Silakan coba lagi.',
+            ]);
+        }
     }
 
     public function show(ImageRate $imageRate)
@@ -131,26 +78,48 @@ class ImageRateController extends Controller
         return view('pages.admin.rating_image.edit', compact('imageRate'));
     }
 
-    public function update(Request $request, $id)
+    public function update(ImageRateUpdateRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'rate' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:255',
-        ]);
+        try {
+            $this->service->update((int) $id, $request->validated());
 
-        $imageRate = ImageRate::findOrFail($id);
-        $imageRate->update($request->only(['name', 'email', 'rate', 'comment']));
+            return redirect()->route('admin-rating-image.index')->with('success', 'Rating berhasil diupdate');
+        } catch (QueryException $e) {
+            Log::warning('Failed to update image rating due to DB constraint.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
-        return redirect()->route('admin-rating-image.index')->with('success', 'Rating berhasil diupdate');
+            return back()->withInput()->withErrors([
+                'error' => 'Data rating tidak valid. Silakan cek form dan coba lagi.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while updating image rating.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'error' => 'Terjadi kesalahan saat memperbarui rating. Silakan coba lagi.',
+            ]);
+        }
     }
 
     public function destroy($id)
     {
-        $imageRate = ImageRate::findOrFail($id);
-        $imageRate->delete();
+        try {
+            $this->service->destroy((int) $id);
 
-        return redirect()->route('admin-rating-image.index')->with('success', 'Rating berhasil dihapus');
+            return redirect()->route('admin-rating-image.index')->with('success', 'Rating berhasil dihapus');
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while deleting image rating.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan saat menghapus rating. Silakan coba lagi.',
+            ]);
+        }
     }
 }

@@ -16,7 +16,7 @@ class UploadChunkPartRequest extends FormRequest
         return [
             'upload_id' => ['required', 'string'],
             'chunk_index' => ['required', 'integer', 'min:0'],
-            'chunk' => ['required', 'file'],
+            'chunk' => ['required', 'file', 'max:2048'],
         ];
     }
 }

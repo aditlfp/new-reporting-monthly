@@ -22,26 +22,28 @@ class UImageUserDraftRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "user_id" => 'required', 
-            "clients_id" => 'required', 
-            "img_before" => 'nullable|file', 
-            "img_proccess" => 'nullable|file', 
-            "img_final" => 'nullable|file', 
-            "temp_img_before" => 'nullable|string',
-            "temp_img_proccess" => 'nullable|string',
-            "temp_img_final" => 'nullable|string',
-            "note" => 'required', 
-            "max_data" => 'nullable', 
-            "status" => 'nullable',
+            'user_id' => 'nullable|integer',
+            'clients_id' => 'nullable|integer',
+            'img_before' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:12288',
+            'img_proccess' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:12288',
+            'img_final' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:12288',
+            'temp_img_before' => 'nullable|string',
+            'temp_img_proccess' => 'nullable|string',
+            'temp_img_final' => 'nullable|string',
+            'area' => 'required|string|max:255',
+            'note' => 'required|string',
+            'max_data' => 'nullable',
+            'status' => 'nullable',
         ];
     }
 
     public function messages(): array
     {
         return [
-            "user_id.required" => 'User wajib diisi.', 
-            "clients_id.required" => 'Mitra wajib diisi.', 
-            "note.required" => 'Keterangan wajib diisi.',
+            'user_id.required' => 'User wajib diisi.',
+            'clients_id.required' => 'Mitra wajib diisi.',
+            'area.required' => 'Area wajib diisi.',
+            'note.required' => 'Keterangan wajib diisi.',
         ];
     }
 }

@@ -116,6 +116,7 @@
                                 @for ($i = 1; $i <= 5; $i++)
                                     <input type="radio" name="rate" value="{{ $i }}" aria-label="{{ $i }} star"
                                         class="mask mask-star-2 bg-amber-400"
+                                        {{ $i === 1 ? 'required' : '' }}
                                         {{ (int) old('rate', 0) === $i ? 'checked' : '' }} />
                                 @endfor
                             </div>

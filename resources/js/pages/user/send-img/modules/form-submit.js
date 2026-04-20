@@ -34,6 +34,12 @@ export function initFormSubmit(options) {
       return;
     }
 
+    if (!area.trim()) {
+      notify('Silakan isi area kegiatan', 'warning');
+      setLoading(false);
+      return;
+    }
+
     if (!content.trim()) {
       notify('Silakan isi konten laporan', 'warning');
       setLoading(false);
@@ -45,6 +51,7 @@ export function initFormSubmit(options) {
     formData.append('status', reportStatus.val());
     formData.append('id', reportId.val());
     formData.append('note', combineNoteWithArea(content, area));
+    formData.append('area', area);
     formData.append('user_id', $('#user_id').val());
     formData.append('clients_id', $('#client_id').val());
     formData.append('type', 'draft');
@@ -110,22 +117,36 @@ export function initFormSubmit(options) {
       return;
     }
 
+    if (!area.trim()) {
+      notify('Silakan isi area kegiatan', 'warning');
+      setLoading(false);
+      return;
+    }
+
     if (!content.trim()) {
       notify('Silakan isi konten laporan', 'warning');
       setLoading(false);
       return;
     }
 
-    let hasImage = false;
-    for (let i = 1; i <= 3; i += 1) {
-      if ($(`#image${i}`)[0].files.length > 0 || ($(`#preview${i} img`).attr('src') && !$(`#preview${i}`).hasClass('hidden'))) {
-        hasImage = true;
-        break;
-      }
+    const hasBeforeImage = $('#image1')[0].files.length > 0
+      || !!$('#temp_img_before').val()
+      || !!$('#existing_img_before').val()
+      || ($('#preview1 img').attr('src') && !$('#preview1').hasClass('hidden'));
+
+    if (!hasBeforeImage) {
+      notify('Silakan upload gambar Before.', 'warning');
+      setLoading(false);
+      return;
     }
 
-    if (!hasImage) {
-      notify('Silakan upload minimal satu gambar pendukung', 'warning');
+    const hasFinalImage = $('#image3')[0].files.length > 0
+      || !!$('#temp_img_final').val()
+      || !!$('#existing_img_final').val()
+      || ($('#preview3 img').attr('src') && !$('#preview3').hasClass('hidden'));
+
+    if (!hasFinalImage) {
+      notify('Silakan upload gambar After.', 'warning');
       setLoading(false);
       return;
     }
@@ -135,6 +156,7 @@ export function initFormSubmit(options) {
     formData.append('status', reportStatus.val());
     formData.append('id', reportId.val());
     formData.append('note', combineNoteWithArea(content, area));
+    formData.append('area', area);
     formData.append('user_id', $('#user_id').val());
     formData.append('clients_id', $('#client_id').val());
     formData.append('type', 'submit');

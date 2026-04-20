@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
-use App\Models\Jabatan;
-use App\Models\UploadImage;
-use App\Models\User;
+use App\Repositories\Contracts\MonitoringRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Services\Shared\RoleScopeService;
 
 class CalendarService
 {
-    protected $user;
+    protected Authenticatable $user;
 
-    public function __construct(Authenticatable $user)
-    {
+    public function __construct(
+        Authenticatable $user,
+        private readonly RoleScopeService $roleScope,
+        private readonly MonitoringRepositoryInterface $monitoring,
+    ) {
         $this->user = $user;
     }
 
@@ -42,58 +42,9 @@ class CalendarService
                 "Indonesian Independence Day" => "Hari Kemerdekaan Indonesia",
             ];
 
-        $clientId = $this->user->kerjasama->client_id;
-        $user = auth()->user();
-        $typeJabatanUser = Str::upper($user->jabatan->name_jabatan);
-
-            // normalisasi typo
-        $typeJabatanUser = str_replace('pusat', 'PUSAT', $typeJabatanUser);
-
-        $isSecurity = Str::contains($typeJabatanUser, 'SUPERVISOR PUSAT SECURITY');
-
-        if(!$isSecurity && $typeJabatanUser == 'DANRU SECURITY')
-        {
-            $type = ['SECURITY'];
-        }else{
-            $type = $isSecurity
-                ? ['SECURITY', 'SUPERVISOR PUSAT SECURITY']
-                : [
-                    'CLEANING SERVICE',
-                    'FRONT OFFICE',
-                    'LEADER',
-                    'FO',
-                    'KASIR',
-                    'KARYAWAN',
-                    'TAMAN',
-                    'TEKNISI'
-                ];    
-        }
-
-            // dd($isSecurity, $type);
-
-        $jabId = Jabatan::whereIn(
-                DB::raw('UPPER(type_jabatan)'),
-                $type
-            )
-            ->pluck('id')
-            ->toArray();
-        $userIds = User::select('id')->whereIn('jabatan_id', $jabId) 
-                        ->whereHas('kerjasama.client', function ($q) use ($clientId) {
-                                    $q->where('id', $clientId);
-                            })->get();
-
-        $uploadsByDay = UploadImage::selectRaw("
-                        DATE(created_at) as date,
-                        COUNT(*) as total
-                    ")
-                    ->where('clients_id', $clientId)
-                    ->when(!empty($userIds), function ($q) use ($userIds) {
-                        $q->whereIn('user_id', $userIds);
-                    })
-                    ->where('status', 1)
-                    ->groupBy(DB::raw('DATE(created_at)'))
-                    ->orderBy(DB::raw('DATE(created_at)'))
-                    ->get();
+        $clientId = (int) $this->user->kerjasama->client_id;
+        $userIds = $this->roleScope->allowedUserIds($this->user, $clientId);
+        $uploadsByDay = $this->monitoring->getUploadDailyTotalsByClientAndUsers($clientId, $userIds);
 
         return [
             'translate' => $translate,

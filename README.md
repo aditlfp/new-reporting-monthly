@@ -22,6 +22,56 @@ Format rilis:
 
 ---
 
+## [v2.4.0] - 2026-04-20
+
+### Added
+- Repository dan Service layer pattern untuk domain Media (Cover, Latters, QrCode, ImageRate) dan Monitoring (Dashboard, FixedImage, HandlerCount, SendImageStatus).
+- 12 repository interfaces dan implementations baru untuk abstraksi data access: CoverRepository, LattersRepository, QrCodeRepository, ImageRateRepository, MonitoringRepository, SettingsRepository, UserSettingsRepository, RoleScopeRepository, AbsensiUserRepository, dll.
+- Request validation classes baru: CalendarModalShowRequest, CoverStorePdfRequest, ImageRateStoreRequest, ImageRateUpdateRequest, QrCodeStoreRequest, SettingsStoreRequest, UserSettingsStoreRequest.
+- Shared services: RoleScopeService, PeriodService untuk reusable business logic.
+- Session toast component untuk menampilkan flash messages dengan styling konsisten.
+- Field marker pada form labels: asterisk (*) untuk required field dan "(opsional)" untuk optional field.
+- Dukungan login dengan email atau username pada form login (fleksibel).
+- Area field requirement pada upload form dengan validasi yang lebih ketat.
+- Unit dan feature tests untuk ImageRateController, QrCodeController, SendImageStatusController, SettingsController, RoleScopeService, SettingsService.
+- Rate limiting (throttle:20,1) pada endpoint rating-pekerjaan untuk mencegah abuse.
+
+### Changed
+- Refactor semua controller domain Media dan Monitoring ke pola thin controller + service pattern.
+- Pemisahan tanggung jawab: controller hanya handle request/response, service handle business logic, repository handle data access.
+- Perubahan struktur UploadImageService dengan metode resolveClientIdForUser untuk validasi client lebih ketat.
+- CalendarService sekarang menggunakan MonitoringRepository dan RoleScopeService untuk query yang lebih efisien.
+- Login request validation mengizinkan field email dan name nullable, mendukung identifier fleksibel.
+- File upload validation lebih ketat: mime types spesifik (jpg, jpeg, png, webp) dan max size per file.
+- Chunk upload validation dengan batasan ukuran dan tipe chunks yang lebih jelas.
+- Penggabungan area dan note pada upload form dengan format yang lebih terstruktur.
+- Blade layout (app.blade.php, guest.blade.php) dengan penambahan Notify.js dan auto-marker untuk label fields.
+- RatingsImageController dan QrCodeController dengan error handling yang lebih robust (try-catch, QueryException, logging).
+- CoverReportControllers dengan CoverService dan CoverStorageService untuk image handling terpusat.
+- UserNavigateController dengan injeksi UserSettingsService dan CalendarService yang lebih clean.
+
+### Fixed
+- Bug pada LoginRequest: dulunya hanya support login dengan nama, sekarang support email juga.
+- Bug pada UImageUserRequest dan UImageUserDraftRequest: area field kini diakomodasi dan divalidasi.
+- Bug pada UploadImageService: resolveClientIdForUser memastikan client_id selalu valid.
+- Bug pada CalendarService: query yang tadinya loose kini menggunakan repository untuk performa lebih baik.
+- Bug pada form upload: validasi gambar Before dan After kini mandatory terpisah (bukan hanya "ada satu gambar").
+- Bug pada FixedImageController: logic operasi create/destroy kini melalui service untuk konsistensi.
+- Bug pada ImageRateController: form validation dan error handling dengan exception yang lebih spesifik.
+- Bug pada QrCodeController: lifecycle create/update/delete kini melalui service untuk reusability.
+- Bug pada CoverReportControllers: image upload handling terpusat di CoverStorageService.
+- Bug pada UserSettingsController: implementasi update method yang sebelumnya kosong.
+- Bug pada SendImageStatusController: modal detail jadi JSON yang lebih informatif.
+- Konsistensi exception handling di semua controller: gunakan Throwable bukan Exception generic.
+
+### Removed
+- Inline business logic dari controller (dipindahkan ke service).
+- Direct model queries dari controller (diganti dengan repository).
+- Duplikasi logic di helper methods private controller (centralized ke service/shared services).
+- Manual role/scope resolution di setiap controller (centralized ke RoleScopeService).
+
+---
+
 ## [v2.3.1] - 2026-04-19
 
 ### Changed

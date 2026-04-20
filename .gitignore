@@ -8,3 +8,8 @@ public/hot
 **/caddy
 frankenphp
 frankenphp-worker.php
+
+# Local agent/tooling artifacts
+.agents/
+skills-lock.json
+.codex

@@ -75,6 +75,15 @@ class User extends Authenticatable
         return $this->hasMany(FixedImage::class);
     }
 
+    public function getConnectionName()
+    {
+        if (app()->runningUnitTests()) {
+            return config('database.default');
+        }
+
+        return $this->connection;
+    }
+
 
     public function isAccess(): bool
     {

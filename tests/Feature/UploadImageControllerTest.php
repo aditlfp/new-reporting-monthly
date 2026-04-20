@@ -63,6 +63,7 @@ it('stores draft through upload image service', function () {
         ->postJson(route('upload-images.draft'), [
         'user_id' => $user->id,
         'clients_id' => 10,
+        'area' => 'Area test',
         'note' => 'Draft test',
         'status' => 0,
     ])->assertCreated()

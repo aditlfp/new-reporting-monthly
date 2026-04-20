@@ -2,53 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\CoverRequest;
-use App\Helpers\FileHelper;
-use App\Models\Clients;
-use App\Models\Cover;
-use App\Models\Latters;
-use App\Models\UploadImage;
-use Carbon\Carbon;
-use Exception;
+use App\Http\Requests\CoverStorePdfRequest;
+use App\Services\Media\CoverService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class CoverReportControllers extends Controller
 {
+    public function __construct(
+        private readonly CoverService $service,
+    ) {}
+
     public function index(Request $request)
     {
-        $covers = Cover::with('client')->latest()->paginate(10);
-        $client = Clients::all();
+        $data = $this->service->indexData();
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'data' => $covers,
-                'client' => $client
+                'data' => $data['covers'],
+                'client' => $data['client'],
             ]);
         }
 
-        return view('pages.admin.covers.index', compact('covers', 'client'));
+        return view('pages.admin.covers.index', [
+            'covers' => $data['covers'],
+            'client' => $data['client'],
+        ]);
     }
 
     public function show(Request $request, $id)
     {
         try {
-            $covers = Cover::with('client')->findOrFail($id);
+            $cover = $this->service->showById((int) $id);
 
-            // If AJAX → return JSON data
             if ($request->ajax()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Get cover by ID.',
-                    'data' => $covers
+                    'data' => $cover,
                 ], 200);
             }
-        } catch (Exception $e) {
+
+            return view('pages.admin.covers.show', compact('cover'));
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
-                'data' => $e
+                'data' => $e->getMessage(),
             ], 500);
         }
     }
@@ -56,23 +57,20 @@ class CoverReportControllers extends Controller
     public function store(CoverRequest $request)
     {
         try {
-            $validated = $request->validated();
-
-            $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', null);
-            $validated['img_src_2'] = $this->handleImageUpload($request, 'img_src_2', null);
-
-            $cover = Cover::create($validated);
-
-            $cover->load('client');
+            $cover = $this->service->store(
+                $request->validated(),
+                $request->file('img_src_1'),
+                $request->file('img_src_2'),
+            );
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'id' => $cover->id,
                     'jenis_rekap' => $cover->jenis_rekap,
-                ]
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->getErrorResponse($e, 'Failed to create cover.');
         }
     }
@@ -80,29 +78,24 @@ class CoverReportControllers extends Controller
     public function update(CoverRequest $request, $id)
     {
         try {
-            $cover = Cover::findOrFail($id);
-            $validated = $request->validated();
-
-            if ($request->hasFile('img_src_1') && $request->img1_changed) {
-                $validated['img_src_1'] = $this->handleImageUpload($request, 'img_src_1', $cover->img_src_1);
-            }
-            if ($request->hasFile('img_src_2') && $request->img2_changed) {
-                $validated['img_src_2'] = $this->handleImageUpload($request, 'img_src_2', $cover->img_src_2);
-            }
-
-            $cover->update($validated);
-
-            $cover->load('client');
+            $cover = $this->service->update(
+                (int) $id,
+                $request->validated(),
+                $request->file('img_src_1'),
+                (bool) $request->img1_changed,
+                $request->file('img_src_2'),
+                (bool) $request->img2_changed,
+            );
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'id' => $cover->id,
-                    'client_name' => ucwords(strtolower($cover->client->name)),
+                    'client_name' => ucwords(strtolower((string) $cover->client->name)),
                     'jenis_rekap' => $cover->jenis_rekap,
-                ]
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->getErrorResponse($e, 'Failed to update cover.');
         }
     }
@@ -110,115 +103,39 @@ class CoverReportControllers extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $cover = Cover::findOrFail($id);
-
-            // Delete images
-            if ($cover->img_src_1) {
-                FileHelper::deleteImage($cover->img_src_1);
-            }
-            if ($cover->img_src_2) {
-                FileHelper::deleteImage($cover->img_src_2);
-            }
-
-            $cover->delete();
+            $this->service->destroy((int) $id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cover deleted successfully'
+                'message' => 'Cover deleted successfully',
             ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete cover'
+                'message' => 'Failed to delete cover',
             ], 500);
         }
     }
 
-
-    public function store_pdf(Request $request)
+    public function store_pdf(CoverStorePdfRequest $request)
     {
-        $request->validate([
-            'pdf' => 'required|file|mimetypes:application/pdf|max:512000', // 500MB
-            'cover_id' => 'required',
-            'srt_id' => 'required'
-        ]);
+        $url = $this->service->mergeAndStorePdf($request->file('pdf'), (int) $request->validated()['srt_id']);
 
-        $dataSrt = Latters::with(['cover.client'])->find($request->srt_id);
-        Carbon::setLocale('id');
-
-        // $fileName = $year . '-' . $month . '-' . $clientIds . '.pdf';
-        // $filePath = 'rekap_foto/' . $fileName;
-
-        $periodEn = str_replace(
-            ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
-            ['January','February','March','April','May','June','July','August','September','October','November','December'],
-            $dataSrt->period
-        );
-
-        $periodDate = Carbon::createFromFormat('F Y', $periodEn);
-
-        $period       = $periodDate->format('Y-m');
-        $periodMonth  = $periodDate->month; 
-        $periodYear   = $periodDate->year;
-
-
-        $dataImg = UploadImage::where('clients_id', $dataSrt->cover->clients_id)->whereMonth('created_at', $periodMonth)
-            ->whereYear('created_at', $periodYear)->get();
-
-        $namePDF = $dataSrt->cover->client->name . ' ' . $period;
-        $path = $request->file('pdf')->storeAs(
-            'pdf',
-            $namePDF,
-            'public'
-        );
-
-
-        $file1 = storage_path('app/public/' . $path);
-        $file2 = storage_path('app/public/' . $dataSrt->signature);
-        $file3 = storage_path('app/public/rekap_foto/' . $period . '-' . $dataSrt->cover->clients_id . '.pdf');
-
-        $files = [$file1, $file2, $file3];
-
-        // FileHelper::mergePdfs($files, storage_path('app/public/pdf/laporan-'. $dataSrt->cover->client->name . ' - ' . $period .'.pdf'));
-        $finalName = 'laporan-' . 
-            str()->slug($dataSrt->cover->client->name) . 
-            '-' . 
-            str()->slug($period) . 
-            '.pdf';
-        
-        $finalPath = 'pdf/' . $finalName;
-        
-        FileHelper::mergePdfs(
-            $files,
-            storage_path('app/public/' . $finalPath)
-        );
         return response()->json([
             'success' => true,
             'message' => 'PDF successfully to merge and Saved Into Server!',
-            'url' => asset('storage/' . $finalPath)
+            'url' => $url,
         ]);
     }
 
-    private function handleImageUpload(Request $request, $fieldName, $oldImagePath = null)
-    {
-        if ($request->hasFile($fieldName)) {
-            // Delete old image if exists
-            if ($oldImagePath) {
-                FileHelper::deleteImage($oldImagePath);
-            }
-            return FileHelper::uploadImage($request->file($fieldName), 'covers');
-        }
-        return $oldImagePath;
-    }
-
-    private function getErrorResponse(\Exception $e, $message)
+    private function getErrorResponse(\Throwable $e, string $message)
     {
         Log::error($message . ': ' . $e->getMessage());
 
         if (request()->ajax() || request()->wantsJson()) {
             return response()->json([
                 'success' => false,
-                'message' => $message . ': ' . $e->getMessage()
+                'message' => $message . ': ' . $e->getMessage(),
             ], 500);
         }
 

@@ -2,24 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UploadImage;
-use App\Models\UserSettings;
 use App\Services\CalendarService;
 use App\Services\HolidayService;
+use App\Services\Settings\UserSettingsService;
 use App\Services\UploadImageService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class UserNavigateController extends Controller
 {
-    private $auth;
-    private $now;
-
-    public function __construct()
-    {
-        $this->auth = auth()->user();
-        $this->now = now();
-    }
+    public function __construct(
+        private readonly UserSettingsService $userSettingsService,
+    ) {}
 
     public function toUploadImgLaporan(UploadImageService $service)
     {
@@ -28,22 +20,22 @@ class UserNavigateController extends Controller
         return view('pages.user.send_img.create', $data);
     }
 
-    public function toCalenderUpload(HolidayService $holidayService)
+    public function toCalenderUpload(HolidayService $holidayService, CalendarService $calendarService)
     {
         $holidays = $holidayService->getHolidays();
-        $serviceGetCalendar = new CalendarService($this->auth);
-        $data = $serviceGetCalendar->getCalendarData();
+        $data = $calendarService->getCalendarData();
 
         return view('pages.user.calender.index', [
             'holidays' => $holidays,
             'translate' => $data['translate'],
-            'uploadsByDay' => $data['uploadsByDay']
+            'uploadsByDay' => $data['uploadsByDay'],
         ]);
     }
 
     public function toSettings()
     {
-        $dataSetting = UserSettings::where('user_id', $this->auth->id)->first();
+        $dataSetting = $this->userSettingsService->getByUser((int) auth()->id());
+
         return view('pages.user.settings.index', compact('dataSetting'));
     }
 }

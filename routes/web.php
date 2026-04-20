@@ -26,7 +26,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'theme'])->name('dashboard');
-Route::resource('/rating-pekerjaan', ImageRateController::class)->only('create', 'store');
+Route::resource('/rating-pekerjaan', ImageRateController::class)
+    ->only('create', 'store')
+    ->middleware('throttle:20,1');
 
 Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

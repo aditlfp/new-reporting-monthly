@@ -2,28 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserSettingsStoreRequest;
 use App\Models\UserSettings;
-use Illuminate\Http\Request;
+use App\Services\Settings\UserSettingsService;
 
 class UserSettingsController extends Controller
 {
-    
-    public function store(Request $request)
+    public function __construct(
+        private readonly UserSettingsService $service,
+    ) {}
+
+    public function store(UserSettingsStoreRequest $request)
     {
-
-        $data = $request->only([
-            'bg_color',
-            'text_color_1',
-            'text_color_2',
-            'primary_color',
-            'secondary_color',
-            'error_color',
-        ]);
-
-        UserSettings::updateOrCreate(
-            ['user_id' => auth()->id()],   // kondisi
-            ['data_theme' => $data]        // data yang diupdate
-        );
+        $this->service->storeTheme((int) $request->user()->id, $request->validated());
 
         if ($request->ajax()) {
             return response()->json([
@@ -31,11 +22,17 @@ class UserSettingsController extends Controller
                 'message' => 'Data Theme Has Been created successfully',
             ], 200);
         }
+
+        return back()->with('success', 'Data Theme Has Been created successfully');
     }
 
-    public function update(Request $request, UserSettings $userSettings)
+    public function update(UserSettingsStoreRequest $request, UserSettings $userSettings)
     {
-        //
-    }
+        $this->service->storeTheme((int) $request->user()->id, $request->validated());
 
+        return response()->json([
+            'status' => true,
+            'message' => 'Data Theme Has Been updated successfully',
+        ]);
+    }
 }

@@ -61,7 +61,7 @@ class UploadImageService
             return DB::transaction(function () use ($request) {
                 return $this->uploadImages->createUpload([
                     'user_id' => $this->user->id,
-                    'clients_id' => $request->clients_id,
+                    'clients_id' => $this->resolveClientIdForUser($request),
                     'note' => $request->note,
                     'status' => $request->status,
                     'max_data' => 14,
@@ -84,19 +84,22 @@ class UploadImageService
     public function storeDraft(Request $request): UploadImage
     {
         $user = $request->user();
+        $clientId = $this->resolveClientIdForUser($request);
 
-        return DB::transaction(function () use ($request, $user) {
+        return DB::transaction(function () use ($request, $user, $clientId) {
             $images = [
                 'img_before' => 'none',
                 'img_proccess' => 'none',
                 'img_final' => 'none',
             ];
 
-            foreach ([
-                'img_before' => 'upload_images/before',
-                'img_proccess' => 'upload_images/process',
-                'img_final' => 'upload_images/final',
-            ] as $field => $folder) {
+            foreach (
+                [
+                    'img_before' => 'upload_images/before',
+                    'img_proccess' => 'upload_images/process',
+                    'img_final' => 'upload_images/final',
+                ] as $field => $folder
+            ) {
                 $resolved = $this->storage->resolveImageInput($request, $field, $folder);
                 if ($resolved) {
                     $images[$field] = $resolved;
@@ -105,7 +108,7 @@ class UploadImageService
 
             return $this->uploadImages->createUpload([
                 'user_id' => $user->id,
-                'clients_id' => $request->clients_id,
+                'clients_id' => $clientId,
                 'note' => $request->note,
                 'status' => $request->status ?? 0,
                 'max_data' => 14,
@@ -132,11 +135,13 @@ class UploadImageService
                 'status' => $request->status,
             ];
 
-            foreach ([
-                'img_before' => 'upload_images/before',
-                'img_proccess' => 'upload_images/process',
-                'img_final' => 'upload_images/final',
-            ] as $field => $folder) {
+            foreach (
+                [
+                    'img_before' => 'upload_images/before',
+                    'img_proccess' => 'upload_images/process',
+                    'img_final' => 'upload_images/final',
+                ] as $field => $folder
+            ) {
                 $existingField = 'existing_' . $field;
 
                 if ($request->hasFile($field) || $request->filled('temp_' . $field)) {
@@ -286,11 +291,13 @@ class UploadImageService
             'status' => 1,
         ];
 
-        foreach ([
-            'img_before' => 'upload_images/before',
-            'img_proccess' => 'upload_images/process',
-            'img_final' => 'upload_images/final',
-        ] as $field => $folder) {
+        foreach (
+            [
+                'img_before' => 'upload_images/before',
+                'img_proccess' => 'upload_images/process',
+                'img_final' => 'upload_images/final',
+            ] as $field => $folder
+        ) {
             if ($request->hasFile($field)) {
                 $payload[$field] = $this->storage->storeDirectImage($request->file($field), $folder, $uploadImage->{$field});
             }
@@ -338,7 +345,7 @@ class UploadImageService
                 'type' => 'create_post',
                 'payload' => [
                     'temp_files' => $tempFiles,
-                    'clients_id' => $request->clients_id,
+                    'clients_id' => $this->resolveClientIdForUser($request),
                     'note' => $request->note,
                     'status' => $request->status,
                 ],
@@ -365,5 +372,17 @@ class UploadImageService
             || $request->filled('temp_img_final')
             || ($request->filled('existing_img_final') && $request->input('existing_img_final') !== 'none')
             || $request->input('type') === 'draft';
+    }
+
+    protected function resolveClientIdForUser(Request $request): int
+    {
+        $authUser = $request->user();
+        $clientId = (int) ($authUser?->kerjasama?->client_id ?? $authUser?->clients_id ?? 0);
+
+        if ($clientId <= 0) {
+            throw new \RuntimeException('Client pengguna tidak valid.');
+        }
+
+        return $clientId;
     }
 }

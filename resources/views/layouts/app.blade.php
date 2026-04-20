@@ -29,6 +29,20 @@
                 transform: translateX(0) !important;
             }
         }
+
+        .field-required-marker {
+            margin-left: 0.25rem;
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .field-optional-marker {
+            margin-left: 0.35rem;
+            color: #0284c7;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 0.85em;
+        }
     </style>
 </head>
 
@@ -47,7 +61,47 @@
             @include('layouts.footer')
         </div>
 
+    @include('components.session-toast')
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const labels = document.querySelectorAll('label');
+
+            labels.forEach(function(label) {
+                if (label.querySelector('.field-required-marker, .field-optional-marker')) {
+                    return;
+                }
+
+                let field = null;
+                const fieldId = label.getAttribute('for');
+
+                if (fieldId) {
+                    field = document.getElementById(fieldId);
+                }
+
+                if (!field) {
+                    field = label.closest('.form-control')?.querySelector('input, select, textarea')
+                        || label.parentElement?.querySelector('input, select, textarea');
+                }
+
+                if (!field) {
+                    return;
+                }
+
+                const marker = document.createElement('span');
+
+                if (field.required) {
+                    marker.className = 'field-required-marker';
+                    marker.textContent = '*';
+                } else {
+                    marker.className = 'field-optional-marker';
+                    marker.textContent = '(opsional)';
+                }
+
+                label.appendChild(marker);
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             const sidebar = $('#sidebar');

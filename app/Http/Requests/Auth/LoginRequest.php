@@ -27,7 +27,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
+            'email' => ['nullable', 'string'],
+            'name' => ['nullable', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,11 +42,31 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('name', 'password'), $this->boolean('remember'))) {
+        $identifier = $this->input('email') ?: $this->input('name');
+
+        if (empty($identifier)) {
+            throw ValidationException::withMessages([
+                'email' => 'Email atau username wajib diisi.',
+            ]);
+        }
+
+        $attempted = Auth::attempt([
+            'email' => $identifier,
+            'password' => $this->input('password'),
+        ], $this->boolean('remember'));
+
+        if (!$attempted) {
+            $attempted = Auth::attempt([
+                'name' => $identifier,
+                'password' => $this->input('password'),
+            ], $this->boolean('remember'));
+        }
+
+        if (! $attempted) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'name' => trans('auth.failed'),
+                'email' => trans('auth.failed'),
             ]);
         }
 
@@ -80,6 +101,8 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('name')).'|'.$this->ip());
+        $identifier = (string) ($this->input('email') ?: $this->input('name') ?: '');
+
+        return Str::transliterate(Str::lower($identifier).'|'.$this->ip());
     }
 }

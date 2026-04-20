@@ -2,30 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\FileHelper;
-use App\Models\qrCode as QrCodeModel;
+use App\Http\Requests\QrCodeStoreRequest;
+use App\Services\Media\QrCodeService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
+use Illuminate\Support\Facades\Log;
 
 class QrCodeController extends Controller
 {
-    private const QR_TARGET_BASE_URL = 'https://laporan-sac.sac-po.com/send-img/laporan';
+    public function __construct(
+        private readonly QrCodeService $service,
+    ) {}
 
     public function index(Request $request)
     {
-        $search = trim((string) $request->get('search'));
+        $data = $this->service->indexData(trim((string) $request->get('search')));
 
-        $qrCodes = QrCodeModel::query()
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where('data', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
-
-        return view('pages.admin.qrcode.index', compact('qrCodes', 'search'));
+        return view('pages.admin.qrcode.index', $data);
     }
 
     public function create()
@@ -35,68 +28,87 @@ class QrCodeController extends Controller
 
     public function edit($id)
     {
-        $qrCode = QrCodeModel::findOrFail($id);
+        try {
+            $qrCode = $this->service->getById((int) $id);
 
-        return view('pages.admin.qrcode.create', compact('qrCode'));
+            return view('pages.admin.qrcode.create', compact('qrCode'));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to open QR edit page.', ['id' => $id, 'error' => $e->getMessage()]);
+            return redirect()->route('admin-qrcode.index')->withErrors([
+                'error' => 'Data QR Code tidak ditemukan.',
+            ]);
+        }
     }
 
-    public function store(Request $request)
+    public function store(QrCodeStoreRequest $request)
     {
-        $request->validate([
-            'data' => ['required', 'string', 'max:255'],
-        ]);
+        try {
+            $this->service->create($request->validated()['data']);
 
-        $targetUrl = self::QR_TARGET_BASE_URL . '?n=' . rawurlencode($request->data);
-        $filename = 'qr/' . Str::uuid() . '.png';
-        $qrImage = QrCodeGenerator::format('png')
-            ->size(300)
-            ->margin(1)
-            ->generate($targetUrl);
+            return redirect()
+                ->route('admin-qrcode.index')
+                ->with('success', 'QR Code berhasil ditambahkan.');
+        } catch (QueryException $e) {
+            Log::warning('Failed to create QR code due to DB constraint.', ['error' => $e->getMessage()]);
 
-        Storage::disk('public')->put($filename, $qrImage);
+            return back()->withInput()->withErrors([
+                'error' => 'Data QR Code tidak valid. Silakan cek kembali.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while creating QR code.', ['error' => $e->getMessage()]);
 
-        QrCodeModel::create([
-            'qr' => $filename,
-            'data' => $request->data,
-        ]);
-
-        return redirect()
-            ->route('admin-qrcode.index')
-            ->with('success', 'QR Code berhasil ditambahkan.');
+            return back()->withInput()->withErrors([
+                'error' => 'Terjadi kesalahan saat membuat QR Code. Silakan coba lagi.',
+            ]);
+        }
     }
 
-    public function update(Request $request, $id)
+    public function update(QrCodeStoreRequest $request, $id)
     {
-        $request->validate([
-            'data' => ['required', 'string', 'max:255'],
-        ]);
+        try {
+            $this->service->update((int) $id, $request->validated()['data']);
 
-        $qrCode = QrCodeModel::findOrFail($id);
-        $targetUrl = self::QR_TARGET_BASE_URL . '?n=' . rawurlencode($request->data);
-        $qrImage = QrCodeGenerator::format('png')
-            ->size(300)
-            ->margin(1)
-            ->generate($targetUrl);
+            return redirect()
+                ->route('admin-qrcode.index')
+                ->with('success', 'QR Code berhasil diperbarui.');
+        } catch (QueryException $e) {
+            Log::warning('Failed to update QR code due to DB constraint.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
-        Storage::disk('public')->put($qrCode->qr, $qrImage);
+            return back()->withInput()->withErrors([
+                'error' => 'Data QR Code tidak valid. Silakan cek kembali.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while updating QR code.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
-        $qrCode->update([
-            'data' => $request->data,
-        ]);
-
-        return redirect()
-            ->route('admin-qrcode.index')
-            ->with('success', 'QR Code berhasil diperbarui.');
+            return back()->withInput()->withErrors([
+                'error' => 'Terjadi kesalahan saat memperbarui QR Code. Silakan coba lagi.',
+            ]);
+        }
     }
 
     public function destroy($id)
     {
-        $qrCode = QrCodeModel::findOrFail($id);
-        FileHelper::deleteImage($qrCode->qr);
-        $qrCode->delete();
+        try {
+            $this->service->delete((int) $id);
 
-        return redirect()
-            ->route('admin-qrcode.index')
-            ->with('success', 'QR Code berhasil dihapus.');
+            return redirect()
+                ->route('admin-qrcode.index')
+                ->with('success', 'QR Code berhasil dihapus.');
+        } catch (\Throwable $e) {
+            Log::error('Unexpected error while deleting QR code.', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan saat menghapus QR Code. Silakan coba lagi.',
+            ]);
+        }
     }
 }
