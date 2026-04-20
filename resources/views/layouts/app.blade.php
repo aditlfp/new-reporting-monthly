@@ -139,6 +139,11 @@
             });
         });
     </script>
+    @if(session('set_operator'))
+    <script>
+        localStorage.setItem('SACoperator', 'true');
+    </script>
+    @endif
 </body>
 
 </html>
