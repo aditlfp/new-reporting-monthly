@@ -272,12 +272,10 @@ class UploadImageService
 
     public function getAdminIndexData(Request $request): array
     {
-        $filters = $request->only(['id', 'mitra', 'user', 'month', 'year']);
+        $filters = $request->only(['mitra', 'user', 'month', 'year']);
 
         return [
-            'images' => !empty($filters['id'])
-                ? $this->uploadImages->findAdminUploadById((int) $filters['id'])
-                : $this->uploadImages->paginateAdminUploads($filters),
+            'images' => $this->uploadImages->paginateAdminUploads($filters),
             'users' => !empty($filters['mitra']) ? $this->uploadImages->getUsersByMitra((int) $filters['mitra']) : collect(),
             'client' => Clients::all(),
         ];

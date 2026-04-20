@@ -36,13 +36,6 @@
             font-weight: 700;
         }
 
-        .field-optional-marker {
-            margin-left: 0.35rem;
-            color: #0284c7;
-            font-style: italic;
-            font-weight: 500;
-            font-size: 0.85em;
-        }
     </style>
 </head>
 
@@ -68,7 +61,11 @@
             const labels = document.querySelectorAll('label');
 
             labels.forEach(function(label) {
-                if (label.querySelector('.field-required-marker, .field-optional-marker')) {
+                if (
+                    label.id?.startsWith('error-') ||
+                    label.classList.contains('hidden') ||
+                    label.querySelector('.field-required-marker, .text-error')
+                ) {
                     return;
                 }
 
@@ -88,17 +85,16 @@
                     return;
                 }
 
-                const marker = document.createElement('span');
-
-                if (field.required) {
-                    marker.className = 'field-required-marker';
-                    marker.textContent = '*';
-                } else {
-                    marker.className = 'field-optional-marker';
-                    marker.textContent = '(opsional)';
+                if (!field.required) {
+                    return;
                 }
 
-                label.appendChild(marker);
+                const target = label.querySelector('.label-text') || label;
+
+                const marker = document.createElement('span');
+                marker.className = 'field-required-marker';
+                marker.textContent = '*';
+                target.appendChild(marker);
             });
         });
     </script>
@@ -139,6 +135,11 @@
             });
         });
     </script>
+    @if(session('set_operator'))
+    <script>
+        localStorage.setItem('SACoperator', 'true');
+    </script>
+    @endif
 </body>
 
 </html>

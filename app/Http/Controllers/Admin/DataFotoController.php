@@ -44,6 +44,15 @@ class DataFotoController extends Controller
         return redirect()->route('admin.upload.index')->with('success', 'Upload updated successfully.');
     }
 
+    public function show(UploadImage $uploadImage)
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Get upload image data successfully',
+            'data' => $uploadImage->load(['clients', 'user.kerjasama']),
+        ]);
+    }
+
     public function destroy(Request $request, UploadImage $uploadImage, UploadImageService $service)
     {
         $service->deleteAdminUpload($uploadImage);

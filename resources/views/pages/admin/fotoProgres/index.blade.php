@@ -1,18 +1,18 @@
 <x-app-layout title="Data Photo Progress" subtitle="Menampilkan Data Photo Yang Sudah Ada">
-    <div class="admin-shell flex min-h-screen bg-slate-50">
+    <div class="flex min-h-screen pb-10 admin-shell bg-slate-50">
         @include('components.sidebar-component')
-        <div class="admin-content flex-1 p-3 overflow-y-auto md:p-6">
+        <div class="flex-1 p-3 overflow-y-auto admin-content md:p-6">
             <div class="container px-3 py-6 mx-auto md:px-4 md:py-8">
                 <div class="m-3 bg-white shadow-xl md:m-5 card admin-panel">
                     <div class="card-body">
-                        <div class="admin-filter-card px-4 py-3 md:px-5 flex flex-col gap-3 mb-4 md:mb-6">
+                        <div class="flex flex-col gap-3 px-4 py-3 mb-4 admin-filter-card md:px-5 md:mb-6">
                             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <h2 class="text-xl font-semibold md:text-2xl text-slate-900">Data Photo Progress</h2>
                                     <p class="text-xs text-slate-500 md:text-sm">Filter data, pilih foto, lalu export atau hapus sesuai kebutuhan.</p>
                                 </div>
                                 <span id="activeFilterBadge"
-                                    class="hidden px-3 py-1 text-xs font-medium border rounded-full w-fit border-blue-100 bg-blue-50 text-blue-700">
+                                    class="hidden px-3 py-1 text-xs font-medium text-blue-700 border border-blue-100 rounded-full w-fit bg-blue-50">
                                     Filter aktif
                                 </span>
                             </div>
@@ -20,7 +20,7 @@
                             <!-- Filter Section -->
                             <div class="rounded-lg bg-white/45">
                                 <div class="flex flex-wrap items-end gap-2 md:gap-3">
-                                    <div class="form-control w-full sm:w-52 lg:w-56">
+                                    <div class="w-full form-control sm:w-52 lg:w-56">
                                         <label for="mitraFilter" class="min-h-0 px-0 py-1 label">
                                             <span class="text-xs font-medium label-text">Mitra</span>
                                         </label>
@@ -33,7 +33,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div id="filterUserContainer" class="form-control w-full sm:w-52 lg:w-56">
+                                    <div id="filterUserContainer" class="w-full form-control sm:w-52 lg:w-56">
                                         <label for="userFilter" class="min-h-0 px-0 py-1 label">
                                             <span class="text-xs font-medium label-text">User</span>
                                         </label>
@@ -202,7 +202,7 @@
                                 <label class="py-1 label">
                                     <span class="text-xs font-medium label-text md:text-sm">Keterangan</span>
                                 </label>
-                                <textarea class="w-full min-h-32 rounded-md textarea textarea-bordered textarea-sm" id="note"
+                                <textarea class="w-full rounded-md min-h-32 textarea textarea-bordered textarea-sm" id="note"
                                     name="note" placeholder="Tambahkan catatan progress..."></textarea>
                                 <label class="hidden label" id="error-note">
                                     <span class="label-text-alt text-error"></span>
@@ -211,7 +211,7 @@
                         </div>
 
                         <div class="space-y-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Foto Progress</p>
+                            <p class="text-xs font-semibold tracking-wide uppercase text-slate-500">Foto Progress</p>
                             <div class="grid gap-3 md:grid-cols-3">
                                 <div class="p-3 border rounded-lg form-control border-slate-200 bg-slate-50/70">
                                     <label class="py-1 label">
@@ -270,9 +270,9 @@
     {{-- Delete Confirmation Modal --}}
     <dialog id="deleteConfirmModal" class="modal">
         <div class="w-11/12 max-w-md p-0 overflow-hidden modal-box">
-            <div class="px-5 py-4 border-b bg-red-50 border-red-100">
+            <div class="px-5 py-4 border-b border-red-100 bg-red-50">
                 <div class="flex items-center gap-3">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-700">
+                    <div class="flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded-full">
                         <i class="text-xl ri-delete-bin-6-line"></i>
                     </div>
                     <div>
@@ -287,7 +287,7 @@
             <div class="px-5 py-4 border-t modal-action border-base-200 bg-base-100">
                 <button type="button" class="btn btn-sm btn-ghost" id="cancelDelete">Batal</button>
                 <button type="button"
-                    class="text-white border-0 rounded-md btn btn-sm min-w-24 bg-red-600 hover:bg-red-700"
+                    class="text-white bg-red-600 border-0 rounded-md btn btn-sm min-w-24 hover:bg-red-700"
                     id="confirmDelete">
                     <span class="hidden loading loading-spinner loading-xs" id="deleteSpinner"></span>
                     Hapus
@@ -445,6 +445,12 @@
             $(document).ready(function() {
                 let currentPage = 1;
                 let currentMonth = '';
+                let activeFilters = {
+                    month: '',
+                    year: '',
+                    mitra: '',
+                    user: ''
+                };
                 let currentRequest = null;
                 let pendingDelete = {
                     type: null,
@@ -507,8 +513,18 @@
                             }
 
                             if (response.status) {
-                                renderTable(response.data.data);
-                                renderPagination(response.data);
+                                const paginator = normalizePaginator(response.data);
+
+                                try {
+                                    renderTable(paginator.items);
+                                } catch (error) {
+                                    console.error('Error rendering table:', error);
+                                    $('#tableBody').html(
+                                        '<tr><td colspan="9" class="py-8 text-center text-error">Error rendering table data.</td></tr>'
+                                    );
+                                }
+
+                                renderPagination(paginator);
                                 currentPage = page;
                             } else {
                                 // server returned JSON but with status false
@@ -530,6 +546,49 @@
                             // inspect xhr.responseText in devtools
                         }
                     });
+                }
+
+                function normalizePaginator(data) {
+                    const meta = data?.meta || {};
+                    const perPage = Number(data?.per_page || meta.per_page || 0);
+                    const total = Number(data?.total || meta.total || 0);
+
+                    return {
+                        items: Array.isArray(data?.data) ? data.data : [],
+                        currentPage: Number(data?.current_page || meta.current_page || 1),
+                        perPage,
+                        total,
+                        lastPage: Number(data?.last_page || meta.last_page || (perPage && total ?
+                            Math.ceil(total / perPage) : 1)),
+                    };
+                }
+
+                function getSelectedFilters() {
+                    return {
+                        month: $('#monthFilter').val() || '',
+                        year: $('#yearFilter').val() || '',
+                        mitra: $('#mitraFilter').val() || '',
+                        user: $('#userFilter').val() || ''
+                    };
+                }
+
+                function setActiveFilters(filters = getSelectedFilters()) {
+                    activeFilters = {
+                        month: filters.month || '',
+                        year: filters.year || '',
+                        mitra: filters.mitra || '',
+                        user: filters.user || ''
+                    };
+                }
+
+                function loadDataWithActiveFilters(page = currentPage) {
+                    loadData(
+                        page,
+                        activeFilters.month,
+                        activeFilters.year,
+                        activeFilters.mitra,
+                        activeFilters.user
+                    );
                 }
 
                 // Render table
@@ -592,48 +651,62 @@
                 // Helper function to render image cell
                 function renderImageCell(imagePath, label) {
                     if (!imagePath) {
-                        return `<img src="https://placehold.co/600x400?text=Kosong" class="max-w-[60px] md:max-w-[100px] opacity-50" alt="Kosong" />`;
+                        return `<img src="https://placehold.co/160x160?text=Kosong"
+                             class="object-cover w-16 h-16 opacity-50 md:h-20 md:w-20"
+                             width="80"
+                             height="80"
+                             loading="lazy"
+                             decoding="async"
+                             alt="Kosong" />`;
                     }
 
                     const fullUrl = window.location.origin + '/storage/' + imagePath;
                     return `<img src="${fullUrl}" 
-                             class="max-w-[60px] md:max-w-[100px] cursor-pointer hover:opacity-80 transition-opacity" 
+                             class="object-cover w-16 h-16 transition-opacity cursor-pointer md:h-20 md:min-w-20 hover:opacity-80"
+                             width="80"
+                             height="80"
+                             loading="lazy"
+                             decoding="async"
+                             fetchpriority="low"
                              onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';"
                              onclick="showImagePreview('${fullUrl}')" 
                              alt="${label}" />`;
                 }
 
                 // Render pagination
-                function renderPagination(data) {
-                    if (data.last_page <= 1) {
+                function renderPagination(paginator) {
+                    const currentPageNumber = paginator.currentPage;
+                    const lastPage = paginator.lastPage;
+
+                    if (!lastPage || lastPage <= 1) {
                         $('#pagination').html('');
                         return;
                     }
 
-                    let html = '<div class="join">';
+                    let html = '<nav class="flex flex-wrap items-center justify-center gap-1" aria-label="Pagination">';
 
                     // Previous button
-                    html += `<button class="join-item btn btn-xs ${data.current_page === 1 ? 'btn-disabled' : ''}" data-page="${data.current_page - 1}">
+                    html += `<button type="button" class="btn btn-xs pagination-btn ${currentPageNumber === 1 ? 'btn-disabled' : ''}" data-page="${currentPageNumber - 1}" aria-label="Halaman sebelumnya">
                         <i class="ri-arrow-left-s-line"></i>
                     </button>`;
 
                     // Page numbers
-                    for (let i = 1; i <= data.last_page; i++) {
-                        if (i === 1 || i === data.last_page || (i >= data.current_page - 2 && i <= data.current_page +
+                    for (let i = 1; i <= lastPage; i++) {
+                        if (i === 1 || i === lastPage || (i >= currentPageNumber - 2 && i <= currentPageNumber +
                                 2)) {
                             html +=
-                                `<button class="join-item btn btn-xs ${i === data.current_page ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
-                        } else if (i === data.current_page - 3 || i === data.current_page + 3) {
-                            html += '<button class="join-item btn btn-xs btn-disabled">...</button>';
+                                `<button type="button" class="btn btn-xs pagination-btn ${i === currentPageNumber ? 'btn-active' : ''}" data-page="${i}">${i}</button>`;
+                        } else if (i === currentPageNumber - 3 || i === currentPageNumber + 3) {
+                            html += '<button type="button" class="btn btn-xs btn-disabled">...</button>';
                         }
                     }
 
                     // Next button
-                    html += `<button class="join-item btn btn-xs ${data.current_page === data.last_page ? 'btn-disabled' : ''}" data-page="${data.current_page + 1}">
+                    html += `<button type="button" class="btn btn-xs pagination-btn ${currentPageNumber === lastPage ? 'btn-disabled' : ''}" data-page="${currentPageNumber + 1}" aria-label="Halaman berikutnya">
                         <i class="ri-arrow-right-s-line"></i>
                     </button>`;
 
-                    html += '</div>';
+                    html += '</nav>';
                     $('#pagination').html(html);
                 }
 
@@ -695,6 +768,12 @@
                         $('#userFilter').html('<option selected value="">Select Mitra First</option>');
                         $('#userFilter').prop('disabled', true);
                         currentMonth = '';
+                        setActiveFilters({
+                            month: '',
+                            year: '',
+                            mitra: '',
+                            user: ''
+                        });
                         updateFilterSummary();
                         loadData(1);
                     });
@@ -731,10 +810,20 @@
                 }
 
                 $('#applyFilter').click(function() {
-                    const month = $('#monthFilter').val();
-                    const year = $('#yearFilter').val();
-                    const mitra = $('#mitraFilter').val();
-                    const user = $('#userFilter').val();
+                    const {
+                        month,
+                        year,
+                        mitra,
+                        user
+                    } = getSelectedFilters();
+
+                    setActiveFilters({
+                        month,
+                        year,
+                        mitra,
+                        user
+                    });
+
                     // Update currentMonth when filter is applied
                     if (month || year) {
                         currentMonth = year + '-' + (month ? month.padStart(2, '0') : '01');
@@ -868,7 +957,7 @@
                         success: function(response) {
                             deleteModal.close();
                             resetPendingDelete();
-                            loadData(currentPage);
+                            loadDataWithActiveFilters(currentPage);
                             $('#headerCheckbox').prop('checked', false);
                             Notify(response.message || 'Selected uploads deleted successfully',
                                 null, null, 'success');
@@ -1066,15 +1155,11 @@
                 }
 
                 // Pagination click
-                $(document).on('click', '#pagination button', function(e) {
+                $(document).on('click', '#pagination .pagination-btn', function(e) {
                     e.preventDefault();
-                    const page = $(this).data('page');
+                    const page = Number($(this).data('page'));
                     if (page && !$(this).hasClass('btn-disabled') && !$(this).hasClass('btn-active')) {
-                        const month = $('#monthFilter').val();
-                        const year = $('#yearFilter').val();
-                        const mitra = $('#mitraFilter').val();
-                        const user = $('#userFilter').val();
-                        loadData(page, month, year, mitra, user);
+                        loadDataWithActiveFilters(page);
                     }
                 });
 
@@ -1088,10 +1173,7 @@
                 $(document).on('click', '.btn-edit', function() {
                     const id = $(this).data('id');
                     $.ajax({
-                        url: `{{ route('admin.upload.index') }}`,
-                        data: {
-                            id: id
-                        },
+                        url: `{{ route('admin.upload.show', ':id') }}`.replace(':id', id),
                         type: 'GET',
                         dataType: 'json',
                         success: function(response) {
@@ -1123,15 +1205,15 @@
                         const fullUrl = window.location.origin + '/storage/' + imagePath;
                         container.html(
                             `<div class="space-y-2">
-                                <button type="button" class="block w-full overflow-hidden border rounded-md border-base-300 bg-white" onclick="showImagePreview('${fullUrl}')">
-                                    <img src="${fullUrl}" class="object-cover w-full h-28 transition-opacity hover:opacity-80" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';" />
+                                <button type="button" class="block w-full overflow-hidden bg-white border rounded-md border-base-300" onclick="showImagePreview('${fullUrl}')">
+                                    <img src="${fullUrl}" class="object-cover w-full transition-opacity h-28 hover:opacity-80" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';" />
                                 </button>
                                 <span class="block text-[11px] md:text-xs text-base-content/70">Gambar saat ini</span>
                             </div>`
                         );
                     } else {
                         container.html(
-                            `<div class="flex items-center justify-center w-full h-28 border border-dashed rounded-md border-slate-300 bg-white text-slate-400">
+                            `<div class="flex items-center justify-center w-full bg-white border border-dashed rounded-md h-28 border-slate-300 text-slate-400">
                                 <span class="text-[11px] md:text-xs">Belum ada gambar</span>
                             </div>`
                         );
@@ -1176,7 +1258,7 @@
                         success: function(response) {
                             if (response.status) {
                                 modal.close();
-                                loadData(currentPage);
+                                loadDataWithActiveFilters(currentPage);
                                 Notify(response.message, null, null, 'success');
                                 resetForm();
                             }
@@ -1223,7 +1305,7 @@
                             if (response.status) {
                                 deleteModal.close();
                                 resetPendingDelete();
-                                loadData(currentPage);
+                                loadDataWithActiveFilters(currentPage);
                                 Notify(response.message, null, null, 'success');
                             }
                         },
@@ -1385,8 +1467,8 @@
                         const objectUrl = URL.createObjectURL(file);
                         $(`#current-${field}`).html(
                             `<div class="space-y-2">
-                                <button type="button" class="block w-full overflow-hidden border rounded-md border-primary/40 bg-white" onclick="showImagePreview('${objectUrl}')">
-                                    <img src="${objectUrl}" class="object-cover w-full h-28 transition-opacity hover:opacity-80" />
+                                <button type="button" class="block w-full overflow-hidden bg-white border rounded-md border-primary/40" onclick="showImagePreview('${objectUrl}')">
+                                    <img src="${objectUrl}" class="object-cover w-full transition-opacity h-28 hover:opacity-80" />
                                 </button>
                                 <span class="block text-[11px] md:text-xs text-base-content/70">Preview file baru</span>
                             </div>`

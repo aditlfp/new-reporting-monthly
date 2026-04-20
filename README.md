@@ -22,6 +22,20 @@ Format rilis:
 
 ---
 
+## [v2.4.1] - 2026-04-20
+
+### Changed
+- Halaman admin Photo Progress kini mempertahankan filter aktif saat edit, delete single, delete selected, dan pindah halaman pagination.
+- Thumbnail gambar pada tabel Photo Progress menggunakan rasio 1:1, fixed size, lazy loading, async decoding, dan prioritas rendah untuk mengurangi lag saat tabel berisi banyak gambar.
+- Marker form global di layout hanya menampilkan tanda `*` untuk field required dan tidak lagi menampilkan teks `(opsional)`.
+
+### Fixed
+- Memisahkan endpoint detail edit Photo Progress (`admin.upload.show`) dari endpoint index agar response index selalu berupa paginator.
+- Memperbaiki render pagination Photo Progress agar membaca metadata paginator secara konsisten dan tetap dirender meskipun render tabel mengalami error.
+- Memperbaiki marker required agar tidak dobel pada label yang sudah memiliki `*` manual dan tidak muncul pada label error tersembunyi.
+
+---
+
 ## [v2.4.0] - 2026-04-20
 
 ### Added
