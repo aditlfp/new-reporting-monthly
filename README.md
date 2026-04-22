@@ -22,6 +22,49 @@ Format rilis:
 
 ---
 
+## [v2.6.0] - 2026-04-22
+
+### Added
+- Menu admin baru **Download Rekap** dengan filter `client`, `bulan`, dan `tahun`, plus card cover per client untuk generate file rekap langsung dari dashboard admin.
+- Flow generate khusus Download Rekap yang memakai template cover dan surat existing (`coverPages.js` + `letterPages.js`) lalu merge dengan urutan khusus untuk kebutuhan admin.
+- Validasi request baru untuk generate Download Rekap yang mendukung input `cover_id`, `month`, `year`, dan file PDF hasil render frontend.
+- Feature dan unit test untuk flow Download Rekap admin serta merge rekap fallback di `CoverService`.
+
+### Changed
+- Flow Download Rekap admin kini memakai **surat terbaru** berdasarkan kombinasi `cover` + `periode` dan menandai ketersediaan surat langsung di card daftar cover.
+- Render cover PDF pada Download Rekap disesuaikan ulang agar ukuran teks nama client lebih proporsional untuk nama client yang panjang tanpa merusak layout utama cover.
+- Halaman konversi PDF untuk file gambar di Upload Tambahan disederhanakan agar hanya menampilkan isi gambar tanpa header tambahan.
+
+### Fixed
+- Perbaikan bug halaman cover dan surat dobel pada hasil Download Rekap akibat file lampiran/signature legacy ikut ter-merge kembali.
+- Perbaikan fallback `rekap_foto` di `CoverService` saat file period-specific tidak ditemukan: sistem sekarang membuat PDF fallback dari data nyata `FixedImage` dan user cleaning service bulan berjalan.
+- Perbaikan query fallback `FixedImage` agar mengikuti relasi model yang benar dan tidak lagi mengarah ke tabel jabatan yang salah.
+- Perbaikan proses copy hasil fallback rekap ke path period agar error path `rekap_foto/{period}-{client}.pdf` tidak lagi muncul.
+- Perbaikan komponen toast session agar aman dirender walau `$errors` belum tersedia di view tertentu.
+
+---
+
+## [v2.5.1] - 2026-04-21
+
+### Added
+- Menu **Pengaturan** untuk user dengan opsi sederhana: ganti tema website dan toggle splashscreen setelah login.
+- Splashscreen setelah login yang hanya tampil sekali berdasarkan preferensi user.
+- Pengaturan tema admin sederhana (`light` / `dark`) pada halaman admin settings.
+
+### Changed
+- Penyimpanan preferensi user dipusatkan di `user_settings.data_theme` dengan key JSON `theme_mode` dan `splash_on_login`.
+- Layout aplikasi membaca tema aktif secara dinamis dari preferensi user/admin agar seluruh halaman user mengikuti theme yang tersimpan.
+- Dashboard user diperbarui: chart upload per bulan mengikuti bulan Januari-Desember pada tahun berjalan secara dinamis (`now()`), dan visualisasi diubah menjadi line chart.
+- Kartu limit gambar di dashboard user diperbarui agar progress bar terbalik: `0` merah dan limit penuh tetap full bar.
+
+### Fixed
+- Perbaikan theme switch yang sebelumnya tidak benar-benar mengubah tampilan halaman.
+- Perbaikan dark mode admin/user pada card, tabel, panel, dan teks yang masih tertahan di warna light/slate lama.
+- Perbaikan state sidebar settings pada user dan admin agar konsisten dengan route aktif.
+- Perbaikan perhitungan limit dashboard agar nilai tidak turun di bawah `0`.
+
+---
+
 ## [v2.5.0] - 2026-04-20
 
 ### Added

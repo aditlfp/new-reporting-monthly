@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 interface CoverRepositoryInterface
 {
     public function paginateWithClient(int $perPage = 10): LengthAwarePaginator;
+    public function paginateWithClientForDownload(?int $clientId = null, int $perPage = 12): LengthAwarePaginator;
 
     public function allClients(): Collection;
 

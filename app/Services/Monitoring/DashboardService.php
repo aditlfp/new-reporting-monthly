@@ -86,20 +86,36 @@ class DashboardService
 
     public function getPerformancePerMonth(int $userId): array
     {
-        $performance = $this->repository->getUserPerformanceByMonth($userId);
+        $currentYear = now()->year;
+        $performance = $this->repository->getUserPerformanceByMonth($userId, $currentYear);
 
-        $months = [];
-        $totals = [];
+        $monthlyTotals = array_fill(1, 12, 0);
+        $monthLabels = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
 
         foreach ($performance as $row) {
             $monthNumber = (int) $row->month;
-            $months[] = Carbon::create()->month($monthNumber)->format('F');
-            $totals[] = $row->total;
+            if ($monthNumber >= 1 && $monthNumber <= 12) {
+                $monthlyTotals[$monthNumber] = (int) $row->total;
+            }
         }
 
         return [
-            'months' => $months,
-            'totals' => $totals,
+            'months' => array_values($monthLabels),
+            'totals' => array_values($monthlyTotals),
+            'year' => $currentYear,
         ];
     }
 }

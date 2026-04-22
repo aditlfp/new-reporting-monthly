@@ -1,5 +1,21 @@
+@php
+    $resolvedTheme = 'light';
+    if (Auth::check() && Auth::user()->role_id == 2) {
+        $adminTheme = \App\Models\Settings::query()->value('theme');
+        $resolvedTheme = in_array($adminTheme, ['light', 'dark'], true) ? $adminTheme : 'light';
+    } else {
+        $resolvedTheme = $themeSettings['theme_mode'] ?? 'light';
+        if ($resolvedTheme === 'silk') {
+            $resolvedTheme = 'light';
+        }
+        if (!in_array($resolvedTheme, ['dark', 'light'], true)) {
+            $resolvedTheme = 'light';
+        }
+    }
+    $showLoginSplash = session('set_operator') && (($themeSettings['splash_on_login'] ?? false) === true);
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="silk">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $resolvedTheme }}">
 
 <head>
     <meta charset="utf-8">
@@ -40,6 +56,14 @@
 </head>
 
 <body class="font-sans antialiased {{ Auth::check() && Auth::user()->role_id == 2 ? 'admin-ui' : '' }}">
+    @if ($showLoginSplash)
+        <div id="login-splash-overlay" data-login-splash="active"
+            class="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-4 bg-white transition-opacity duration-300">
+            <div class="loading loading-spinner loading-lg text-blue-500"></div>
+            <p class="text-lg font-bold tracking-wide text-slate-900">{{ config('app.name', 'SILAB') }}</p>
+            <p class="text-sm font-medium tracking-wide text-slate-600">Loading...</p>
+        </div>
+    @endif
     <div class="min-h-screen bg-gray-100">
         <div id="notifications"></div>
         @props(['title' => 'Default Title', 'subtitle' => 'Default Subtitle'])
@@ -139,6 +163,23 @@
     <script>
         localStorage.setItem('SACoperator', 'true');
     </script>
+    @endif
+    @if ($showLoginSplash)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const splash = document.getElementById('login-splash-overlay');
+                if (!splash) {
+                    return;
+                }
+
+                setTimeout(function() {
+                    splash.classList.add('opacity-0');
+                    setTimeout(function() {
+                        splash.remove();
+                    }, 300);
+                }, 1200);
+            });
+        </script>
     @endif
 </body>
 

@@ -14,25 +14,35 @@ class UserSettingsController extends Controller
 
     public function store(UserSettingsStoreRequest $request)
     {
-        $this->service->storeTheme((int) $request->user()->id, $request->validated());
+        $payload = [
+            'theme_mode' => (string) $request->validated('theme_mode'),
+            'splash_on_login' => $request->boolean('splash_on_login'),
+        ];
+
+        $this->service->storeTheme((int) $request->user()->id, $payload);
 
         if ($request->ajax()) {
             return response()->json([
                 'status' => true,
-                'message' => 'Data Theme Has Been created successfully',
+                'message' => 'Pengaturan berhasil disimpan',
             ], 200);
         }
 
-        return back()->with('success', 'Data Theme Has Been created successfully');
+        return back()->with('success', 'Pengaturan berhasil disimpan');
     }
 
     public function update(UserSettingsStoreRequest $request, UserSettings $userSettings)
     {
-        $this->service->storeTheme((int) $request->user()->id, $request->validated());
+        $payload = [
+            'theme_mode' => (string) $request->validated('theme_mode'),
+            'splash_on_login' => $request->boolean('splash_on_login'),
+        ];
+
+        $this->service->storeTheme((int) $request->user()->id, $payload);
 
         return response()->json([
             'status' => true,
-            'message' => 'Data Theme Has Been updated successfully',
+            'message' => 'Pengaturan berhasil diperbarui',
         ]);
     }
 }

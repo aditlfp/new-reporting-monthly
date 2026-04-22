@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SettingsStoreRequest;
+use App\Models\Settings;
 use App\Services\Settings\SettingsService;
 
 class SettingsController extends Controller
@@ -13,7 +14,14 @@ class SettingsController extends Controller
 
     public function index()
     {
-        return view('pages.admin.settings.index');
+        $currentTheme = Settings::query()->value('theme');
+        if (!in_array($currentTheme, ['light', 'dark'], true)) {
+            $currentTheme = 'light';
+        }
+
+        return view('pages.admin.settings.index', [
+            'currentTheme' => $currentTheme,
+        ]);
     }
 
     public function store(SettingsStoreRequest $request)

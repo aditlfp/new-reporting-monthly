@@ -81,6 +81,14 @@
                         <span class="text-sm">Upload Tambahan</span>
                     </a>
 
+                    <a href="{{ route('admin.download-rekap.index') }}"
+                        class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin.download-rekap.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L4 6V12C4 17.55 7.84 22.74 12 24C16.16 22.74 20 17.55 20 12V6L12 2ZM11 7H13V13H16L12 17L8 13H11V7ZM7 19H17V21H7V19Z"></path>
+                        </svg>
+                        <span class="text-sm">Download Rekap</span>
+                    </a>
+
                     <a href="{{ route('admin-rating-image.index') }}"
                         class="flex items-center m-2 px-3 py-2 space-x-2 rounded-lg transition-all {{ request()->routeIs('admin-rating-image.*') ? 'active bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">

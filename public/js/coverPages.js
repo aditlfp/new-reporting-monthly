@@ -1,11 +1,11 @@
 // In a separate file or at the top of your script
 function getCoverPageHtml(latterData, assetUrl) {
-  const condensedTitleStyle =
-    "display: inline-block; padding: 1mm 3mm; font-family: Arial, Helvetica, sans-serif; " +
-    "font-size: 24pt; font-weight: bold; text-transform: uppercase; white-space: nowrap; " +
-    "max-width: 90%; overflow: hidden; text-overflow: ellipsis; letter-spacing: 2px; word-spacing: 0; line-height: 1;";
+    const condensedTitleStyle =
+        "display: inline-block; padding: 1mm 3mm; font-family: Arial, Helvetica, sans-serif; " +
+        "font-size: 24pt; font-weight: bold; text-transform: uppercase; white-space: nowrap; " +
+        "max-width: 90%; overflow: hidden; text-overflow: ellipsis; letter-spacing: 2px; word-spacing: 0; line-height: 1;";
 
-  return `
+    return `
         <section style="width: 210mm; height: 297mm; position: relative; margin: 0; padding: 0; overflow: hidden; page-break-after: always;">
             <!-- Background image as absolute positioned element -->
             <img src="/img/COVER.svg"
@@ -21,11 +21,10 @@ function getCoverPageHtml(latterData, assetUrl) {
 
                 <div style="margin-top: -6mm; text-align: center;">
                     <div style="${condensedTitleStyle} color: #323C8B;">
-                        (${
-                          latterData.cover.client
-                            ? latterData.cover.client.name
-                            : "Unknown Client"
-                        })
+                        (${latterData.cover.client
+            ? latterData.cover.client.name
+            : "Unknown Client"
+        })
                     </div>
                 </div>
 
@@ -33,9 +32,9 @@ function getCoverPageHtml(latterData, assetUrl) {
                     <div style="width: 50%; padding-right: 1mm;">
                         <div style="display: flex; align-items: center; justify-center; width: 100%; height: 65mm;">
                             <img src="${assetUrl}/${latterData.cover.img_src_1.replace(
-    /^\/+/,
-    ""
-  )}"
+            /^\/+/,
+            ""
+        )}"
                                 style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Cover Image 1">
                         </div>
                     </div>
@@ -43,9 +42,9 @@ function getCoverPageHtml(latterData, assetUrl) {
                     <div style="width: 50%; padding-left: 1mm;">
                         <div style="display: flex; align-items: center; justify-center; width: 100%; height: 65mm;">
                             <img src="${assetUrl}/${latterData.cover.img_src_2.replace(
-    /^\/+/,
-    ""
-  )}"
+            /^\/+/,
+            ""
+        )}"
                                 style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="Cover Image 2">
                         </div>
                     </div>

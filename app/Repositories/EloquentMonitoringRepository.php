@@ -66,7 +66,7 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
             ->count();
     }
 
-    public function getUserPerformanceByMonth(int $userId): Collection
+    public function getUserPerformanceByMonth(int $userId, int $year): Collection
     {
         return UploadImage::query()->selectRaw("
                 MONTH(created_at) as month,
@@ -77,6 +77,7 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
                 ) as total
             ")
             ->where('user_id', $userId)
+            ->whereYear('created_at', $year)
             ->groupBy('month')
             ->orderBy('month')
             ->get();

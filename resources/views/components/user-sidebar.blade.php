@@ -135,15 +135,15 @@
                 <span class="font-medium">Kalender</span>
             </a>
 
-            {{--  <a href="{{ route('user.settings.index')}}"
-                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('user.settings.index') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100'}}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+            <a href="{{ route('user.settings.index') }}"
+                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('user.settings.index') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 1.75A2.25 2.25 0 0 1 14.25 4v.35a7.984 7.984 0 0 1 1.98.82l.25-.25a2.25 2.25 0 1 1 3.18 3.18l-.25.25a7.985 7.985 0 0 1 .82 1.98H20a2.25 2.25 0 1 1 0 4.5h-.35a7.984 7.984 0 0 1-.82 1.98l.25.25a2.25 2.25 0 1 1-3.18 3.18l-.25-.25a7.984 7.984 0 0 1-1.98.82V20a2.25 2.25 0 1 1-4.5 0v-.35a7.984 7.984 0 0 1-1.98-.82l-.25.25a2.25 2.25 0 1 1-3.18-3.18l.25-.25a7.984 7.984 0 0 1-.82-1.98H4a2.25 2.25 0 1 1 0-4.5h.35c.18-.69.46-1.36.82-1.98l-.25-.25a2.25 2.25 0 1 1 3.18-3.18l.25.25c.62-.36 1.29-.64 1.98-.82V4A2.25 2.25 0 0 1 12 1.75Zm0 6a4.25 4.25 0 1 0 0 8.5 4.25 4.25 0 0 0 0-8.5Z">
                     </path>
                 </svg>
                 <span class="font-medium">Pengaturan</span>
-            </a> --}}
+            </a>
 
         </div>
     </nav>

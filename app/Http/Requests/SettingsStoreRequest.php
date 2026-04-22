@@ -14,9 +14,7 @@ class SettingsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'api_key' => ['nullable', 'string'],
-            'theme' => ['nullable', 'string', 'max:100'],
-            'login_by' => ['nullable', 'string', 'max:100'],
+            'theme' => ['required', 'in:light,dark'],
         ];
     }
 }

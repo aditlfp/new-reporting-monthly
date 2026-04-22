@@ -22,7 +22,7 @@ interface MonitoringRepositoryInterface
 
     public function countSessionsForMonth(int $month): int;
 
-    public function getUserPerformanceByMonth(int $userId): Collection;
+    public function getUserPerformanceByMonth(int $userId, int $year): Collection;
 
     public function getUserDrafts(int $userId, int $month, int $year): Collection;
 

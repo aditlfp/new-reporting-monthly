@@ -35,7 +35,18 @@ class UserNavigateController extends Controller
     public function toSettings()
     {
         $dataSetting = $this->userSettingsService->getByUser((int) auth()->id());
+        $preferences = array_merge(
+            [
+                'theme_mode' => 'light',
+                'splash_on_login' => false,
+            ],
+            is_array($dataSetting?->data_theme) ? $dataSetting->data_theme : []
+        );
 
-        return view('pages.user.settings.index', compact('dataSetting'));
+        if (($preferences['theme_mode'] ?? null) === 'silk') {
+            $preferences['theme_mode'] = 'light';
+        }
+
+        return view('pages.user.settings.index', compact('preferences'));
     }
 }

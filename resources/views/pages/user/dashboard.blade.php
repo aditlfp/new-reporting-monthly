@@ -32,19 +32,22 @@
                                     <div>
                                         <div class="flex items-baseline">
                                         @php
-                                            $varCount = 33 - $totalImageCount;
+                                            $imageLimit = 33;
+                                            $varCount = max(0, $imageLimit - (int) $totalImageCount);
                                             $varClass = $varCount >= 25 ? 'text-green-600'
                                                 : ($varCount >= 15 ? 'text-amber-600'
                                                 : ($varCount <= 14 ? 'text-red-600'
                                                 : ''));
-                                            $persen = $totalImageCount > 0 ?($totalImageCount / 33) * 100 : 0;
-                                            $varPersenClass = $persen >= 80 ? 'bg-green-600'
-                                                                : ($persen >= 75 ? 'bg-lime-600'
-                                                                : ($persen >= 50 ? 'bg-amber-600'
+                                            $persen = $imageLimit > 0
+                                                ? min(100, max(0, ($varCount / $imageLimit) * 100))
+                                                : 0;
+                                            $varPersenClass = $persen >= 75 ? 'bg-green-600'
+                                                                : ($persen >= 50 ? 'bg-lime-600'
+                                                                : ($persen >= 25 ? 'bg-amber-600'
                                                                 : 'bg-red-600'));
                                         @endphp
-                                        <p class="text-2xl font-bold {{ $varClass }}" id="remainingImages">{{ 33 -   $totalImageCount }}</p>
-                                        <span class="ml-1 text-sm text-slate-500">/ 33</span>
+                                        <p class="text-2xl font-bold {{ $varClass }}" id="remainingImages">{{ $varCount }}</p>
+                                        <span class="ml-1 text-sm text-slate-500">/ {{ $imageLimit }}</span>
                                     </div>
                                     <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2">
                                         <div class="{{ $varPersenClass }} h-1.5 rounded-full transition-all duration-300" id="imageProgress"
@@ -126,15 +129,19 @@
 
                     setTimeout(() => {   // ensures animation works
                         new Chart(ctx, {
-                            type: "bar",
+                            type: "line",
                             data: {
                                 labels: data.months,
                                 datasets: [{
                                     label: "Uploads Per Month",
                                     data: data.totals,
                                     borderWidth: 1,
-                                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                                    borderColor: "rgb(54, 162, 235)"
+                                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                                    borderColor: "rgb(54, 162, 235)",
+                                    pointBackgroundColor: "rgb(54, 162, 235)",
+                                    pointRadius: 4,
+                                    tension: 0.35,
+                                    fill: true
                                 }]
                             },
                             options: {
@@ -143,6 +150,11 @@
                                     easing: "easeInOutQuart"
                                 },
                                 scales: {
+                                    x: {
+                                        ticks: {
+                                            autoSkip: false
+                                        }
+                                    },
                                     y: {
                                         beginAtZero: true
                                     }

@@ -19,6 +19,7 @@ use App\Http\Controllers\UploadTambahanController;
 use App\Http\Controllers\UserNavigateController;
 use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\Admin\UploadTambahanAdminController;
+use App\Http\Controllers\Admin\DownloadRekapController;
 use App\Models\Clients;
 use App\Models\Kerjasama;
 use App\Models\UploadImage;
@@ -106,6 +107,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-rating-image', ImageRateController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::get('/admin-upload-tambahan', [UploadTambahanAdminController::class, 'index'])->name('admin.upload-tambahan.index');
     Route::get('/admin-upload-tambahan/{id}', [UploadTambahanAdminController::class, 'show'])->name('admin.upload-tambahan.show');
+    Route::get('/admin-download-rekap', [DownloadRekapController::class, 'index'])->name('admin.download-rekap.index');
+    Route::post('/admin-download-rekap/generate', [DownloadRekapController::class, 'generate'])->name('admin.download-rekap.generate');
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');

@@ -1,4 +1,8 @@
-@if (session()->has('success') || session()->has('error') || session()->has('warning') || session()->has('info') || $errors->any())
+@php
+    $viewErrors = $errors ?? new \Illuminate\Support\ViewErrorBag();
+@endphp
+
+@if (session()->has('success') || session()->has('error') || session()->has('warning') || session()->has('info') || $viewErrors->any())
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof window.Notify !== 'function') {
@@ -23,8 +27,8 @@
                 queue.push({ type: 'info', message: @json(session('info')) });
             @endif
 
-            @if ($errors->any())
-                @foreach ($errors->all() as $errorMessage)
+            @if ($viewErrors->any())
+                @foreach ($viewErrors->all() as $errorMessage)
                     queue.push({ type: 'error', message: @json($errorMessage) });
                 @endforeach
             @endif

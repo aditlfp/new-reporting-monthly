@@ -21,19 +21,24 @@ it('stores admin settings through service', function () {
 
     $mock = Mockery::mock(SettingsService::class, function (MockInterface $mock) {
         $mock->shouldReceive('store')->once()->with([
-            'api_key' => 'key-123',
             'theme' => 'dark',
-            'login_by' => 'email',
         ]);
     });
 
     app()->instance(SettingsService::class, $mock);
 
     $this->postJson(route('admin.set.settings'), [
-        'api_key' => 'key-123',
         'theme' => 'dark',
-        'login_by' => 'email',
     ])->assertCreated()->assertJson([
         'status' => true,
     ]);
+});
+
+it('rejects invalid admin theme value', function () {
+    $this->withoutMiddleware();
+    $this->actingAs(makeAdminUser());
+
+    $this->postJson(route('admin.set.settings'), [
+        'theme' => 'silk',
+    ])->assertStatus(422)->assertJsonValidationErrors('theme');
 });

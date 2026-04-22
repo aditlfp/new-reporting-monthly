@@ -15,6 +15,17 @@ class EloquentCoverRepository implements CoverRepositoryInterface
         return Cover::query()->with('client')->latest()->paginate($perPage);
     }
 
+    public function paginateWithClientForDownload(?int $clientId = null, int $perPage = 12): LengthAwarePaginator
+    {
+        return Cover::query()
+            ->with('client')
+            ->when($clientId, function ($query) use ($clientId) {
+                $query->where('clients_id', $clientId);
+            })
+            ->latest()
+            ->paginate($perPage);
+    }
+
     public function allClients(): Collection
     {
         return Clients::all();

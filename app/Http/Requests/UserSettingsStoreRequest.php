@@ -14,12 +14,8 @@ class UserSettingsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bg_color' => ['nullable', 'string', 'max:20'],
-            'text_color_1' => ['nullable', 'string', 'max:20'],
-            'text_color_2' => ['nullable', 'string', 'max:20'],
-            'primary_color' => ['nullable', 'string', 'max:20'],
-            'secondary_color' => ['nullable', 'string', 'max:20'],
-            'error_color' => ['nullable', 'string', 'max:20'],
+            'theme_mode' => ['required', 'in:dark,light'],
+            'splash_on_login' => ['nullable', 'boolean'],
         ];
     }
 }
