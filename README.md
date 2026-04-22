@@ -34,6 +34,7 @@ Format rilis:
 - Flow Download Rekap admin kini memakai **surat terbaru** berdasarkan kombinasi `cover` + `periode` dan menandai ketersediaan surat langsung di card daftar cover.
 - Render cover PDF pada Download Rekap disesuaikan ulang agar ukuran teks nama client lebih proporsional untuk nama client yang panjang tanpa merusak layout utama cover.
 - Halaman konversi PDF untuk file gambar di Upload Tambahan disederhanakan agar hanya menampilkan isi gambar tanpa header tambahan.
+- Alignment tombol aksi topbar admin dan aksi sidebar user pada perangkat mobile dirapikan agar tombol logout tetap sejajar dan tidak turun terlalu bawah.
 
 ### Fixed
 - Perbaikan bug halaman cover dan surat dobel pada hasil Download Rekap akibat file lampiran/signature legacy ikut ter-merge kembali.
@@ -41,6 +42,8 @@ Format rilis:
 - Perbaikan query fallback `FixedImage` agar mengikuti relasi model yang benar dan tidak lagi mengarah ke tabel jabatan yang salah.
 - Perbaikan proses copy hasil fallback rekap ke path period agar error path `rekap_foto/{period}-{client}.pdf` tidak lagi muncul.
 - Perbaikan komponen toast session agar aman dirender walau `$errors` belum tersedia di view tertentu.
+- Perbaikan tampilan cover Download Rekap untuk nama client panjang agar tetap terbaca tanpa terpotong.
+- Perbaikan halaman PDF upload tambahan hasil konversi gambar agar tidak lagi menampilkan judul `UPLOAD TAMBAHAN` dan nama file di bagian atas.
 
 ---
 

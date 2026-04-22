@@ -149,15 +149,17 @@
     </nav>
 
     <div class="p-4 border-t border-slate-100">
-        <form action="{{ route('logout') }}" method="POST" class="w-full">
+        <form action="{{ route('logout') }}" method="POST" class="w-full m-0">
             @csrf
             <button type="submit"
-                class="flex items-center w-full px-4 py-3 space-x-3 transition-all rounded-lg text-slate-600 hover:bg-red-50">
-                <svg class="w-5 h-5 text-slate-400" stroke="red" fill="none" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
+                class="flex items-center w-full gap-3 px-4 py-3 transition-all rounded-lg text-red-600 bg-red-50 hover:bg-red-100">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 shrink-0">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                </span>
                 <span class="font-medium text-red-600">Keluar</span>
             </button>
         </form>

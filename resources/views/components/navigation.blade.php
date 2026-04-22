@@ -16,13 +16,13 @@
             </button>
         </div>
 
-        <div class="flex items-center gap-2">
-            <button type="button" class="btn btn-ghost btn-sm btn-circle text-slate-500 hover:bg-slate-100">
+        <div class="flex items-center self-center gap-2 shrink-0">
+            <button type="button" class="btn btn-ghost btn-sm btn-circle text-slate-500 hover:bg-slate-100 shrink-0">
                 <i class="text-lg ri-notification-3-line"></i>
             </button>
-            <form action="{{ route('logout') }}" method="POST" class="w-full">
+            <form action="{{ route('logout') }}" method="POST" class="m-0 shrink-0">
                 @csrf
-                <button type="submit" class="btn btn-ghost btn-sm btn-circle text-slate-500 hover:bg-slate-100"
+                <button type="submit" class="btn btn-ghost btn-sm btn-circle text-slate-500 hover:bg-slate-100 shrink-0"
                     title="Logout">
                     <i class="text-lg ri-logout-box-r-line"></i>
                 </button>

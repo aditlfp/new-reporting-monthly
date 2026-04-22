@@ -125,16 +125,17 @@
         </a>
 
         <div class="block p-2 md:p-4 md:hidden">
-            <form action="{{ route('logout') }}" method="POST" class="w-full">
+            <form action="{{ route('logout') }}" method="POST" class="w-full m-0">
                 @csrf
                 <button type="submit"
-                    class="flex items-center w-full gap-2 p-2 text-red-500 transition-colors rounded-lg hover:text-red-400 bg-red-500/20">
-                    <svg class="relative w-8 h-8 p-2 text-red-500 transition-colors rounded-full hover:text-red-400 bg-red-500/20"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
+                    class="flex items-center w-full gap-3 px-3 py-2 text-red-600 transition-colors rounded-lg bg-red-50 hover:bg-red-100">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 shrink-0">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </span>
+                    <span class="text-sm font-medium">Logout</span>
                 </button>
             </form>
         </div>
