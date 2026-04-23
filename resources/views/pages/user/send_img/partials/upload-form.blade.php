@@ -25,7 +25,7 @@
 
             <div class="space-y-6">
                 <div>
-                    <label class="block mb-3 text-sm font-medium text-slate-700">Gambar (Rasio 1:1)</label>
+                    <label class="block mb-3 text-sm font-medium text-slate-700 required">Gambar (Rasio 1:1)</label>
                     <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                         @php
                             $imageConfig = [
@@ -42,31 +42,33 @@
                         @endphp
 
                         @foreach ($imageConfig as $index => $config)
-                            <div class="relative">
-                                <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}" accept="{{ $acceptedTypes }}" class="hidden" {{ in_array($config['name'], ['img_before', 'img_final']) ? 'required' : '' }}>
-                                <label for="{{ $config['id'] }}"
-                                    class="flex flex-col items-center justify-center w-full h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer sm:h-28 md:h-32 lg:h-36 border-slate-300 bg-slate-50 hover:bg-slate-100"
-                                    data-upload-label="{{ $config['id'] }}">
-                                    {!! $uploadIcon !!}
-                                    <span class="text-[10px] sm:text-xs text-slate-500 text-center px-1">+ {{ $config['label'] }}</span>
-                                </label>
+                            <div class="min-w-0 space-y-1.5">
+                                <div class="relative">
+                                    <input type="file" id="{{ $config['id'] }}" name="{{ $config['name'] }}" accept="{{ $acceptedTypes }}" class="hidden" data-upload-input="{{ $config['id'] }}">
+                                    <label for="{{ $config['id'] }}"
+                                        class="flex flex-col items-center justify-center w-full h-24 transition-colors border-2 border-dashed rounded-lg cursor-pointer sm:h-28 md:h-32 lg:h-36 border-slate-300 bg-slate-50 hover:bg-slate-100"
+                                        data-upload-label="{{ $config['id'] }}">
+                                        {!! $uploadIcon !!}
+                                        <span class="text-[10px] sm:text-xs text-slate-500 text-center px-1">+ {{ $config['label'] }}</span>
+                                    </label>
 
-                                <div id="preview{{ $index + 1 }}" class="absolute inset-0 hidden overflow-hidden rounded-lg">
-                                    <img src="" alt="Preview" class="object-cover w-full h-full lazy-load">
-                                    <button type="button"
-                                        class="absolute p-1 sm:p-1.5 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
-                                        onclick="removeImage({{ $index + 1 }})">
-                                        {!! $deleteIcon !!}
-                                    </button>
+                                    <div id="preview{{ $index + 1 }}" class="absolute inset-0 hidden overflow-hidden rounded-lg">
+                                        <img src="" alt="Preview" class="object-cover w-full h-full lazy-load">
+                                        <button type="button"
+                                            class="absolute p-1 sm:p-1.5 text-white transition-colors bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
+                                            onclick="removeImage({{ $index + 1 }})">
+                                            {!! $deleteIcon !!}
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div id="uploadState{{ $index + 1 }}" class="upload-progress-card hidden" data-state="idle">
+                                <div id="uploadState{{ $index + 1 }}" class="hidden upload-progress-card" data-state="idle">
                                     <div class="flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <span class="upload-spinner hidden"></span>
-                                            <span class="text-[10px] sm:text-xs font-medium text-slate-700 upload-status">Menunggu upload</span>
+                                        <div class="flex items-center min-w-0 gap-2">
+                                            <span class="hidden upload-spinner"></span>
+                                            <span class="text-[10px] sm:text-xs font-medium text-slate-700 truncate upload-status">Menunggu upload</span>
                                         </div>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center flex-shrink-0 gap-1.5">
                                             <span class="text-[10px] sm:text-xs font-semibold text-slate-500 upload-percent">0%</span>
                                             <button type="button"
                                                 class="hidden text-[10px] sm:text-xs font-medium text-red-500 transition-colors hover:text-red-600 upload-retry"
@@ -75,7 +77,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="mt-2 upload-progress-bar"><span style="width: 0%"></span></div>
+                                    <div class="mt-1 upload-progress-bar"><span style="width: 0%"></span></div>
                                 </div>
                             </div>
                         @endforeach

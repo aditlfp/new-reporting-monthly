@@ -64,12 +64,12 @@
                 </div>
 
                 <div id="not-operator" class="hidden mb-6">
-                    <div class="rounded-xl border border-indigo-100 bg-indigo-50/70 p-3.5">
+                    <div class="rounded-xl border-[3px] border-dashed border-indigo-600/70 bg-indigo-50/70 p-3.5">
                         <p class="flex flex-wrap items-center gap-2 text-sm text-indigo-900">
                             <i class="text-base ri-chat-smile-2-line"></i>
                             <span>Ingin memberikan ulasan pekerjaan?</span>
                             <a href="{{ route('rating-pekerjaan.create') }}"
-                                class="inline-flex items-center gap-1 rounded-md bg-white px-2.5 py-1 font-semibold text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                                class="inline-flex items-center gap-1 rounded-md bg-white px-2.5 py-1 font-semibold text-indigo-600 transition hover:bg-indigo-600 hover:text-indigo-400">
                                 Klik di sini
                                 <i class="text-sm ri-arrow-right-line"></i>
                             </a>

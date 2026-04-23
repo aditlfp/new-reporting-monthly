@@ -14,16 +14,16 @@
 
     <style>
         :root {
-            --bg: #f5f1e8;
-            --surface: #fffdfa;
-            --surface-alt: #f1ece2;
-            --ink: #172126;
+            --bg: #f4f8ff;
+            --surface: #ffffff;
+            --surface-alt: #eaf2ff;
+            --ink: #10233f;
             --muted: #5f686f;
-            --line: rgba(23, 33, 38, 0.1);
-            --accent: #b85f34;
-            --accent-dark: #934721;
-            --green: #29453f;
-            --shadow: 0 16px 40px rgba(23, 33, 38, 0.08);
+            --line: rgba(16, 35, 63, 0.1);
+            --accent: #2563eb;
+            --accent-dark: #1d4ed8;
+            --blue-soft: #0f76a8;
+            --shadow: 0 16px 40px rgba(16, 35, 63, 0.08);
         }
 
         * {
@@ -33,9 +33,9 @@
         body {
             min-height: 100vh;
             background:
-                radial-gradient(circle at top left, rgba(184, 95, 52, 0.12), transparent 24%),
-                radial-gradient(circle at right 10%, rgba(41, 69, 63, 0.12), transparent 18%),
-                linear-gradient(180deg, #f7f2e9 0%, #f2ede4 100%);
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%),
+                radial-gradient(circle at right 10%, rgba(14, 116, 168, 0.12), transparent 18%),
+                linear-gradient(180deg, #f7fbff 0%, #eef6ff 100%);
             color: var(--ink);
             font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             letter-spacing: -0.01em;
@@ -82,7 +82,7 @@
             width: 11rem;
             height: 11rem;
             border-radius: 2rem;
-            background: linear-gradient(135deg, rgba(184, 95, 52, 0.18), rgba(184, 95, 52, 0.05));
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0.05));
             transform: rotate(18deg);
         }
 
@@ -92,8 +92,8 @@
             width: 8rem;
             height: 8rem;
             border-radius: 999px;
-            border: 1px solid rgba(41, 69, 63, 0.12);
-            background: rgba(41, 69, 63, 0.06);
+            border: 1px solid rgba(14, 116, 168, 0.12);
+            background: rgba(14, 116, 168, 0.06);
         }
 
         .hero-shape-line {
@@ -101,15 +101,15 @@
             right: 20%;
             width: 7rem;
             height: 7rem;
-            border-top: 1px solid rgba(23, 33, 38, 0.08);
-            border-right: 1px solid rgba(23, 33, 38, 0.08);
+            border-top: 1px solid rgba(16, 35, 63, 0.08);
+            border-right: 1px solid rgba(16, 35, 63, 0.08);
             border-radius: 0 2rem 0 0;
             transform: rotate(14deg);
         }
 
         .panel,
         .card {
-            background: rgba(255, 253, 250, 0.92);
+            background: rgba(255, 255, 255, 0.94);
             border: 1px solid var(--line);
             box-shadow: var(--shadow);
         }
@@ -122,7 +122,7 @@
             border-radius: 999px;
             border: 1px solid var(--line);
             background: rgba(255, 255, 255, 0.82);
-            color: var(--green);
+            color: var(--blue-soft);
             font-size: 0.8rem;
             font-weight: 700;
             letter-spacing: 0.12em;
@@ -142,14 +142,14 @@
             width: 0.35rem;
             height: 2.8rem;
             border-radius: 999px;
-            background: linear-gradient(180deg, var(--accent), rgba(184, 95, 52, 0.08));
+            background: linear-gradient(180deg, var(--accent), rgba(37, 99, 235, 0.08));
         }
 
         .section-line {
             width: 84px;
             height: 3px;
             border-radius: 999px;
-            background: linear-gradient(90deg, var(--accent), rgba(184, 95, 52, 0.12));
+            background: linear-gradient(90deg, var(--accent), rgba(37, 99, 235, 0.12));
         }
 
         .btn-primary,
@@ -180,14 +180,14 @@
 
         .btn-secondary:hover {
             background: #fff;
-            border-color: rgba(23, 33, 38, 0.18);
+            border-color: rgba(16, 35, 63, 0.18);
             transform: translateY(-1px);
         }
 
         .simple-grid {
             background-image:
-                linear-gradient(rgba(23, 33, 38, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(23, 33, 38, 0.05) 1px, transparent 1px);
+                linear-gradient(rgba(16, 35, 63, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 35, 63, 0.05) 1px, transparent 1px);
             background-size: 28px 28px;
         }
 
@@ -217,9 +217,9 @@
             justify-content: center;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.8);
-            background: rgba(23, 33, 38, 0.88);
+            background: rgba(16, 35, 63, 0.88);
             color: #fff;
-            box-shadow: 0 12px 30px rgba(23, 33, 38, 0.18);
+            box-shadow: 0 12px 30px rgba(16, 35, 63, 0.18);
             opacity: 0;
             visibility: hidden;
             transform: translateY(10px);
@@ -380,16 +380,16 @@
                     <a href="#beranda" class="flex min-w-0 items-center gap-2.5 sm:gap-3">
                         <img src="{{ asset('img/logo-320.webp') }}" alt="Logo SILAB" width="48" height="48" class="flex-shrink-0 object-contain w-10 h-10 p-1 bg-white rounded-2xl sm:h-12 sm:w-12" fetchpriority="high" decoding="async">
                         <div class="min-w-0">
-                            <p class="brand-type truncate text-base font-extrabold tracking-tight text-[#172126] sm:text-lg">SILAB</p>
+                            <p class="brand-type truncate text-base font-extrabold tracking-tight text-[#10233f] sm:text-lg">SILAB</p>
                             <p class="hidden text-[10px] uppercase tracking-[0.24em] text-slate-500 sm:block md:text-xs">Sistem Laporan Bulanan</p>
                         </div>
                     </a>
 
                     <div class="items-center text-sm font-semibold nav-menu gap-7 text-slate-600 lg:flex">
-                        <a href="#beranda" class="transition hover:text-[#172126]">Beranda</a>
-                        <a href="#tentang" class="transition hover:text-[#172126]">Tentang</a>
-                        <a href="#fitur" class="transition hover:text-[#172126]">Fitur</a>
-                        <a href="#kontak" class="transition hover:text-[#172126]">Kontak</a>
+                        <a href="#beranda" class="transition hover:text-[#10233f]">Beranda</a>
+                        <a href="#tentang" class="transition hover:text-[#10233f]">Tentang</a>
+                        <a href="#fitur" class="transition hover:text-[#10233f]">Fitur</a>
+                        <a href="#kontak" class="transition hover:text-[#10233f]">Kontak</a>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -398,7 +398,7 @@
                             <span>Masuk</span>
                         </a>
 
-                        <button type="button" id="mobileMenuToggle" class="mobile-only menu-toggle inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-black/10 bg-white text-[#172126] lg:hidden" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobileMenu">
+                        <button type="button" id="mobileMenuToggle" class="mobile-only menu-toggle inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-blue-900/10 bg-white text-[#10233f] lg:hidden" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobileMenu">
                             <span class="menu-toggle-icon">
                                 <span class="menu-toggle-line"></span>
                                 <span class="menu-toggle-line"></span>
@@ -410,12 +410,12 @@
 
                 <div id="mobileMenu" class="mobile-menu mobile-only lg:hidden">
                     <div class="mobile-menu-inner">
-                        <div class="grid gap-2 pt-3 border-t border-black/10">
-                            <a href="#beranda" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-black/5">Beranda</a>
-                            <a href="#tentang" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-black/5">Tentang</a>
-                            <a href="#fitur" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-black/5">Fitur</a>
-                            <a href="#kontak" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-black/5">Kontak</a>
-                            <a href="{{ route('login') }}" class="rounded-2xl bg-[#172126] px-4 py-3 text-sm font-semibold text-white transition hover:bg-black">Masuk ke sistem</a>
+                        <div class="grid gap-2 pt-3 border-t border-blue-900/10">
+                            <a href="#beranda" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-blue-50">Beranda</a>
+                            <a href="#tentang" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-blue-50">Tentang</a>
+                            <a href="#fitur" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-blue-50">Fitur</a>
+                            <a href="#kontak" class="px-4 py-3 text-sm font-semibold transition rounded-2xl text-slate-700 hover:bg-blue-50">Kontak</a>
+                            <a href="{{ route('login') }}" class="rounded-2xl bg-[#10233f] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1d4ed8]">Masuk ke sistem</a>
                         </div>
                     </div>
                 </div>
@@ -433,11 +433,11 @@
                     <div class="relative z-10 grid items-center gap-6 md:gap-8 lg:grid-cols-[1.08fr_0.92fr]">
                         <div class="kicker-block">
                             <div class="eyebrow">
-                                <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#b85f34]"></span>
+                                <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#2563eb]"></span>
                                 Pengelolaan laporan yang lebih terstruktur
                             </div>
 
-                            <h1 class="mt-5 max-w-4xl text-3xl font-extrabold text-[#172126] sm:text-4xl md:mt-6 md:text-5xl lg:text-6xl">
+                            <h1 class="mt-5 max-w-4xl text-3xl font-extrabold text-[#10233f] sm:text-4xl md:mt-6 md:text-5xl lg:text-6xl">
                                 Satu sistem untuk mencatat, memantau, dan merapikan laporan kegiatan bulanan.
                             </h1>
 
@@ -459,33 +459,33 @@
                             <div class="grid gap-3 mt-8 sm:grid-cols-3 sm:gap-4 md:mt-10">
                                 <div class="card rounded-[20px] p-4">
                                     <p class="text-sm font-medium text-slate-500">Dokumentasi</p>
-                                    <p class="mt-2 text-2xl font-bold text-[#172126] sm:text-3xl">3 tahap</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#10233f] sm:text-3xl">3 tahap</p>
                                     <p class="mt-2 text-sm text-slate-600">Before, process, dan after tersusun dalam satu alur.</p>
                                 </div>
                                 <div class="card rounded-[20px] p-4">
                                     <p class="text-sm font-medium text-slate-500">Monitoring</p>
-                                    <p class="mt-2 text-2xl font-bold text-[#172126] sm:text-3xl">Lebih cepat</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#10233f] sm:text-3xl">Lebih cepat</p>
                                     <p class="mt-2 text-sm text-slate-600">Progres kegiatan lebih mudah dipantau dari satu halaman.</p>
                                 </div>
                                 <div class="card rounded-[20px] p-4">
                                     <p class="text-sm font-medium text-slate-500">Arsip</p>
-                                    <p class="mt-2 text-2xl font-bold text-[#172126] sm:text-3xl">Per periode</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#10233f] sm:text-3xl">Per periode</p>
                                     <p class="mt-2 text-sm text-slate-600">Riwayat laporan lebih mudah dicari saat dibutuhkan.</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card simple-grid rounded-[24px] p-4 sm:p-5 md:rounded-[30px] md:p-6">
-                            <div class="flex items-start justify-between gap-4 pb-4 border-b border-black/10">
+                            <div class="flex items-start justify-between gap-4 pb-4 border-b border-blue-900/10">
                                 <div class="min-w-0">
                                     <p class="text-xs uppercase tracking-[0.26em] text-slate-500">Ringkasan</p>
-                                    <h2 class="mt-2 text-xl font-bold text-[#172126] sm:text-2xl">Ringkas, jelas, dan langsung ke kebutuhan utama</h2>
+                                    <h2 class="mt-2 text-xl font-bold text-[#10233f] sm:text-2xl">Ringkas, jelas, dan langsung ke kebutuhan utama</h2>
                                 </div>
                                 <img src="{{ asset('img/logo-320.webp') }}" alt="Logo SILAB" width="56" height="56" class="flex-shrink-0 object-contain w-12 h-12 p-1 bg-white rounded-2xl sm:h-14 sm:w-14" loading="eager" decoding="async">
                             </div>
 
                             <div class="mt-5 space-y-4">
-                                <div class="accent-quote rounded-[20px] bg-[#172126] p-4 text-white sm:p-5">
+                                <div class="accent-quote rounded-[20px] bg-[#10233f] p-4 text-white sm:p-5">
                                     <p class="text-sm uppercase tracking-[0.22em] text-white/65">Tujuan utama</p>
                                     <p class="mt-3 text-xl font-bold sm:text-2xl">Membuat pelaporan bulanan lebih tertib</p>
                                     <p class="mt-3 text-sm leading-7 text-white/75">
@@ -496,14 +496,14 @@
                                 <div class="grid gap-4 md:grid-cols-2">
                                     <div class="card rounded-[20px] p-4 sm:p-5">
                                         <p class="text-sm font-semibold text-slate-500">Untuk admin</p>
-                                        <p class="mt-2 text-lg font-bold text-[#172126]">Pantau progres dengan lebih cepat</p>
+                                        <p class="mt-2 text-lg font-bold text-[#10233f]">Pantau progres dengan lebih cepat</p>
                                         <p class="mt-3 text-sm leading-7 text-slate-600">
                                             Lihat perkembangan laporan, cek data yang masuk, dan telusuri aktivitas tanpa proses manual yang melelahkan.
                                         </p>
                                     </div>
                                     <div class="card rounded-[20px] p-4 sm:p-5">
                                         <p class="text-sm font-semibold text-slate-500">Untuk user</p>
-                                        <p class="mt-2 text-lg font-bold text-[#172126]">Input kegiatan dengan lebih praktis</p>
+                                        <p class="mt-2 text-lg font-bold text-[#10233f]">Input kegiatan dengan lebih praktis</p>
                                         <p class="mt-3 text-sm leading-7 text-slate-600">
                                             Unggah dokumentasi kerja dan keterangan kegiatan dalam format yang sudah disiapkan dengan rapi.
                                         </p>
@@ -511,9 +511,9 @@
                                 </div>
 
                                 <div class="grid gap-3 sm:grid-cols-3">
-                                    <div class="rounded-2xl bg-[#edf2ee] px-4 py-3 text-sm font-medium leading-6 text-[#29453f]">Riwayat laporan tersusun per periode</div>
-                                    <div class="rounded-2xl bg-[#fff2ea] px-4 py-3 text-sm font-medium leading-6 text-[#b85f34]">Dokumentasi progres lebih mudah dibaca</div>
-                                    <div class="px-4 py-3 text-sm font-medium leading-6 bg-white border rounded-2xl border-black/10 text-slate-700">Akses kerja lebih terarah</div>
+                                    <div class="rounded-2xl bg-[#e8f3ff] px-4 py-3 text-sm font-medium leading-6 text-[#0f76a8]">Riwayat laporan tersusun per periode</div>
+                                    <div class="rounded-2xl bg-[#eff6ff] px-4 py-3 text-sm font-medium leading-6 text-[#2563eb]">Dokumentasi progres lebih mudah dibaca</div>
+                                    <div class="px-4 py-3 text-sm font-medium leading-6 bg-white border rounded-2xl border-blue-900/10 text-slate-700">Akses kerja lebih terarah</div>
                                 </div>
                             </div>
                         </div>
@@ -527,10 +527,10 @@
                 <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
                     <div>
                         <div class="eyebrow">
-                            <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#29453f]"></span>
+                            <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#0f76a8]"></span>
                             Tentang SILAB
                         </div>
-                        <h2 class="mt-5 max-w-xl text-3xl font-extrabold text-[#172126] sm:text-4xl md:mt-6 md:text-5xl">
+                        <h2 class="mt-5 max-w-xl text-3xl font-extrabold text-[#10233f] sm:text-4xl md:mt-6 md:text-5xl">
                             Platform internal untuk menjaga proses pelaporan kegiatan tetap tertata.
                         </h2>
                         <div class="mt-6 section-line"></div>
@@ -541,22 +541,22 @@
 
                     <div class="grid gap-5 md:grid-cols-3">
                         <div class="card rounded-[24px] p-5 sm:p-6">
-                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[#b85f34]">1. Input</p>
-                            <h3 class="mt-3 text-2xl font-bold text-[#172126]">Catat kegiatan</h3>
+                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[#2563eb]">1. Input</p>
+                            <h3 class="mt-3 text-2xl font-bold text-[#10233f]">Catat kegiatan</h3>
                             <p class="mt-3 leading-7 text-slate-600">
                                 Dokumentasi dan uraian pekerjaan dikirim dalam satu alur yang lebih jelas dan seragam.
                             </p>
                         </div>
                         <div class="card rounded-[24px] p-5 sm:p-6">
-                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[#29453f]">2. Pantau</p>
-                            <h3 class="mt-3 text-2xl font-bold text-[#172126]">Pantau perkembangan</h3>
+                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[#0f76a8]">2. Pantau</p>
+                            <h3 class="mt-3 text-2xl font-bold text-[#10233f]">Pantau perkembangan</h3>
                             <p class="mt-3 leading-7 text-slate-600">
                                 Admin dapat melihat aktivitas terbaru dan memantau perkembangan laporan yang masuk dari waktu ke waktu.
                             </p>
                         </div>
                         <div class="card rounded-[24px] p-5 sm:p-6">
                             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">3. Arsip</p>
-                            <h3 class="mt-3 text-2xl font-bold text-[#172126]">Arsipkan per periode</h3>
+                            <h3 class="mt-3 text-2xl font-bold text-[#10233f]">Arsipkan per periode</h3>
                             <p class="mt-3 leading-7 text-slate-600">
                                 Laporan lebih mudah ditelusuri kembali saat dibutuhkan untuk rekap, validasi, atau pengecekan ulang.
                             </p>
@@ -570,70 +570,70 @@
             <div class="shell">
                 <div class="mb-10">
                     <div class="eyebrow">
-                        <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#b85f34]"></span>
+                        <span class="inline-block h-2.5 w-2.5 rounded-full bg-[#2563eb]"></span>
                         Fitur utama
                     </div>
-                    <h2 class="mt-5 max-w-2xl text-3xl font-extrabold text-[#172126] sm:text-4xl md:mt-6 md:text-5xl">
+                    <h2 class="mt-5 max-w-2xl text-3xl font-extrabold text-[#10233f] sm:text-4xl md:mt-6 md:text-5xl">
                         Fitur-fitur inti yang mendukung proses pelaporan bulanan dengan lebih efisien.
                     </h2>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#172126] text-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#10233f] text-white">
                             <i class="text-xl ri-dashboard-3-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Dashboard ringkas</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Dashboard ringkas</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Menampilkan ringkasan data penting agar proses pemantauan terasa lebih cepat dan fokus.
                         </p>
                     </article>
 
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#29453f] text-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0f76a8] text-white">
                             <i class="text-xl ri-image-2-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Foto progres kegiatan</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Foto progres kegiatan</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Dokumentasi before, process, dan after tersimpan dalam satu rangkaian kegiatan yang utuh.
                         </p>
                     </article>
 
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#b85f34] text-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2563eb] text-white">
                             <i class="text-xl ri-folder-chart-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Riwayat per bulan</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Riwayat per bulan</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Arsip laporan tersusun berdasarkan periode untuk memudahkan pencarian, rekap, dan peninjauan ulang.
                         </p>
                     </article>
 
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff1e8] text-[#b85f34]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eaf4ff] text-[#2563eb]">
                             <i class="text-xl ri-time-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Aktivitas tercatat</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Aktivitas tercatat</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Perubahan data dan aktivitas penting tetap tercatat melalui jejak waktu yang jelas.
                         </p>
                     </article>
 
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf2ee] text-[#29453f]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f3ff] text-[#0f76a8]">
                             <i class="text-xl ri-shield-check-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Akses sesuai peran</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Akses sesuai peran</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Admin dan user menggunakan area kerja yang disesuaikan dengan kebutuhan masing-masing.
                         </p>
                     </article>
 
                     <article class="card rounded-[24px] p-5 sm:rounded-[28px] sm:p-6">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/5 text-[#172126]">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-[#10233f]">
                             <i class="text-xl ri-smartphone-line"></i>
                         </div>
-                        <h3 class="mt-5 text-2xl font-bold text-[#172126]">Responsif di berbagai perangkat</h3>
+                        <h3 class="mt-5 text-2xl font-bold text-[#10233f]">Responsif di berbagai perangkat</h3>
                         <p class="mt-4 leading-7 text-slate-600">
                             Tetap nyaman diakses dari desktop maupun perangkat mobile saat dibutuhkan di lapangan.
                         </p>
@@ -644,7 +644,7 @@
 
         <section class="px-4 pb-16 sm:pb-20 md:pb-24">
             <div class="shell">
-                <div class="rounded-[28px] bg-[#172126] px-5 py-8 text-white shadow-[0_20px_60px_rgba(23,33,38,0.16)] sm:px-6 sm:py-10 md:rounded-[34px] md:px-10 md:py-12">
+                <div class="rounded-[28px] bg-[#10233f] px-5 py-8 text-white shadow-[0_20px_60px_rgba(16,35,63,0.16)] sm:px-6 sm:py-10 md:rounded-[34px] md:px-10 md:py-12">
                     <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
                         <div>
                             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">Akses sistem</p>
@@ -661,7 +661,7 @@
                                 <i class="text-lg ri-login-box-line"></i>
                                 Masuk sekarang
                             </a>
-                            <a href="#kontak" class="btn btn-secondary border-white/15 bg-white/10 text-white hover:bg-white hover:text-[#172126] sm:w-auto">
+                            <a href="#kontak" class="btn btn-secondary border-white/15 bg-white/10 text-white hover:bg-white hover:text-[#10233f] sm:w-auto">
                                 <i class="text-lg ri-customer-service-2-line"></i>
                                 Hubungi admin
                             </a>
@@ -680,7 +680,7 @@
                         <div class="flex items-center gap-3">
                             <img src="{{ asset('img/logo-320.webp') }}" alt="Logo SILAB" width="56" height="56" class="object-contain w-12 h-12 p-1 bg-white rounded-2xl sm:h-14 sm:w-14" loading="lazy" decoding="async">
                             <div class="min-w-0">
-                                <p class="text-xl font-extrabold text-[#172126] sm:text-2xl">SILAB</p>
+                                <p class="text-xl font-extrabold text-[#10233f] sm:text-2xl">SILAB</p>
                                 <p class="text-sm text-slate-500">Sistem Laporan Bulanan</p>
                             </div>
                         </div>
@@ -693,10 +693,10 @@
                         <div>
                             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Navigasi</p>
                             <div class="flex flex-col gap-3 mt-4 text-sm font-semibold text-slate-600">
-                                <a href="#beranda" class="transition hover:text-[#172126]">Beranda</a>
-                                <a href="#tentang" class="transition hover:text-[#172126]">Tentang</a>
-                                <a href="#fitur" class="transition hover:text-[#172126]">Fitur</a>
-                                <a href="{{ route('login') }}" class="transition hover:text-[#172126]">Login</a>
+                                <a href="#beranda" class="transition hover:text-[#10233f]">Beranda</a>
+                                <a href="#tentang" class="transition hover:text-[#10233f]">Tentang</a>
+                                <a href="#fitur" class="transition hover:text-[#10233f]">Fitur</a>
+                                <a href="{{ route('login') }}" class="transition hover:text-[#10233f]">Login</a>
                             </div>
                         </div>
 
@@ -704,15 +704,15 @@
                             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontak</p>
                             <div class="mt-4 space-y-3 text-sm leading-7 text-slate-600">
                                 <p class="flex items-start gap-3">
-                                    <i class="ri-map-pin-line mt-1 text-[#b85f34]"></i>
+                                    <i class="ri-map-pin-line mt-1 text-[#2563eb]"></i>
                                     <span>Jl. Budi Utomo No. 10, Ponorogo, Jawa Timur</span>
                                 </p>
                                 <p class="flex items-center gap-3">
-                                    <i class="ri-mail-line text-[#b85f34]"></i>
+                                    <i class="ri-mail-line text-[#2563eb]"></i>
                                     <span>ponorogo.sac@gmail.com</span>
                                 </p>
                                 <p class="flex items-center gap-3">
-                                    <i class="ri-shield-user-line text-[#b85f34]"></i>
+                                    <i class="ri-shield-user-line text-[#2563eb]"></i>
                                     <span>Akses saat ini digunakan untuk kebutuhan internal.</span>
                                 </p>
                             </div>
@@ -720,7 +720,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-3 pt-5 mt-8 text-sm border-t border-black/10 text-slate-500 md:flex-row md:items-center md:justify-between">
+                <div class="flex flex-col gap-3 pt-5 mt-8 text-sm border-t border-blue-900/10 text-slate-500 md:flex-row md:items-center md:justify-between">
                     <p>© {{ date('Y') }} SILAB. Sistem laporan kegiatan bulanan.</p>
                     <p>Tampilan dirancang ringan untuk akses yang lebih cepat.</p>
                 </div>

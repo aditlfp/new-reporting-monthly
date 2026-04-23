@@ -59,6 +59,7 @@ html[data-theme="dark"] body:not(.admin-ui) .shadow-sm {
 .required::after {
   content: " *";
   color: red;
+  white-space: nowrap;
 }
 
 #sidebar {
