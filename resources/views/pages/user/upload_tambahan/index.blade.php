@@ -31,7 +31,7 @@
                             </div>
                             <div class="grid content-between gap-4 px-5 py-6 md:px-6 md:py-8 bg-slate-50">
                                 <div>
-                                    <p class="text-xs font-semibold tracking-wide text-slate-500 uppercase">Aksi Cepat
+                                    <p class="text-xs font-semibold tracking-wide uppercase text-slate-500">Aksi Cepat
                                     </p>
                                     <a href="{{ route('upload-tambahan.show') }}"
                                         class="inline-flex items-center justify-center w-full px-4 py-2.5 mt-3 text-sm font-semibold text-blue-700 transition bg-white border border-blue-200 rounded-lg hover:bg-blue-50">
@@ -46,7 +46,7 @@
                                     </a>
                                 </div>
                                 <div class="p-3 border rounded-xl border-emerald-200 bg-emerald-50">
-                                    <p class="text-xs font-semibold tracking-wide text-emerald-700 uppercase">Status</p>
+                                    <p class="text-xs font-semibold tracking-wide uppercase text-emerald-700">Status</p>
                                     <p class="mt-1 text-sm font-medium text-emerald-800">Pipeline upload siap digunakan.
                                     </p>
                                 </div>
@@ -105,7 +105,7 @@
 
                         <div class="space-y-4">
                             <div class="p-4 bg-white border shadow-sm rounded-2xl border-slate-200 md:p-5">
-                                <h4 class="text-sm font-semibold tracking-wide text-slate-700 uppercase">Panduan</h4>
+                                <h4 class="text-sm font-semibold tracking-wide uppercase text-slate-700">Panduan</h4>
                                 <ul class="mt-3 space-y-3 text-sm text-slate-600">
                                     <li class="flex gap-2">
                                         <span class="mt-1 w-1.5 h-1.5 rounded-full bg-blue-500"></span>
@@ -203,8 +203,8 @@
                                 <div>
                                     <label class="block mb-1.5 text-sm font-medium text-slate-700">File <span class="text-red-500">*</span></label>
                                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-                                        <input id="file-input-${rowKey}" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" class="sr-only tambahan-file-input">
-                                        <label for="file-input-${rowKey}" class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition">
+                                        <input id="file-input-${rowKey}" type="file" accept=".pdf" class="sr-only tambahan-file-input">
+                                        <label for="file-input-${rowKey}" class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 transition bg-white border rounded-lg cursor-pointer border-slate-200 hover:border-blue-300 hover:bg-blue-50/40">
                                             <span class="text-sm font-medium text-blue-700">Pilih File</span>
                                             <span class="text-xs text-slate-500 tambahan-file-name truncate max-w-[150px] sm:max-w-[220px] text-left sm:text-right">Belum ada file dipilih</span>
                                         </label>

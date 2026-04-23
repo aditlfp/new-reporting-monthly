@@ -22,6 +22,22 @@ Format rilis:
 
 ---
 
+## [v2.6.1] - 2026-04-23
+
+### Changed
+- Palet halaman welcome diperbarui ke tema biru-putih, termasuk background, tombol, aksen section, card, border, dan hover state navigasi.
+- Progress upload gambar kegiatan dipindahkan ke bawah preview gambar agar tidak menutupi konten image, dengan tampilan yang lebih compact.
+- Form upload gambar kegiatan dirapikan: label gambar diberi marker required, state progress dibuat truncate agar aman di grid 3 kolom, dan input upload diberi marker data untuk handling frontend.
+- Card link ulasan pekerjaan pada halaman login diperjelas dengan border dashed indigo dan hover link yang lebih terlihat.
+- Halaman upload tambahan membatasi pilihan file menjadi PDF sesuai flow upload tambahan yang digunakan.
+
+### Fixed
+- Perbaikan marker required agar tanda `*` tidak terpisah dari label saat teks berpindah baris.
+- Perbaikan indikator limit gambar dashboard agar badge status penuh hanya tampil saat sisa limit masih maksimal.
+- Perbaikan layout progress upload gambar agar preview tetap terlihat utuh selama proses preparing/uploading/error.
+
+---
+
 ## [v2.6.0] - 2026-04-22
 
 ### Added
