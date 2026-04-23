@@ -379,8 +379,6 @@
     <audio id="notify-sound" src="{{ asset('/sound/done.mp3') }}" preload="auto"></audio>
 
     @push('scripts')
-        <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js"></script>
         <script src="{{ asset('js/fotoPages.js') }}"></script>
         <script>
             function askNotificationPermission() {
@@ -468,10 +466,14 @@
                     rotation: 0,
                     zoom: 1
                 };
+                let pdfLibrariesPromise = null;
 
                 const ASSET_URL = "{{ asset('storage') }}";
                 const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 const PLACEHOLDER_IMAGE = 'https://placehold.co/600x400?text=Image+Not+Found';
+                const THUMB_PLACEHOLDER =
+                    'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2280%22 height%3D%2280%22 viewBox%3D%220 0 80 80%22%3E%3Crect width%3D%2280%22 height%3D%2280%22 rx%3D%228%22 fill%3D%22%23f1f5f9%22%2F%3E%3Cpath d%3D%22M23 52l11-13 8 9 6-7 9 11H23z%22 fill%3D%22%23cbd5e1%22%2F%3E%3Ccircle cx%3D%2254%22 cy%3D%2226%22 r%3D%226%22 fill%3D%22%23cbd5e1%22%2F%3E%3C%2Fsvg%3E';
+                let tableImageObserver = null;
 
                 function init() {
                     loadData();
@@ -490,8 +492,13 @@
                         currentRequest.abort();
                     }
 
-                    // show loader or disable controls if you want
-                    $('#tableContainer').html('Loading...');
+                    $('#tableBody').html(`
+                        <tr>
+                            <td colspan="9" class="py-8 text-center">
+                                <span class="loading loading-spinner loading-lg"></span>
+                            </td>
+                        </tr>
+                    `);
 
                     currentRequest = $.ajax({
                         url: '{{ route('admin.upload.index') }}',
@@ -528,7 +535,9 @@
                                 currentPage = page;
                             } else {
                                 // server returned JSON but with status false
-                                $('#tableContainer').html('<p>No data</p>');
+                                $('#tableBody').html(
+                                    '<tr><td colspan="9" class="py-8 text-center text-base-content/60">No data</td></tr>'
+                                );
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {
@@ -595,7 +604,7 @@
                 function renderTable(data) {
                     if (data.length === 0) {
                         $('#tableBody').html(
-                            '<tr><td colspan="8" class="py-8 text-center text-base-content/60">No data available</td></tr>'
+                            '<tr><td colspan="9" class="py-8 text-center text-base-content/60">No data available</td></tr>'
                         );
                         updateDeleteSelectedState();
                         return;
@@ -645,7 +654,46 @@
                     `).join('');
 
                     $('#tableBody').html(html);
+                    observeTableImages();
                     updateDeleteSelectedState();
+                }
+
+                function observeTableImages() {
+                    if (tableImageObserver) {
+                        tableImageObserver.disconnect();
+                    }
+
+                    const lazyImages = document.querySelectorAll('#tableBody img[data-src]');
+
+                    if (!('IntersectionObserver' in window)) {
+                        lazyImages.forEach(loadLazyTableImage);
+                        return;
+                    }
+
+                    tableImageObserver = new IntersectionObserver((entries, observer) => {
+                        entries.forEach((entry) => {
+                            if (!entry.isIntersecting) {
+                                return;
+                            }
+
+                            loadLazyTableImage(entry.target);
+                            observer.unobserve(entry.target);
+                        });
+                    }, {
+                        rootMargin: '180px 0px',
+                        threshold: 0.01,
+                    });
+
+                    lazyImages.forEach((image) => tableImageObserver.observe(image));
+                }
+
+                function loadLazyTableImage(image) {
+                    if (!image?.dataset?.src) {
+                        return;
+                    }
+
+                    image.src = image.dataset.src;
+                    image.removeAttribute('data-src');
                 }
 
                 // Helper function to render image cell
@@ -661,7 +709,8 @@
                     }
 
                     const fullUrl = window.location.origin + '/storage/' + imagePath;
-                    return `<img src="${fullUrl}" 
+                    return `<img src="${THUMB_PLACEHOLDER}"
+                             data-src="${fullUrl}"
                              class="object-cover w-16 h-16 transition-opacity cursor-pointer md:h-20 md:min-w-20 hover:opacity-80"
                              width="80"
                              height="80"
@@ -996,40 +1045,79 @@
                         $button.html(
                             '<span class="loading loading-spinner loading-sm"></span> Generating PDF...');
 
-                        // Show progress overlay
-
-                        // Get data for PDF generation
-                        $.ajax({
-                            url: '{{ route('admin.upload.get-pdf-data') }}',
-                            type: 'GET',
-                            data: {
-                                ids: selectedIds,
-                                month: currentMonth,
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.status) {
-                                    updatePdfProgress('Generating PDF...');
-                                    generatePdf(response.data, currentMonth, function() {
-                                        // Callback when PDF generation is complete
+                        ensurePdfLibrariesLoaded()
+                            .then(() => {
+                                $.ajax({
+                                    url: '{{ route('admin.upload.get-pdf-data') }}',
+                                    type: 'GET',
+                                    data: {
+                                        ids: selectedIds,
+                                        month: currentMonth,
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.status) {
+                                            updatePdfProgress('Generating PDF...');
+                                            generatePdf(response.data, currentMonth, function() {
+                                                // Callback when PDF generation is complete
+                                                hidePdfProgressOverlay();
+                                                $button.prop('disabled', false);
+                                                $button.html(originalText);
+                                            });
+                                        } else {
+                                            hidePdfProgressOverlay();
+                                            $button.prop('disabled', false);
+                                            $button.html(originalText);
+                                            Notify('Error generating PDF', null, null, 'error');
+                                        }
+                                    },
+                                    error: function(xhr) {
                                         hidePdfProgressOverlay();
                                         $button.prop('disabled', false);
                                         $button.html(originalText);
-                                    });
-                                } else {
-                                    hidePdfProgressOverlay();
-                                    $button.prop('disabled', false);
-                                    $button.html(originalText);
-                                    Notify('Error generating PDF', null, null, 'error');
-                                }
-                            },
-                            error: function(xhr) {
+                                        Notify('Error getting PDF data', null, null, 'error');
+                                    }
+                                });
+                            })
+                            .catch(() => {
                                 hidePdfProgressOverlay();
                                 $button.prop('disabled', false);
                                 $button.html(originalText);
-                                Notify('Error getting PDF data', null, null, 'error');
-                            }
-                        });
+                                Notify('Gagal memuat library PDF. Silakan coba lagi.', null, null, 'error');
+                            });
+                    });
+                }
+
+                function ensurePdfLibrariesLoaded() {
+                    if (window.html2canvas) {
+                        return Promise.resolve();
+                    }
+
+                    if (pdfLibrariesPromise) {
+                        return pdfLibrariesPromise;
+                    }
+
+                    pdfLibrariesPromise = loadScript('https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.13/dist/html2canvas-pro.min.js');
+
+                    return pdfLibrariesPromise;
+                }
+
+                function loadScript(src) {
+                    return new Promise((resolve, reject) => {
+                        const existingScript = document.querySelector(`script[src="${src}"]`);
+
+                        if (existingScript) {
+                            existingScript.addEventListener('load', resolve, { once: true });
+                            existingScript.addEventListener('error', reject, { once: true });
+                            return;
+                        }
+
+                        const script = document.createElement('script');
+                        script.src = src;
+                        script.async = true;
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
                     });
                 }
 

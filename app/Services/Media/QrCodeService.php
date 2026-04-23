@@ -10,6 +10,26 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 class QrCodeService
 {
     private const QR_TARGET_BASE_URL = 'https://laporan-sac.sac-po.com/send-img/laporan';
+    private const DEFAULT_KEGIATAN_OPTIONS = [
+        'Progres glass cleaning',
+        'Progres general cleaning',
+        'Progres pembasmian gulma',
+        'Progres pembersihan toilet',
+        'Progres pembersihan taman',
+        'Progres pembersihan lantai',
+        'Progres pembersihan kaca',
+        'Progres pembersihan plafon',
+        'Progres pembersihan dinding',
+        'Progres pembersihan saluran air',
+        'Progres pembuangan sampah',
+        'Progres disinfeksi area',
+        'Progres perawatan landscape',
+        'Progres pengepelan area',
+        'Progres penyapuan area',
+        'Progres high dusting',
+        'Progres fogging',
+        'Progres vacuum karpet',
+    ];
 
     public function __construct(
         private readonly QrCodeRepositoryInterface $repository,
@@ -24,9 +44,64 @@ class QrCodeService
         ];
     }
 
-    public function create(string $data)
+    public function kegiatanOptions(): array
     {
-        $targetUrl = self::QR_TARGET_BASE_URL . '?n=' . rawurlencode($data);
+        $storedOptions = $this->repository
+            ->allDataValues()
+            ->map(fn (string $storedData) => self::splitStoredData($storedData)['kegiatan'])
+            ->filter(fn (string $kegiatan) => $kegiatan !== '');
+
+        return $storedOptions
+            ->merge(self::DEFAULT_KEGIATAN_OPTIONS)
+            ->map(fn (string $kegiatan) => trim($kegiatan))
+            ->filter()
+            ->unique(fn (string $kegiatan) => mb_strtolower($kegiatan))
+            ->sort()
+            ->values()
+            ->all();
+    }
+
+    public static function splitStoredData(string $storedData): array
+    {
+        $parts = explode('-', $storedData, 2);
+
+        return [
+            'data' => trim($parts[0] ?? ''),
+            'kegiatan' => trim($parts[1] ?? ''),
+        ];
+    }
+
+    public static function combineData(string $data, ?string $kegiatan = null): string
+    {
+        $data = trim($data);
+        $kegiatan = trim((string) $kegiatan);
+
+        return $kegiatan !== '' ? "{$data}-{$kegiatan}" : $data;
+    }
+
+    public static function buildTargetUrl(string $data, ?string $kegiatan = null): string
+    {
+        $targetUrl = self::QR_TARGET_BASE_URL . '?n=' . rawurlencode(trim($data));
+        $kegiatan = trim((string) $kegiatan);
+
+        if ($kegiatan !== '') {
+            $targetUrl .= '&keg=' . rawurlencode($kegiatan);
+        }
+
+        return $targetUrl;
+    }
+
+    public static function buildTargetUrlFromStoredData(string $storedData): string
+    {
+        $parts = self::splitStoredData($storedData);
+
+        return self::buildTargetUrl($parts['data'], $parts['kegiatan']);
+    }
+
+    public function create(string $data, ?string $kegiatan = null)
+    {
+        $storedData = self::combineData($data, $kegiatan);
+        $targetUrl = self::buildTargetUrl($data, $kegiatan);
         $filename = 'qr/' . Str::uuid() . '.png';
         $qrImage = QrCodeGenerator::format('png')
             ->size(300)
@@ -37,14 +112,15 @@ class QrCodeService
 
         return $this->repository->create([
             'qr' => $filename,
-            'data' => $data,
+            'data' => $storedData,
         ]);
     }
 
-    public function update(int $id, string $data)
+    public function update(int $id, string $data, ?string $kegiatan = null)
     {
         $qrCode = $this->repository->findOrFail($id);
-        $targetUrl = self::QR_TARGET_BASE_URL . '?n=' . rawurlencode($data);
+        $storedData = self::combineData($data, $kegiatan);
+        $targetUrl = self::buildTargetUrl($data, $kegiatan);
 
         $qrImage = QrCodeGenerator::format('png')
             ->size(300)
@@ -54,7 +130,7 @@ class QrCodeService
         Storage::disk('public')->put($qrCode->qr, $qrImage);
 
         return $this->repository->update($qrCode, [
-            'data' => $data,
+            'data' => $storedData,
         ]);
     }
 
