@@ -95,7 +95,7 @@
                     <label for="reportContent" class="block mb-2 text-sm font-medium text-slate-700">Keterangan Kegiatan</label>
                     <textarea id="reportContent" name="note" rows="4"
                         class="w-full px-3 py-2 text-sm bg-white border rounded-lg resize-none textarea sm:px-4 sm:py-3 sm:text-base text-slate-900 border-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan')" required>{{ old('note') }}</textarea>
+                        placeholder="Tulis isi keterangan kegiatan di sini... (format: 'nama kegiatan')" required>{{ old('note', request('keg')) }}</textarea>
                 </div>
 
                 <div class="hidden">

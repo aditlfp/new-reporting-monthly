@@ -22,6 +22,28 @@ Format rilis:
 
 ---
 
+## [v2.6.2] - 2026-04-23
+
+### Added
+- Field opsional **Kegiatan** pada form admin QR Code yang menambahkan parameter `keg` ke link redirect QR.
+- Autocomplete custom untuk field Kegiatan QR Code dengan daftar kegiatan default dan referensi kegiatan yang pernah tersimpan di database.
+- Kolom **Link Redirect** pada tabel QR Code untuk melihat dan membuka URL tujuan QR secara langsung.
+- Autofill field **Keterangan Kegiatan** pada form upload gambar user dari parameter URL `keg`.
+
+### Changed
+- Penyimpanan data QR tetap memakai kolom `data`, dengan format gabungan `data-kegiatan` saat kegiatan diisi.
+- Daftar default kegiatan QR difokuskan ke nama kegiatan seperti `Progres glass cleaning`, `Progres general cleaning`, dan `Progres pembasmian gulma`.
+- Halaman admin Photo Progress dioptimasi: payload query diperkecil, relasi dibatasi ke kolom yang dibutuhkan, dan thumbnail tabel dimuat on-demand dengan `IntersectionObserver`.
+- Default Photo Progress sekarang menampilkan data yang dibuat hari ini, diurutkan berdasarkan `clients_id`; saat filter aktif, jumlah data per halaman dinaikkan sampai 150 item.
+- Library PDF berat pada Photo Progress tidak lagi dimuat saat halaman dibuka, tetapi baru dimuat saat tombol generate PDF digunakan.
+
+### Fixed
+- Perbaikan state loading Photo Progress agar memakai `#tableBody` yang benar.
+- Perbaikan target URL QR pada print/selection agar memakai builder URL yang sama dengan QR hasil generate.
+- Penyesuaian test QR Code controller terhadap parameter kegiatan baru.
+
+---
+
 ## [v2.6.1] - 2026-04-23
 
 ### Changed

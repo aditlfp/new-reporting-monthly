@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\qrCode;
 use App\Repositories\Contracts\QrCodeRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class EloquentQrCodeRepository implements QrCodeRepositoryInterface
 {
@@ -17,6 +18,13 @@ class EloquentQrCodeRepository implements QrCodeRepositoryInterface
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
+    }
+
+    public function allDataValues(): Collection
+    {
+        return qrCode::query()
+            ->whereNotNull('data')
+            ->pluck('data');
     }
 
     public function findOrFail(int $id): qrCode

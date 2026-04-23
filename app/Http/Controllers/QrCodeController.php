@@ -23,7 +23,9 @@ class QrCodeController extends Controller
 
     public function create()
     {
-        return view('pages.admin.qrcode.create');
+        return view('pages.admin.qrcode.create', [
+            'kegiatanOptions' => $this->service->kegiatanOptions(),
+        ]);
     }
 
     public function edit($id)
@@ -31,7 +33,10 @@ class QrCodeController extends Controller
         try {
             $qrCode = $this->service->getById((int) $id);
 
-            return view('pages.admin.qrcode.create', compact('qrCode'));
+            return view('pages.admin.qrcode.create', [
+                'qrCode' => $qrCode,
+                'kegiatanOptions' => $this->service->kegiatanOptions(),
+            ]);
         } catch (\Throwable $e) {
             Log::warning('Failed to open QR edit page.', ['id' => $id, 'error' => $e->getMessage()]);
             return redirect()->route('admin-qrcode.index')->withErrors([
@@ -43,7 +48,8 @@ class QrCodeController extends Controller
     public function store(QrCodeStoreRequest $request)
     {
         try {
-            $this->service->create($request->validated()['data']);
+            $validated = $request->validated();
+            $this->service->create($validated['data'], $validated['kegiatan'] ?? null);
 
             return redirect()
                 ->route('admin-qrcode.index')
@@ -66,7 +72,8 @@ class QrCodeController extends Controller
     public function update(QrCodeStoreRequest $request, $id)
     {
         try {
-            $this->service->update((int) $id, $request->validated()['data']);
+            $validated = $request->validated();
+            $this->service->update((int) $id, $validated['data'], $validated['kegiatan'] ?? null);
 
             return redirect()
                 ->route('admin-qrcode.index')

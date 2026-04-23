@@ -81,27 +81,52 @@ class EloquentUploadImageRepository implements UploadImageRepositoryInterface
 
     public function paginateAdminUploads(array $filters, int $perPage = 20): LengthAwarePaginator
     {
-        $query = UploadImage::query()->with(['clients', 'user.kerjasama']);
+        $hasActiveFilter = !empty($filters['mitra'])
+            || !empty($filters['user'])
+            || !empty($filters['month'])
+            || !empty($filters['year']);
 
-        if (!empty($filters['mitra'])) {
-            $query->where('clients_id', $filters['mitra']);
-        }
+        $query = UploadImage::query()
+            ->select([
+                'id',
+                'clients_id',
+                'user_id',
+                'img_before',
+                'img_proccess',
+                'img_final',
+                'note',
+                'created_at',
+            ])
+            ->with(['clients:id,name', 'user:id,nama_lengkap']);
 
-        if (!empty($filters['user'])) {
-            $query->where('user_id', $filters['user']);
-            $perPage = 30;
-        } elseif (!empty($filters['mitra'])) {
-            $perPage = 14;
-        }
-
-        if (!empty($filters['month'])) {
-            $query->whereMonth('created_at', $filters['month']);
-            if (!empty($filters['year'])) {
-                $query->whereYear('created_at', $filters['year']);
+        if ($hasActiveFilter) {
+            if (!empty($filters['mitra'])) {
+                $query->where('clients_id', $filters['mitra']);
             }
+
+            if (!empty($filters['user'])) {
+                $query->where('user_id', $filters['user']);
+            }
+
+            if (!empty($filters['month'])) {
+                $query->whereMonth('created_at', $filters['month']);
+                if (!empty($filters['year'])) {
+                    $query->whereYear('created_at', $filters['year']);
+                }
+            }
+
+            $perPage = 150;
+
+            return $query
+                ->latest()
+                ->paginate($perPage);
         }
 
-        return $query->latest()->paginate($perPage);
+        return $query
+            ->whereDate('created_at', now()->toDateString())
+            ->orderBy('clients_id')
+            ->latest()
+            ->paginate($perPage);
     }
 
     public function findAdminUploadById(int $uploadId): ?UploadImage

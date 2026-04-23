@@ -94,12 +94,16 @@
                                     <th class="w-16">No</th>
                                     <th class="w-40">Preview QR</th>
                                     <th>Data</th>
+                                    <th>Link Redirect</th>
                                     <th class="w-40 text-center">Dibuat</th>
                                     <th class="w-32 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($qrCodes as $index => $qrCode)
+                                    @php
+                                        $targetUrl = \App\Services\Media\QrCodeService::buildTargetUrlFromStoredData($qrCode->data);
+                                    @endphp
                                     <tr class="hover">
                                         <td class="text-center">
                                             <input
@@ -108,7 +112,7 @@
                                                 value="{{ $qrCode->id }}"
                                                 data-image-url="{{ \App\Helpers\FileHelper::getImageUrl($qrCode->qr) }}"
                                                 data-data="{{ $qrCode->data }}"
-                                                data-target-url="{{ 'http://laporan.wow/send-img/laporan?n=' . rawurlencode($qrCode->data) }}">
+                                                data-target-url="{{ $targetUrl }}">
                                         </td>
                                         <td>{{ $qrCodes->firstItem() + $index }}</td>
                                         <td>
@@ -124,8 +128,15 @@
                                                 {{ \Illuminate\Support\Str::limit($qrCode->data, 120) }}
                                             </div>
                                         </td>
-                                        
-                                        
+                                        <td>
+                                            <a
+                                                href="{{ $targetUrl }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="block max-w-sm text-sm font-medium text-blue-600 break-all transition hover:text-blue-700 hover:underline">
+                                                {{ $targetUrl }}
+                                            </a>
+                                        </td>
                                         <td class="text-sm text-center text-slate-500">
                                             {{ $qrCode->created_at?->format('d M Y') }}
                                         </td>
@@ -148,7 +159,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="py-10 text-center text-slate-500">
+                                        <td colspan="8" class="py-10 text-center text-slate-500">
                                             {{ request()->filled('search') ? 'Data QR code tidak ditemukan untuk pencarian tersebut.' : 'Belum ada data QR code.' }}
                                         </td>
                                     </tr>
