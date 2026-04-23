@@ -15,11 +15,11 @@
         </style>
     @endpush
 
-    <div class="admin-shell flex min-h-screen bg-slate-50">
+    <div class="flex min-h-screen pb-28 admin-shell bg-slate-50">
         @include('components.sidebar-component')
 
-        <div class="admin-content flex-1 p-6 overflow-y-auto">
-            <div class="admin-filter-card flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between p-4">
+        <div class="flex-1 p-6 overflow-y-auto admin-content">
+            <div class="flex flex-col gap-4 p-4 mb-6 admin-filter-card md:flex-row md:items-center md:justify-between">
                 <form method="GET" action="{{ route('admin-qrcode.index') }}" class="flex flex-col gap-3 sm:flex-row">
                     <label class="flex items-center w-full max-w-xl gap-2 bg-white input input-bordered">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
@@ -51,7 +51,7 @@
                 </a>
             </div>
 
-            <div class="admin-filter-card p-4 mb-4 bulk-print-toolbar">
+            <div class="p-4 mb-4 admin-filter-card bulk-print-toolbar">
                 <div class="flex items-center gap-3">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="selectAllQr" class="checkbox checkbox-sm checkbox-primary">
@@ -168,9 +168,49 @@
                         </table>
                     </div>
 
-                    @if ($qrCodes->hasPages())
-                        <div class="mt-6">
-                            {{ $qrCodes->links() }}
+                    @if ($qrCodes->total() > 0)
+                        <div class="flex flex-col gap-3 pt-2 mt-2 border-t border-slate-100 md:flex-row md:items-center md:justify-between">
+                            <p class="text-sm text-slate-500">
+                                Menampilkan
+                                <span class="font-semibold text-slate-700">{{ $qrCodes->firstItem() }}</span>
+                                -
+                                <span class="font-semibold text-slate-700">{{ $qrCodes->lastItem() }}</span>
+                                dari
+                                <span class="font-semibold text-slate-700">{{ $qrCodes->total() }}</span>
+                                data
+                            </p>
+
+                            @if ($qrCodes->hasPages())
+                                <nav class="flex flex-wrap items-center gap-1" aria-label="Pagination QR Code">
+                                    @if ($qrCodes->onFirstPage())
+                                        <span class="btn btn-sm btn-disabled">
+                                            <i class="ri-arrow-left-s-line"></i>
+                                        </span>
+                                    @else
+                                        <a href="{{ $qrCodes->previousPageUrl() }}" class="btn btn-sm">
+                                            <i class="ri-arrow-left-s-line"></i>
+                                        </a>
+                                    @endif
+
+                                    @foreach ($qrCodes->getUrlRange(max(1, $qrCodes->currentPage() - 2), min($qrCodes->lastPage(), $qrCodes->currentPage() + 2)) as $page => $url)
+                                        <a
+                                            href="{{ $url }}"
+                                            class="btn btn-sm {{ $page === $qrCodes->currentPage() ? 'btn-active bg-blue-600 text-white hover:bg-blue-700' : '' }}">
+                                            {{ $page }}
+                                        </a>
+                                    @endforeach
+
+                                    @if ($qrCodes->hasMorePages())
+                                        <a href="{{ $qrCodes->nextPageUrl() }}" class="btn btn-sm">
+                                            <i class="ri-arrow-right-s-line"></i>
+                                        </a>
+                                    @else
+                                        <span class="btn btn-sm btn-disabled">
+                                            <i class="ri-arrow-right-s-line"></i>
+                                        </span>
+                                    @endif
+                                </nav>
+                            @endif
                         </div>
                     @endif
                 </div>
