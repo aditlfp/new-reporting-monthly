@@ -65,7 +65,7 @@
                                     d="M14 3V5H19V19H5V5H10V3H3V21H21V3H14ZM12 15L8 11H11V7H13V11H16L12 15ZM7 17H17V19H7V17Z">
                                 </path>
                             </svg>
-                            <span class="font-medium">Upload Tambahan (beta)</span>
+                            <span class="font-medium">Upload File Tambahan (beta)</span>
                         </span>
                         <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -152,8 +152,8 @@
         <form action="{{ route('logout') }}" method="POST" class="w-full m-0">
             @csrf
             <button type="submit"
-                class="flex items-center w-full gap-3 px-4 py-3 transition-all rounded-lg text-red-600 bg-red-50 hover:bg-red-100">
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 shrink-0">
+                class="flex items-center w-full gap-3 px-4 py-3 text-red-600 transition-all rounded-lg bg-red-50 hover:bg-red-100">
+                <span class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-full shrink-0">
                     <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
@@ -168,4 +168,4 @@
 
 <!-- Overlay for mobile sidebar -->
 <div id="sidebarOverlay"
-    class="fixed inset-0 z-4 hidden transition-opacity duration-300 opacity-0 bg-black/50 md:hidden"></div>
+    class="fixed inset-0 hidden transition-opacity duration-300 opacity-0 z-4 bg-black/50 md:hidden"></div>

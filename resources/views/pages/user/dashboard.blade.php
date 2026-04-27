@@ -34,7 +34,7 @@
                                             <div class="flex items-baseline">
                                             @php
                                                 $imageLimit = 33;
-                                                $varCount = max(0, $imageLimit - (int) $totalImageCount);
+                                                $varCount = max(0, $imageLimit - (int) $totalImageCount * 3);
                                                 $varClass = $varCount >= 25 ? 'text-green-600'
                                                     : ($varCount >= 15 ? 'text-amber-600'
                                                     : ($varCount <= 14 ? 'text-red-600'
@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <svg class="w-16 h-16 text-blue-500 {{ $varCount === 33 ? '' : 'hidden'}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.007 2.10377C8.60544 1.65006 7.08181 2.28116 6.41156 3.59306L5.60578 5.17023C5.51004 5.35763 5.35763 5.51004 5.17023 5.60578L3.59306 6.41156C2.28116 7.08181 1.65006 8.60544 2.10377 10.007L2.64923 11.692C2.71404 11.8922 2.71404 12.1078 2.64923 12.308L2.10377 13.993C1.65006 15.3946 2.28116 16.9182 3.59306 17.5885L5.17023 18.3942C5.35763 18.49 5.51004 18.6424 5.60578 18.8298L6.41156 20.407C7.08181 21.7189 8.60544 22.35 10.007 21.8963L11.692 21.3508C11.8922 21.286 12.1078 21.286 12.308 21.3508L13.993 21.8963C15.3946 22.35 16.9182 21.7189 17.5885 20.407L18.3942 18.8298C18.49 18.6424 18.6424 18.49 18.8298 18.3942L20.407 17.5885C21.7189 16.9182 22.35 15.3946 21.8963 13.993L21.3508 12.308C21.286 12.1078 21.286 11.8922 21.3508 11.692L21.8963 10.007C22.35 8.60544 21.7189 7.08181 20.407 6.41156L18.8298 5.60578C18.6424 5.51004 18.49 5.35763 18.3942 5.17023L17.5885 3.59306C16.9182 2.28116 15.3946 1.65006 13.993 2.10377L12.308 2.64923C12.1078 2.71403 11.8922 2.71404 11.692 2.64923L10.007 2.10377ZM6.75977 11.7573L8.17399 10.343L11.0024 13.1715L16.6593 7.51465L18.0735 8.92886L11.0024 15.9999L6.75977 11.7573Z"></path></svg>
+                                <svg class="w-16 h-16 text-blue-500 {{ $varCount === 0 ? '' : 'hidden'}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.007 2.10377C8.60544 1.65006 7.08181 2.28116 6.41156 3.59306L5.60578 5.17023C5.51004 5.35763 5.35763 5.51004 5.17023 5.60578L3.59306 6.41156C2.28116 7.08181 1.65006 8.60544 2.10377 10.007L2.64923 11.692C2.71404 11.8922 2.71404 12.1078 2.64923 12.308L2.10377 13.993C1.65006 15.3946 2.28116 16.9182 3.59306 17.5885L5.17023 18.3942C5.35763 18.49 5.51004 18.6424 5.60578 18.8298L6.41156 20.407C7.08181 21.7189 8.60544 22.35 10.007 21.8963L11.692 21.3508C11.8922 21.286 12.1078 21.286 12.308 21.3508L13.993 21.8963C15.3946 22.35 16.9182 21.7189 17.5885 20.407L18.3942 18.8298C18.49 18.6424 18.6424 18.49 18.8298 18.3942L20.407 17.5885C21.7189 16.9182 22.35 15.3946 21.8963 13.993L21.3508 12.308C21.286 12.1078 21.286 11.8922 21.3508 11.692L21.8963 10.007C22.35 8.60544 21.7189 7.08181 20.407 6.41156L18.8298 5.60578C18.6424 5.51004 18.49 5.35763 18.3942 5.17023L17.5885 3.59306C16.9182 2.28116 15.3946 1.65006 13.993 2.10377L12.308 2.64923C12.1078 2.71403 11.8922 2.71404 11.692 2.64923L10.007 2.10377ZM6.75977 11.7573L8.17399 10.343L11.0024 13.1715L16.6593 7.51465L18.0735 8.92886L11.0024 15.9999L6.75977 11.7573Z"></path></svg>
                             </div>
                         </div>
 
@@ -73,17 +73,18 @@
     </div>
 
     @push('scripts')
-        <script defer>
+        <script>
             $(document).ready(function() {
-                const type = $('#type');
-               
-                window.addEventListener("online", () => {
-                    if(detectBrowser() == 'Chrome' || detectBrowser() == 'Edge') {
+                const chartData = @json($chart);
+                const monthlyChartEl = document.getElementById('monthlyChart');
+
+                window.addEventListener('online', () => {
+                    if (detectBrowser() == 'Chrome' || detectBrowser() == 'Edge') {
                         navigator.serviceWorker.ready.then(reg => {
-                            reg.sync.register("sync-reports");
+                            reg.sync.register('sync-reports');
                         });
-                    }else{
-                        syncDrafts()
+                    } else {
+                        syncDrafts();
                     }
                 });
 
@@ -91,13 +92,12 @@
                     const db = await idb.openDB('reportDB', 1);
                     const drafts = await db.getAll('drafts');
 
-                    for (let draft of drafts) {
+                    for (const draft of drafts) {
                         try {
-
                             const form = new FormData();
                             form.append('note', draft.note);
 
-                            // load kembali file besar dari storage lokal
+                            // Muat ulang file besar dari storage lokal sebelum upload.
                             form.append('img_before', await loadLocalFile(draft.img_before));
                             form.append('img_proccess', await loadLocalFile(draft.img_proccess));
                             form.append('img_final', await loadLocalFile(draft.img_final));
@@ -108,67 +108,49 @@
                             });
 
                             await db.delete('drafts', draft.id);
-
-                        } catch(e) {
-                            console.log("Sync gagal, coba lagi nanti");
-                            return; // stop sync
+                        } catch (e) {
+                            console.log('Sync gagal, coba lagi nanti');
+                            return;
                         }
                     }
                 }
-            });
-        </script>
 
-        {{-- Chart Script --}}
-
-        <script>
-        $(document).ready(function () {
-            $.ajax({
-                url: "/performance-per-month",
-                type: "GET",
-                success: function (data) {
-
-                    const ctx = document.getElementById("monthlyChart");
-
-                    setTimeout(() => {   // ensures animation works
-                        new Chart(ctx, {
-                            type: "line",
-                            data: {
-                                labels: data.months,
-                                datasets: [{
-                                    label: "Uploads Per Month",
-                                    data: data.totals,
-                                    borderWidth: 1,
-                                    backgroundColor: "rgba(54, 162, 235, 0.2)",
-                                    borderColor: "rgb(54, 162, 235)",
-                                    pointBackgroundColor: "rgb(54, 162, 235)",
-                                    pointRadius: 4,
-                                    tension: 0.35,
-                                    fill: true
-                                }]
+                if (monthlyChartEl) {
+                    new Chart(monthlyChartEl, {
+                        type: 'line',
+                        data: {
+                            labels: chartData.months,
+                            datasets: [{
+                                label: `Uploads Per Month (${chartData.year})`,
+                                data: chartData.totals,
+                                borderWidth: 1,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                pointBackgroundColor: 'rgb(54, 162, 235)',
+                                pointRadius: 4,
+                                tension: 0.35,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            animation: {
+                                duration: 1500,
+                                easing: 'easeInOutQuart'
                             },
-                            options: {
-                                animation: {
-                                    duration: 1500,
-                                    easing: "easeInOutQuart"
-                                },
-                                scales: {
-                                    x: {
-                                        ticks: {
-                                            autoSkip: false
-                                        }
-                                    },
-                                    y: {
-                                        beginAtZero: true
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        autoSkip: false
                                     }
+                                },
+                                y: {
+                                    beginAtZero: true
                                 }
                             }
-                        });
-                    }, 100);
-
+                        }
+                    });
                 }
             });
-        });
         </script>
-        {{-- End Chart Script --}}
     @endpush
 </x-app-layout>

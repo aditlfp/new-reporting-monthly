@@ -26,19 +26,8 @@ class DashboardController extends Controller
         );
 
         return view('pages.user.dashboard', [
-            'uploadDraft' => $summary['uploadDraft'],
-            'allImages' => $summary['allImages'],
             'totalImageCount' => $summary['totalImageCount'],
-            'percentage' => 0,
+            'chart' => $summary['chart'],
         ]);
-    }
-
-    public function performancePerMonth()
-    {
-        if (Auth::user()->role_id == 2) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        return response()->json($this->service->getPerformancePerMonth((int) Auth::id()));
     }
 }
