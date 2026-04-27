@@ -22,6 +22,24 @@ Format rilis:
 
 ---
 
+## [v2.6.3] - 2026-04-27
+
+### Changed
+- Dashboard user dioptimasi: data chart bulanan sekarang dikirim langsung bersama request halaman utama, tanpa AJAX terpisah saat halaman dibuka.
+- Halaman user **Set Fixed** dioptimasi: request count ganda saat filter dihilangkan, lazy-load image memakai `IntersectionObserver` yang direuse, dan render gallery diubah menjadi single HTML inject agar update DOM lebih ringan.
+- UI halaman user **Set Fixed** dipoles ulang: pagination dibuat lebih compact, layout filter dirapikan untuk desktop/mobile, tab kategori disederhanakan menjadi `Before`, `Proses`, dan `After`, serta card gallery diperjelas hierarchy visualnya.
+- Modal preview **Set Fixed** diperbarui dengan layout info yang lebih ringkas, placeholder gambar kosong berbasis `placehold.co`, dan area preview yang lebih konsisten antar tab gambar.
+
+### Removed
+- Query dashboard user yang tidak terpakai (`uploadDraft` dan `allImages`) dari flow render halaman utama.
+- Tab filter `All` pada halaman user **Set Fixed** untuk menyederhanakan alur pemilihan kategori.
+
+### Fixed
+- Perbaikan interaksi tab filter halaman user **Set Fixed** setelah penyesuaian layout mobile agar event klik tetap terbaca dengan benar.
+- Perbaikan konsistensi ukuran frame preview gambar pada modal **Set Fixed** untuk state `Before`, `Proses`, `After`, termasuk fallback saat file gambar kosong.
+
+---
+
 ## [v2.6.2] - 2026-04-23
 
 ### Added

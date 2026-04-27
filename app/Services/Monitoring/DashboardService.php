@@ -78,9 +78,8 @@ class DashboardService
     public function getUserDashboardData(int $userId, int $clientId, $date): array
     {
         return [
-            'uploadDraft' => $this->repository->getUserDrafts($userId, $date->month, $date->year),
-            'allImages' => $this->repository->getApprovedUploadsByClient($clientId, $date->month, $date->year),
             'totalImageCount' => $this->repository->countFixedByClientMonth($clientId, $date->month, $date->year),
+            'chart' => $this->getPerformancePerMonth($userId),
         ];
     }
 

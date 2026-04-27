@@ -45,7 +45,6 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::post('/upload-img-lap/chunk/finalize', [UploadImageController::class, 'finalizeChunkUpload'])->name('upload-images.chunk.finalize');
     Route::post('/upload-img-lap/chunk/cancel', [UploadImageController::class, 'cancelChunkUpload'])->name('upload-images.chunk.cancel');
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
-    Route::get('/performance-per-month', [DashboardController::class, 'performancePerMonth']);
     Route::get('/upload-file-tambahan', [UploadTambahanController::class, 'index'])->name('upload-tambahan.index');
     Route::post('/upload-file-tambahan', [UploadTambahanController::class, 'store'])->name('upload-tambahan.store');
     Route::get('/upload-file-tambahan/detail', [UploadTambahanController::class, 'show'])->name('upload-tambahan.show');
