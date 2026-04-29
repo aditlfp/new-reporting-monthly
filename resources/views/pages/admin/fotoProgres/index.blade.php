@@ -299,6 +299,49 @@
         </form>
     </dialog>
 
+    <dialog id="ratingDetailModal" class="modal">
+        <div class="w-11/12 max-w-xl overflow-hidden border shadow-2xl modal-box rounded-2xl border-slate-200 bg-white p-0">
+            <div class="relative px-5 py-5 border-b sm:px-6 border-slate-200 bg-gradient-to-r from-slate-50 via-blue-50/70 to-cyan-50/60">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Review Foto</p>
+                        <h3 class="mt-1 text-lg font-bold text-slate-900 sm:text-xl">Detail Penilaian</h3>
+                    </div>
+                    <button type="button" class="btn btn-xs btn-circle border-0 bg-white/80 text-slate-500 hover:bg-white hover:text-slate-800" id="closeRatingDetailTop">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <span id="ratingDetailBadge" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-slate-200 text-slate-700">
+                        -
+                    </span>
+                </div>
+            </div>
+            <div class="px-5 py-5 space-y-4 sm:px-6">
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5">
+                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Dinilai Oleh</p>
+                        <p id="ratingDetailBy" class="mt-1 text-sm font-medium text-slate-800">-</p>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5">
+                        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Waktu Penilaian</p>
+                        <p id="ratingDetailAt" class="mt-1 text-sm font-medium text-slate-800">-</p>
+                    </div>
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-white px-3 py-3.5">
+                    <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Alasan Penilaian</p>
+                    <p id="ratingDetailReason" class="mt-2 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">-</p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 px-5 py-4 border-t sm:px-6 border-slate-200 bg-slate-50/60">
+                <button type="button" class="btn btn-sm rounded-lg border-0 bg-slate-200 text-slate-700 hover:bg-slate-300" id="closeRatingDetail">Tutup</button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>Tutup</button>
+        </form>
+    </dialog>
+
     {{-- Enhanced Image Preview Modal --}}
     <div id="imagePreviewModal"
         class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-90">
@@ -610,7 +653,15 @@
                         return;
                     }
 
-                    const html = data.map((item, index) => `
+                    const html = data.map((item, index) => {
+                        const rating = item.upload_rating || item.uploadRating || item.fixed_image || item.fixedImage || null;
+                        const hasRating = Boolean(rating && rating.rating_value);
+                        const ratedBy = rating?.rated_by?.nama_lengkap || rating?.ratedBy?.nama_lengkap || '-';
+                        const ratedAt = rating?.rated_at || '-';
+                        const ratingReason = rating?.rating_reason || '-';
+                        const ratingValue = rating?.rating_value || '-';
+
+                        return `
                         <tr class="hover">
                             <td class="px-2 py-2 md:px-3">
                                 <input type="checkbox" class="row-checkbox checkbox checkbox-xs" data-id="${item.id}">
@@ -642,6 +693,21 @@
                             </td>
                             <td class="px-2 py-2 md:px-3">
                                 <div class="flex justify-center gap-1 md:gap-2">
+                                    ${hasRating ? `
+                                    <button
+                                        class="text-cyan-700 border-0 rounded-sm btn btn-xs md:btn-sm bg-cyan-500/20 hover:bg-cyan-600 hover:text-white btn-rating-detail"
+                                        data-rating-value="${String(ratingValue).replace(/"/g, '&quot;')}"
+                                        data-rating-reason="${String(ratingReason).replace(/"/g, '&quot;')}"
+                                        data-rating-by="${String(ratedBy).replace(/"/g, '&quot;')}"
+                                        data-rating-at="${String(ratedAt).replace(/"/g, '&quot;')}">
+                                        <i class="text-xs ri-file-list-3-line md:text-sm"></i>
+                                    </button>` : `
+                                    <button
+                                        class="border-0 rounded-sm btn btn-xs md:btn-sm bg-slate-200 text-slate-400 cursor-not-allowed"
+                                        disabled
+                                        title="Belum dinilai">
+                                        <i class="text-xs ri-file-list-3-line md:text-sm"></i>
+                                    </button>`}
                                     <button class="text-yellow-600 border-0 rounded-sm btn btn-xs md:btn-sm bg-yellow-500/20 hover:bg-yellow-600 hover:text-white btn-edit" data-id="${item.id}">
                                         <i class="text-xs ri-settings-3-line md:text-sm"></i>
                                     </button>
@@ -651,7 +717,8 @@
                                 </div>
                             </td>
                         </tr>
-                    `).join('');
+                    `;
+                    }).join('');
 
                     $('#tableBody').html(html);
                     observeTableImages();
@@ -827,6 +894,40 @@
                         loadData(1);
                     });
                 }
+
+                $(document).on('click', '.btn-rating-detail', function() {
+                    const value = ($(this).data('rating-value') || '-').toString();
+                    const reason = ($(this).data('rating-reason') || '-').toString();
+                    const by = ($(this).data('rating-by') || '-').toString();
+                    const at = ($(this).data('rating-at') || '-').toString();
+
+                    const normalized = value.toLowerCase();
+                    const badgeClasses = {
+                        'baik': 'bg-emerald-100 text-emerald-700',
+                        'cukup': 'bg-amber-100 text-amber-700',
+                        'kurang': 'bg-rose-100 text-rose-700'
+                    };
+
+                    $('#ratingDetailBadge')
+                        .removeClass('bg-slate-200 text-slate-700 bg-emerald-100 text-emerald-700 bg-amber-100 text-amber-700 bg-rose-100 text-rose-700')
+                        .addClass(badgeClasses[normalized] || 'bg-slate-200 text-slate-700')
+                        .text((value || '-').toUpperCase());
+                    $('#ratingDetailReason').text(reason);
+                    $('#ratingDetailBy').text(by);
+                    if (at !== '-') {
+                        const dateObj = new Date(at);
+                        const hh = String(dateObj.getHours()).padStart(2, '0');
+                        const mm = String(dateObj.getMinutes()).padStart(2, '0');
+                        $('#ratingDetailAt').text(`${hh}:${mm}`);
+                    } else {
+                        $('#ratingDetailAt').text('-');
+                    }
+                    document.getElementById('ratingDetailModal').showModal();
+                });
+
+                $('#closeRatingDetail, #closeRatingDetailTop').on('click', function() {
+                    document.getElementById('ratingDetailModal').close();
+                });
 
                 function updateFilterSummary() {
                     const filters = [

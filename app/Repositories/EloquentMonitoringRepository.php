@@ -132,8 +132,11 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
         return UploadImage::query()
             ->select('id', 'user_id', 'clients_id', 'img_before', 'img_proccess', 'img_final', 'note', 'created_at')
             ->with([
-                'fixedImage:id,upload_image_id,user_id',
+                'fixedImage:id,upload_image_id,user_id,rating_value,rating_reason,rated_by_user_id,rated_at',
                 'fixedImage.user:id,nama_lengkap',
+                'fixedImage.ratedBy:id,nama_lengkap',
+                'uploadRating:id,upload_image_id,rating_value,rating_reason,rated_by_user_id,rated_at',
+                'uploadRating.ratedBy:id,nama_lengkap',
                 'user:id,nama_lengkap',
             ])
             ->whereIn('id', $uploadImageIdsQuery)
@@ -144,7 +147,7 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
     public function getFixedForScope(int $clientId, $startAt, $endAt, array $allowedUserIds): Collection
     {
         return FixedImage::query()
-            ->select('upload_image_id', 'user_id')
+            ->select('upload_image_id', 'user_id', 'rating_value', 'rating_reason', 'rated_by_user_id', 'rated_at')
             ->where('clients_id', $clientId)
             ->whereBetween('created_at', [$startAt, $endAt])
             ->whereIn('user_id', $allowedUserIds)
@@ -198,6 +201,13 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
     public function createFixed(array $payload): FixedImage
     {
         return FixedImage::query()->create($payload);
+    }
+
+    public function updateFixed(FixedImage $fixedImage, array $payload): FixedImage
+    {
+        $fixedImage->update($payload);
+
+        return $fixedImage->fresh(['ratedBy:id,nama_lengkap']);
     }
 
     public function deleteFixedByUploadImageId(int $uploadImageId): bool
@@ -332,6 +342,7 @@ class EloquentMonitoringRepository implements MonitoringRepositoryInterface
             'clients:id,name,address',
             'uploadImage:id,user_id,clients_id,note,img_before,img_proccess,img_final,created_at',
             'uploadImage.user:id,nama_lengkap,email',
+            'ratedBy:id,nama_lengkap',
         ])
             ->where('user_id', $userId)
             ->when($month !== 'all', function ($q) use ($month) {

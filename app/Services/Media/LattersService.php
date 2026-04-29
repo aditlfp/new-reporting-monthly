@@ -36,9 +36,14 @@ class LattersService
         return $this->repository->findWithCoverClientOrFail($id);
     }
 
-    public function update(int $id, array $validated)
+    public function update(int $id, array $validated, ?UploadedFile $signature = null)
     {
         $latters = $this->repository->findWithCoverClientOrFail($id);
+        $storedSignature = $this->storage->storeSignature($signature);
+
+        if ($storedSignature) {
+            $validated['signature'] = $storedSignature;
+        }
 
         return $this->repository->update($latters, $validated);
     }

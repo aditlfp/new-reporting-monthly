@@ -2,6 +2,8 @@
 
 Dokumen ini berisi riwayat perubahan aplikasi SILAB dengan format versioning berbasis **Semantic Versioning (SemVer)**.
 
+Current stable version: **v2.6.4** (2026-04-29)
+
 ## Versioning Policy
 
 - `MAJOR` (`X.0.0`): perubahan besar / breaking changes.
@@ -19,6 +21,31 @@ Format rilis:
 ### Planned
 - Penyempurnaan pixel-level pada halaman admin agar lebih mendekati referensi.
 - QA visual lintas breakpoint (desktop/tablet/mobile) untuk seluruh modul admin.
+
+---
+
+## [v2.6.4] - 2026-04-29
+
+### Added
+- Fitur penilaian foto fixed dengan endpoint baru `fixed.rate` untuk menyimpan nilai `kurang/cukup/baik`, alasan, penilai, dan waktu penilaian.
+- Tombol **Nilai Foto Ini** pada modal `/set-image/fixed` untuk mengganti konten modal ke form penilaian langsung.
+- Tabel baru `upload_image_ratings` untuk menyimpan rating foto meskipun foto belum dipilih sebagai fixed image.
+- Tombol **Detail Penilaian** pada halaman admin Photo Progress untuk foto yang sudah memiliki rating.
+- Modal detail penilaian dengan ringkasan nilai, alasan, penilai, dan waktu penilaian.
+
+### Changed
+- Payload detail fixed image diperluas agar mengirim data rating (`rating_value`, `rating_reason`, `rated_by`, `rated_at`) ke frontend.
+- Aturan otorisasi penilaian diperjelas: hanya evaluator yang berhak memberi nilai, dan edit nilai dibatasi untuk penilai awal atau admin.
+- UI form penilaian di modal diperbarui agar lebih modern, responsif, dan tetap konsisten di desktop/tablet/mobile.
+- Komponen pilihan rating diubah ke custom dropdown agar tidak memakai tema select bawaan OS.
+- Tampilan admin Photo Progress sekarang menampilkan data foto secara menyeluruh meskipun belum dipilih oleh leader/danru.
+
+### Fixed
+- Perbaikan alur simpan penilaian agar tidak lagi bersifat sementara; data rating tetap tersimpan walau foto belum dipilih.
+- Perbaikan tombol detail penilaian yang sebelumnya belum aktif pada data tertentu.
+- Perbaikan state tombol detail agar enabled saat data benar-benar sudah memiliki rating.
+- Perbaikan format waktu detail penilaian menjadi `HH:mm` (contoh `12:00`) tanpa detik dan dipaksa memakai separator titik dua (`:`).
+- Perbaikan update surat agar field `signature` tidak lagi tersimpan sebagai path file temporary (`php*.tmp`), tetapi disimpan sebagai file final melalui flow storage service.
 
 ---
 

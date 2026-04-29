@@ -84,6 +84,10 @@ class SendImageStatusService
                 'upload_created_at' => optional($item->uploadImage?->created_at)->toISOString(),
                 'upload_user_name' => $item->uploadImage?->user?->nama_lengkap,
                 'upload_user_email' => $item->uploadImage?->user?->email,
+                'rating_value' => $item->rating_value,
+                'rating_reason' => $item->rating_reason,
+                'rated_at' => optional($item->rated_at)->toISOString(),
+                'rated_by_name' => $item->ratedBy?->nama_lengkap,
                 'upload_images' => [
                     'before' => $item->uploadImage?->img_before,
                     'process' => $item->uploadImage?->img_proccess,

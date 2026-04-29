@@ -97,7 +97,14 @@ class EloquentUploadImageRepository implements UploadImageRepositoryInterface
                 'note',
                 'created_at',
             ])
-            ->with(['clients:id,name', 'user:id,nama_lengkap']);
+            ->with([
+                'clients:id,name',
+                'user:id,nama_lengkap',
+                'uploadRating:id,upload_image_id,rating_value,rating_reason,rated_by_user_id,rated_at',
+                'uploadRating.ratedBy:id,nama_lengkap',
+                'fixedImage:id,upload_image_id,rating_value,rating_reason,rated_by_user_id,rated_at',
+                'fixedImage.ratedBy:id,nama_lengkap',
+            ]);
 
         if ($hasActiveFilter) {
             if (!empty($filters['mitra'])) {
@@ -123,7 +130,6 @@ class EloquentUploadImageRepository implements UploadImageRepositoryInterface
         }
 
         return $query
-            ->whereDate('created_at', now()->toDateString())
             ->orderBy('clients_id')
             ->latest()
             ->paginate($perPage);

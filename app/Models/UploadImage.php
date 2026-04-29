@@ -33,6 +33,11 @@ class UploadImage extends Model
         return $this->hasOne(FixedImage::class, 'upload_image_id');
     }
 
+    public function uploadRating()
+    {
+        return $this->hasOne(UploadImageRating::class, 'upload_image_id');
+    }
+
     public function scopeSearchFilters($query, $filters)
     {
         return $query

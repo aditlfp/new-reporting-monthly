@@ -80,7 +80,10 @@ class ReportLettersControllers extends Controller
 
     public function update(LattersRequest $request, $id)
     {
-        $latter = $this->service->update((int) $id, $request->validated());
+        $validated = $request->validated();
+        unset($validated['signature']);
+
+        $latter = $this->service->update((int) $id, $validated, $request->file('signature'));
 
         if ($request->ajax()) {
             return response()->json([

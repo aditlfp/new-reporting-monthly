@@ -44,6 +44,7 @@ interface MonitoringRepositoryInterface
     public function findFixedByUploadImageIdForScope(int $uploadImageId, int $clientId, array $allowedUserIds): ?FixedImage;
 
     public function createFixed(array $payload): FixedImage;
+    public function updateFixed(FixedImage $fixedImage, array $payload): FixedImage;
 
     public function deleteFixedByUploadImageId(int $uploadImageId): bool;
     public function deleteFixedByUploadImageIdForScope(int $uploadImageId, int $clientId, array $allowedUserIds): bool;

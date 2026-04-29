@@ -254,7 +254,7 @@
 
     <!-- Image Selection Modal -->
     <dialog id="imageModal" class="flex items-center justify-center modal">
-        <div class="w-[94vw] max-w-[94vw] overflow-hidden sm:max-w-2xl md:max-w-5xl modal-box">
+        <div class="w-[96vw] max-w-[96vw] max-h-[92dvh] overflow-y-auto border shadow-2xl sm:max-w-3xl md:max-w-6xl rounded-2xl border-slate-200 modal-box">
             <form method="dialog">
                 <button
                     class="absolute z-10 text-white btn btn-sm btn-circle btn-ghost right-2 top-2 bg-black/50 hover:bg-black/70">
@@ -263,8 +263,15 @@
             </form>
 
             <!-- Image Preview Tabs -->
-            <div class="p-4 pb-2 sm:p-5">
+            <div class="p-4 pb-2 sm:p-6 bg-gradient-to-b from-white to-slate-50/60">
                 <h3 class="mb-3 text-base font-bold sm:text-lg" id="modalImageTitle">Pilih Foto</h3>
+                <div class="mb-3">
+                    <button type="button" id="openRatePanelBtn"
+                        class="btn btn-sm rounded-lg border-0 bg-emerald-500/20 text-emerald-700 hover:bg-emerald-600 hover:text-white">
+                        Nilai Foto Ini
+                    </button>
+                </div>
+                <div id="modalDefaultContent">
                 <div class="grid gap-2 mb-3">
                     <div class="px-3 py-2 border rounded-xl bg-slate-50 border-slate-200">
                         <div class="mb-0.5 text-[10px] font-semibold tracking-[0.16em] uppercase text-slate-400">Uploader</div>
@@ -275,11 +282,11 @@
                         <span class="text-xs font-medium capitalize sm:text-sm text-slate-700 verified_by"></span>
                     </div>
                 </div>
-                <div role="tablist" class="tabs tabs-lifted">
+                <div role="tablist" class="tabs tabs-lifted tabs-boxed bg-white/80 rounded-xl p-1">
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Before"
                         data-type="before" checked />
-                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border-base-300 rounded-box">
-                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-lg bg-slate-200 preview-frame sm:w-full">
+                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border border-slate-200 rounded-box">
+                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-xl bg-slate-200 preview-frame sm:w-full">
                             <img id="imgBefore" src="" alt="Before" class="preview-image min-h-[22vh] max-h-[36vh]">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyBefore"
                                 style="display: none;">
@@ -293,8 +300,8 @@
 
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="Proses"
                         data-type="process" />
-                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border-base-300 rounded-box">
-                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-lg bg-slate-200 preview-frame sm:w-full">
+                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border border-slate-200 rounded-box">
+                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-xl bg-slate-200 preview-frame sm:w-full">
                             <img id="imgProcess" src="" alt="Process" class="preview-image min-h-[22vh] max-h-[36vh]">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyProcess"
                                 style="display: none;">
@@ -308,8 +315,8 @@
 
                     <input type="radio" name="image_tabs" role="tab" class="tab" aria-label="After"
                         data-type="final" />
-                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border-base-300 rounded-box">
-                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-lg bg-slate-200 preview-frame sm:w-full">
+                    <div role="tabpanel" class="p-2 sm:p-3 tab-content bg-base-100 border border-slate-200 rounded-box">
+                        <figure class="relative flex items-center justify-center w-[82vw] max-w-full mx-auto overflow-hidden rounded-xl bg-slate-200 preview-frame sm:w-full">
                             <img id="imgFinal" src="" alt="Final" class="preview-image min-h-[22vh] max-h-[36vh]">
                             <div class="absolute inset-0 flex items-center justify-center" id="emptyFinal"
                                 style="display: none;">
@@ -325,10 +332,57 @@
                     <div class="mb-0.5 text-[10px] font-semibold tracking-[0.16em] uppercase text-slate-400">Keterangan</div>
                     <span class="text-xs leading-relaxed sm:text-sm text-slate-600 note"></span>
                 </div>
+                <div class="px-3 py-2 mt-3 border rounded-xl bg-slate-50 border-slate-200">
+                    <div class="mb-0.5 text-[10px] font-semibold tracking-[0.16em] uppercase text-slate-400">Nilai After</div>
+                    <div class="flex items-center gap-2">
+                        <span id="ratingValueBadge"
+                            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold text-slate-700 bg-slate-200">-</span>
+                        <button type="button" id="openRatingDetailBtn"
+                            class="hidden btn btn-xs rounded-md border-0 bg-blue-500/20 text-blue-700 hover:bg-blue-600 hover:text-white">Detail</button>
+                    </div>
+                </div>
+                </div>
             </div>
 
-            <div class="p-4 pt-2 sm:p-5">
-                <div class="flex gap-2 sm:flex-row">
+            <div class="p-4 pt-2 sm:p-6 bg-white border-t border-slate-200">
+                <div id="rateFormPanel" class="hidden space-y-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 sm:p-5 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-semibold tracking-wide text-slate-800">Form Penilaian Foto</h4>
+                        <button type="button" id="closeRatePanelBtn"
+                            class="btn btn-xs rounded-md border-0 bg-slate-200 text-slate-700 hover:bg-slate-300">Kembali</button>
+                    </div>
+                    <div class="form-control">
+                        <label class="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Rating</label>
+                        <input type="hidden" id="ratingValueInput" value="">
+                        <div class="relative">
+                            <button type="button" id="ratingDropdownBtn"
+                                class="flex w-full items-center justify-between rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-left text-sm font-semibold text-slate-700 transition hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                                <span id="ratingDropdownLabel">Pilih rating</span>
+                                <i class="ri-arrow-down-s-line text-lg text-slate-400"></i>
+                            </button>
+                            <div id="ratingDropdownMenu"
+                                class="absolute z-30 mt-2 hidden w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+                                <button type="button" class="rating-option w-full px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-slate-100" data-value="">Pilih rating</button>
+                                <button type="button" class="rating-option w-full px-3 py-2 text-left text-sm font-medium text-rose-700 hover:bg-rose-50" data-value="kurang">Kurang</button>
+                                <button type="button" class="rating-option w-full px-3 py-2 text-left text-sm font-medium text-amber-700 hover:bg-amber-50" data-value="cukup">Cukup</button>
+                                <button type="button" class="rating-option w-full px-3 py-2 text-left text-sm font-medium text-emerald-700 hover:bg-emerald-50" data-value="baik">Baik</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <label class="mb-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Alasan</label>
+                        <textarea id="ratingReasonInput" rows="4" class="textarea textarea-bordered w-full rounded-xl bg-white"
+                            placeholder="Isi alasan (opsional)"></textarea>
+                    </div>
+                    <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                        <button type="button" id="saveRatingBtn"
+                            class="btn btn-sm rounded-xl border-0 bg-emerald-500/20 text-emerald-700 hover:bg-emerald-600 hover:text-white">
+                            <i class="ri-save-line"></i>
+                            Simpan Penilaian
+                        </button>
+                    </div>
+                </div>
+                <div id="defaultActionPanel" class="mt-3 flex flex-col gap-2 sm:flex-row">
                     <button type="button" disabled
                         class="flex-1 py-1 text-blue-600 border-0 rounded-sm disabled:bg-gray-300 disabled:text-gray-50 btn bg-blue-500/20 hover:bg-blue-500 hover:text-white"
                         id="saveSelectionBtn">
@@ -344,6 +398,26 @@
                 </div>
             </div>
         </div>
+    </dialog>
+
+    <dialog id="ratingReasonModal" class="modal">
+        <div class="modal-box max-w-lg rounded-2xl border border-slate-200">
+            <h3 class="text-base font-semibold text-slate-900">Detail Penilaian</h3>
+            <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Dinilai oleh</p>
+                <p id="ratingReasonBy" class="mt-1 text-sm font-medium text-slate-800">-</p>
+            </div>
+            <div class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Alasan</p>
+                <p id="ratingReasonText" class="mt-1 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">-</p>
+            </div>
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn btn-sm rounded-lg border-0 bg-slate-200 text-slate-700 hover:bg-slate-300">Tutup</button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>Tutup</button></form>
     </dialog>
 
     <!-- Toast Notification -->
@@ -367,6 +441,7 @@
                 let currentPage = 1;
                 let lastPage = 1;
                 let lastRequestParams = {};
+                let canRateCurrentUser = false;
                 const imageModalEl = document.getElementById('imageModal');
                 const baseStorageUrl = "{{ URL::asset('/storage/') }}";
                 const placeholderImageUrl = 'https://placehold.co/1200x900/e2e8f0/64748b?text=Foto+Belum+Tersedia';
@@ -430,6 +505,84 @@
                     }
                 };
 
+                const getRatingBadgeClass = (ratingValue) => {
+                    if (ratingValue === 'baik') return 'bg-emerald-100 text-emerald-700';
+                    if (ratingValue === 'cukup') return 'bg-amber-100 text-amber-700';
+                    if (ratingValue === 'kurang') return 'bg-rose-100 text-rose-700';
+                    return 'bg-slate-200 text-slate-700';
+                };
+
+                const renderRatingSummary = (fixedImage) => {
+                    const ratingValue = fixedImage?.rating_value || '-';
+                    const ratingReason = fixedImage?.rating_reason || '';
+                    const ratedBy = fixedImage?.rated_by_name || '-';
+                    const canEditRating = Boolean(fixedImage?.can_edit_rating ?? canRateCurrentUser);
+
+                    $('#ratingValueBadge')
+                        .removeClass('bg-emerald-100 text-emerald-700 bg-amber-100 text-amber-700 bg-rose-100 text-rose-700 bg-slate-200 text-slate-700')
+                        .addClass(getRatingBadgeClass(ratingValue))
+                        .text(ratingValue === '-' ? '-' : ratingValue.toUpperCase());
+
+                    if (ratingReason) {
+                        $('#openRatingDetailBtn').removeClass('hidden').off('click').on('click', function() {
+                            $('#ratingReasonBy').text(ratedBy || '-');
+                            $('#ratingReasonText').text(ratingReason || '-');
+                            document.getElementById('ratingReasonModal')?.showModal();
+                        });
+                    } else {
+                        $('#openRatingDetailBtn').addClass('hidden').off('click');
+                    }
+
+                    if (!canEditRating) {
+                        $('#ratingDropdownBtn').prop('disabled', true).addClass('opacity-60 cursor-not-allowed');
+                        $('#ratingReasonInput').prop('disabled', true);
+                        $('#saveRatingBtn').prop('disabled', true).addClass('opacity-60 cursor-not-allowed');
+                    } else {
+                        $('#ratingDropdownBtn').prop('disabled', false).removeClass('opacity-60 cursor-not-allowed');
+                        $('#ratingReasonInput').prop('disabled', false);
+                        $('#saveRatingBtn').prop('disabled', false).removeClass('opacity-60 cursor-not-allowed');
+                    }
+                };
+
+                const setRatingDropdownValue = (value) => {
+                    const map = {
+                        '': 'Pilih rating',
+                        'kurang': 'Kurang',
+                        'cukup': 'Cukup',
+                        'baik': 'Baik'
+                    };
+
+                    $('#ratingValueInput').val(value || '');
+                    $('#ratingDropdownLabel').text(map[value || ''] || 'Pilih rating');
+                };
+
+                const showRateMode = () => {
+                    $('#modalDefaultContent').addClass('hidden');
+                    $('#defaultActionPanel').addClass('hidden');
+                    $('#rateFormPanel').removeClass('hidden');
+                };
+
+                const showDefaultMode = () => {
+                    $('#rateFormPanel').addClass('hidden');
+                    $('#modalDefaultContent').removeClass('hidden');
+                    $('#defaultActionPanel').removeClass('hidden');
+                };
+
+                const enforceRatingBeforeSelect = () => {
+                    if (!selectedImageData) return;
+                    if (!canRateCurrentUser) return;
+
+                    const existingValue = selectedImageData?.fixed_image?.rating_value || '';
+                    const inputValue = $('#ratingValueInput').val();
+                    const hasValue = Boolean(inputValue || existingValue);
+
+                    if (!hasValue) {
+                        $('#saveSelectionBtn').prop('disabled', true).html(
+                            '<i class="ri-star-line"></i> Nilai Dulu'
+                        );
+                    }
+                };
+
                 const syncSelectionState = (fixedState) => {
                     if (!fixedState || !fixedState.upload_image_id) return;
 
@@ -468,6 +621,8 @@
                             $('.verified_by').hide().text('');
                         }
                         updateModalActionButtons(isFixed);
+                        renderRatingSummary(selectedImageData.fixed_image);
+                        enforceRatingBeforeSelect();
                     }
                 };
 
@@ -598,6 +753,7 @@
                                 clientData = response.data.client;
                                 imagesData = response.data.image.data;
                                 fixedData = response.data.fixed;
+                                canRateCurrentUser = Boolean(response.data.permissions?.can_rate);
 
                                 currentPage = response.data.image.current_page;
                                 lastPage = response.data.image.last_page;
@@ -662,6 +818,9 @@
                     );
                     if (image.fixed_image) badges.push(
                         '<span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold text-purple-800 bg-purple-100 rounded-full"><svg class="w-2.5 h-2.5 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Verified</span>'
+                    );
+                    if (image.fixed_image?.rating_value) badges.push(
+                        `<span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold rounded-full ${getRatingBadgeClass(image.fixed_image.rating_value)}">${String(image.fixed_image.rating_value).toUpperCase()}</span>`
                     );
                     return badges.join(' ');
                 };
@@ -764,6 +923,7 @@
                     }
                     if (image) {
                         selectedImageData = image;
+                        showDefaultMode();
                         if (fixedData) {
                             const finalData = fixedData.find(e => e.upload_image_id == imageId);
                             updateModalActionButtons(!!finalData);
@@ -796,6 +956,12 @@
                         }
 
                         $('#modalImageTitle').text(`Foto #${image.id}`);
+                        const fixedInfo = image.fixed_image || null;
+                        const summaryRating = image.rating_meta || fixedInfo || null;
+                        renderRatingSummary(summaryRating);
+                        setRatingDropdownValue(summaryRating?.rating_value || '');
+                        $('#ratingReasonInput').val(summaryRating?.rating_reason || '');
+                        enforceRatingBeforeSelect();
 
                         // Reset to first tab
                         {{-- $('input[name="image_tabs"]:first').prop('checked', true);
@@ -810,11 +976,125 @@
                     currentImageType = $(this).data('type');
                 });
 
+                $('#ratingDropdownBtn').on('click', function() {
+                    if ($(this).prop('disabled')) return;
+                    $('#ratingDropdownMenu').toggleClass('hidden');
+                });
+
+                $(document).on('click', '.rating-option', function() {
+                    const value = $(this).data('value') || '';
+                    setRatingDropdownValue(value);
+                    $('#ratingDropdownMenu').addClass('hidden');
+                    if (!selectedImageData) return;
+                    const isFixed = Boolean(selectedImageData.fixed_image);
+                    updateModalActionButtons(isFixed);
+                    enforceRatingBeforeSelect();
+                });
+
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('#ratingDropdownBtn, #ratingDropdownMenu').length) {
+                        $('#ratingDropdownMenu').addClass('hidden');
+                    }
+                });
+
+                $('#openRatePanelBtn').on('click', function() {
+                    if (!selectedImageData) {
+                        Notify('Pilih foto dulu.', null, null, 'warning');
+                        return;
+                    }
+                    showRateMode();
+                });
+
+                $('#closeRatePanelBtn').on('click', function() {
+                    showDefaultMode();
+                });
+
+                $('#saveRatingBtn').on('click', function() {
+                    if (!selectedImageData) {
+                        Notify('Pilih foto dulu.', null, null, 'warning');
+                        return;
+                    }
+
+                    const currentRatingMeta = selectedImageData?.rating_meta || selectedImageData?.fixed_image || null;
+                    if (currentRatingMeta && currentRatingMeta.can_edit_rating === false) {
+                        Notify('Hanya penilai awal atau admin yang dapat mengubah penilaian.', null, null, 'warning');
+                        return;
+                    }
+
+                    const ratingValue = $('#ratingValueInput').val();
+                    const ratingReason = $('#ratingReasonInput').val();
+
+                    if (canRateCurrentUser && !ratingValue) {
+                        Notify('Silakan pilih rating terlebih dahulu.', null, null, 'warning');
+                        return;
+                    }
+
+                    const idx = imagesData.findIndex(img => Number(img.id) === Number(selectedImageData.id));
+                    if (idx === -1) {
+                        Notify('Data foto tidak ditemukan.', null, null, 'error');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '{{ route('fixed.rate') }}',
+                        method: 'POST',
+                        data: {
+                            upload_image_id: selectedImageData.id,
+                            client_id: getCurrentScopeParams().client_id,
+                            month: getCurrentScopeParams().month,
+                            year: getCurrentScopeParams().year,
+                            rating_value: ratingValue,
+                            rating_reason: ratingReason,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        beforeSend: function() {
+                            $('#saveRatingBtn').prop('disabled', true).html('<span class="loading loading-spinner"></span> Menyimpan...');
+                        },
+                        success: function(response) {
+                            if (!response.status) return;
+                            imagesData[idx].rating_meta = {
+                                rating_value: response.data.rating_value,
+                                rating_reason: response.data.rating_reason,
+                                rated_at: response.data.rated_at,
+                                rated_by_name: response.data.rated_by_name,
+                                rated_by_user_id: response.data.rated_by_user_id,
+                                can_rate: response.data.can_rate,
+                                can_edit_rating: response.data.can_edit_rating
+                            };
+                            if (imagesData[idx].fixed_image) {
+                                imagesData[idx].fixed_image = {
+                                    ...(imagesData[idx].fixed_image || {}),
+                                    ...imagesData[idx].rating_meta
+                                };
+                            }
+                            selectedImageData = imagesData[idx];
+                            renderRatingSummary(selectedImageData.rating_meta);
+                            renderImages(imagesData, currentFilter);
+                            enforceRatingBeforeSelect();
+                            showDefaultMode();
+                            Notify(response.message || 'Penilaian berhasil disimpan.', null, null, 'success');
+                        },
+                        error: function(xhr) {
+                            Notify(xhr.responseJSON?.message || 'Gagal menyimpan penilaian.', null, null, 'error');
+                        },
+                        complete: function() {
+                            $('#saveRatingBtn').prop('disabled', false).html('<i class="ri-save-line"></i> Simpan Penilaian');
+                        }
+                    });
+                });
+
                 // Save Selection Button
                 $('#saveSelectionBtn').on('click', function(event) {
                     event.preventDefault();
                     if (!selectedImageData) {
                         Notify('Tidak ada foto yang dipilih', null, null, 'error');
+                        return;
+                    }
+
+                    const ratingValue = $('#ratingValueInput').val();
+                    const ratingReason = $('#ratingReasonInput').val();
+                    if (canRateCurrentUser && !ratingValue) {
+                        Notify('Nilai foto dulu sebelum memilih.', null, null, 'warning');
                         return;
                     }
 
@@ -839,6 +1119,8 @@
                         upload_image_id: selectedImageData.id,
                         month: getCurrentScopeParams().month,
                         year: getCurrentScopeParams().year,
+                        rating_value: ratingValue || selectedImageData?.rating_meta?.rating_value || '',
+                        rating_reason: ratingReason || selectedImageData?.rating_meta?.rating_reason || '',
                         _token: '{{ csrf_token() }}'
                     };
 
@@ -855,6 +1137,17 @@
                                 Notify('Data berhasil disimpan!', null, null, 'success');
                                 applyCountsFromResponse(response);
                                 syncSelectionState(response.fixed_state);
+                                const idx = imagesData.findIndex(img => Number(img.id) === Number(selectedImageData.id));
+                                if (idx !== -1 && response.fixed_state?.rating_value) {
+                                    imagesData[idx].fixed_image = {
+                                        ...(imagesData[idx].fixed_image || {}),
+                                        rating_value: response.fixed_state.rating_value,
+                                        rating_reason: response.fixed_state.rating_reason,
+                                        rated_by_name: response.fixed_state.rated_by_name,
+                                        rated_by_user_id: response.fixed_state.rated_by_user_id,
+                                        can_edit_rating: response.fixed_state.can_edit_rating
+                                    };
+                                }
                                 closeImageModal();
                             }
                         },
@@ -1025,15 +1318,42 @@
 
             @media (max-width: 640px) {
                 #imageModal .modal-box {
-                    width: 94vw;
-                    max-width: 94vw;
-                    padding-left: 0.75rem;
-                    padding-right: 0.75rem;
+                    width: 96vw;
+                    max-width: 96vw;
+                    max-height: 94dvh;
+                    border-radius: 1rem;
+                    padding-left: 0.65rem;
+                    padding-right: 0.65rem;
                 }
 
                 .preview-frame {
                     min-height: 82vw;
                     height: 82vw;
+                }
+
+                #modalDefaultContent .tabs {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 0.35rem;
+                    padding: 0.35rem;
+                }
+
+                #modalDefaultContent .tab {
+                    min-height: 2.4rem;
+                    height: 2.4rem;
+                    font-size: 0.75rem;
+                    border-radius: 0.75rem;
+                }
+
+                #defaultActionPanel .btn {
+                    width: 100%;
+                    min-height: 2.65rem;
+                    border-radius: 0.85rem;
+                }
+
+                #rateFormPanel {
+                    border-radius: 1rem;
+                    padding: 0.85rem;
                 }
             }
 
@@ -1054,6 +1374,46 @@
                 border-color: rgb(37 99 235);
                 color: #fff;
                 box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+            }
+
+            #rateFormPanel {
+                box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            }
+
+            .rating-select {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                border: 1px solid rgb(203 213 225);
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                color: rgb(15 23 42);
+                font-weight: 600;
+            }
+
+            .rating-select:hover {
+                border-color: rgb(148 163 184);
+            }
+
+            .rating-select:focus {
+                outline: none;
+                border-color: rgb(16 185 129);
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            }
+
+            #modalDefaultContent,
+            #rateFormPanel {
+                animation: modalFadeIn 180ms ease-out;
+            }
+
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         </style>
     @endpush

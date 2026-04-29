@@ -58,6 +58,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::get('/api/v1/check-upload-tambahan/{userId}', [UploadTambahanCheckController::class, 'detail'])->name('api.v1.upload-tambahan.check.detail');
 
     Route::resource('/set-image/fixed', FixedImageController::class)->only('index', 'create', 'store', 'destroy');
+    Route::post('/set-image/fixed/rate', [FixedImageController::class, 'rate'])->name('fixed.rate');
 
 
     // Tools Route

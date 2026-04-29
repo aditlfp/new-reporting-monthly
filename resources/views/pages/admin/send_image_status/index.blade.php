@@ -481,6 +481,18 @@
                 const userEmail = escapeHtml(data.user_email || '-');
                 const clientName = escapeHtml(data.client_name || '-');
                 const note = escapeHtml(data.upload_note || '-');
+                const ratingValue = (data.rating_value || '').toString().toLowerCase();
+                const ratingLabel = ratingValue ? ratingValue.toUpperCase() : '-';
+                const ratingReason = escapeHtml(data.rating_reason || '');
+                const ratedByName = escapeHtml(data.rated_by_name || '-');
+
+                const ratingBadgeClass = ratingValue === 'baik'
+                    ? 'bg-green-100 text-green-700'
+                    : ratingValue === 'cukup'
+                        ? 'bg-amber-100 text-amber-700'
+                        : ratingValue === 'kurang'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-gray-100 text-gray-700';
 
                 const beforeLabel = data.upload_images?.before ? 'Ada' : 'Tidak ada';
                 const processLabel = data.upload_images?.process ? 'Ada' : 'Tidak ada';
@@ -529,6 +541,13 @@
                                         <span>Before: ${beforeLabel}</span>
                                         <span>Process: ${processLabel}</span>
                                         <span>After: ${finalLabel}</span>
+                                    </div>
+                                </div>
+                                <div class="p-2 rounded-lg bg-gray-50">
+                                    <span class="text-xs font-medium text-gray-600">Nilai After:</span>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${ratingBadgeClass}">${ratingLabel}</span>
+                                        ${ratingReason ? `<button type="button" class="text-blue-700 bg-blue-100 hover:bg-blue-200 px-2 py-0.5 rounded text-[11px] font-semibold" onclick="alert('Alasan: ${ratingReason}\\nDinilai oleh: ${ratedByName}')">Detail</button>` : ''}
                                     </div>
                                 </div>
                             </div>

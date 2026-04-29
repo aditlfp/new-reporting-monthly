@@ -4,33 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FixedImage extends Model
+class UploadImageRating extends Model
 {
     protected $fillable = [
         'upload_image_id',
-        'user_id',
-        'clients_id',
         'rating_value',
         'rating_reason',
         'rated_by_user_id',
         'rated_at',
     ];
-    protected $connection = 'mysql';
-
-    public function image()
-    {
-        return $this->belongsTo(UploadImage::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function clients()
-    {
-        return $this->belongsTo(Clients::class);
-    }
 
     public function uploadImage()
     {
@@ -42,3 +24,4 @@ class FixedImage extends Model
         return $this->belongsTo(User::class, 'rated_by_user_id');
     }
 }
+
