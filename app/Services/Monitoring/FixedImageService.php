@@ -277,7 +277,7 @@ class FixedImageService
             'status' => true,
             'message' => 'Penilaian foto berhasil disimpan.',
             'code' => 200,
-            'data' => $this->ratingPayload($updated, $user),
+            'data' => $this->ratingPayload($fixed, $user),
         ];
     }
 
