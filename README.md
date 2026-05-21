@@ -2,7 +2,7 @@
 
 Dokumen ini berisi riwayat perubahan aplikasi SILAB dengan format versioning berbasis **Semantic Versioning (SemVer)**.
 
-Current stable version: **v2.6.4** (2026-04-29)
+Current stable version: **v2.6.5** (2026-05-21)
 
 ## Versioning Policy
 
@@ -21,6 +21,32 @@ Format rilis:
 ### Planned
 - Penyempurnaan pixel-level pada halaman admin agar lebih mendekati referensi.
 - QA visual lintas breakpoint (desktop/tablet/mobile) untuk seluruh modul admin.
+
+---
+
+## [v2.6.5] - 2026-05-21
+
+### Added
+- Desain ulang halaman admin **Finding (Temuan)** dengan filter Mitra, User, Bulan, dan Tahun.
+- Kontrol seleksi bulk (Select All, Deselect All, Delete Selected) untuk data temuan.
+- Tabel Finding dengan kolom checkbox, ID, Ruangan, Pengguna, Keterangan, Tanggal, Status, dan Aksi.
+- Dropdown status (Pending/Process/Done) yang dapat diupdate langsung.
+- Tombol Edit dan Hapus dengan desain modern dan responsif.
+- Fitur generate PDF untuk data temuan dengan progress indicator.
+- Indikator jumlah data terpilih dan summary total data pada halaman admin Finding.
+- Pagination untuk tabel Finding dengan filter terintegrasi.
+- Validasi filter client dan user relationship di FindingController.
+
+### Changed
+- Update UI admin Finding untuk konsisten dengan desain admin Photo Progress dan general design system.
+- Menambahkan $clients variable di FindingController untuk dropdown filter mitra.
+- Optimasi tampilan tanggal Finding menggunakan format Indonesia (`d M Y`).
+- Menambahkan status select field untuk setiap baris Finding.
+- Memperbarui tombol Edit/Hapus dengan ukuran yang lebih konsisten (btn-xs md:btn-sm).
+
+### Fixed
+- Perbaikan syntax error pada Blade template Finding (double backslash pada Illuminate\Support\Str::limit).
+- Perbaikan passing $clients variable ke view admin Finding.index.
 
 ---
 
@@ -79,137 +105,7 @@ Format rilis:
 - Penyimpanan data QR tetap memakai kolom `data`, dengan format gabungan `data-kegiatan` saat kegiatan diisi.
 - Daftar default kegiatan QR difokuskan ke nama kegiatan seperti `Progres glass cleaning`, `Progres general cleaning`, dan `Progres pembasmian gulma`.
 - Halaman admin Photo Progress dioptimasi: payload query diperkecil, relasi dibatasi ke kolom yang dibutuhkan, dan thumbnail tabel dimuat on-demand dengan `IntersectionObserver`.
-- Default Photo Progress sekarang menampilkan data yang dibuat hari ini, diurutkan berdasarkan `clients_id`; saat filter aktif, jumlah data per halaman dinaikkan sampai 150 item.
-- Library PDF berat pada Photo Progress tidak lagi dimuat saat halaman dibuka, tetapi baru dimuat saat tombol generate PDF digunakan.
-
-### Fixed
-- Perbaikan state loading Photo Progress agar memakai `#tableBody` yang benar.
-- Perbaikan target URL QR pada print/selection agar memakai builder URL yang sama dengan QR hasil generate.
-- Penyesuaian test QR Code controller terhadap parameter kegiatan baru.
-
----
-
-## [v2.6.1] - 2026-04-23
-
-### Changed
-- Palet halaman welcome diperbarui ke tema biru-putih, termasuk background, tombol, aksen section, card, border, dan hover state navigasi.
-- Progress upload gambar kegiatan dipindahkan ke bawah preview gambar agar tidak menutupi konten image, dengan tampilan yang lebih compact.
-- Form upload gambar kegiatan dirapikan: label gambar diberi marker required, state progress dibuat truncate agar aman di grid 3 kolom, dan input upload diberi marker data untuk handling frontend.
-- Card link ulasan pekerjaan pada halaman login diperjelas dengan border dashed indigo dan hover link yang lebih terlihat.
-- Halaman upload tambahan membatasi pilihan file menjadi PDF sesuai flow upload tambahan yang digunakan.
-
-### Fixed
-- Perbaikan marker required agar tanda `*` tidak terpisah dari label saat teks berpindah baris.
-- Perbaikan indikator limit gambar dashboard agar badge status penuh hanya tampil saat sisa limit masih maksimal.
-- Perbaikan layout progress upload gambar agar preview tetap terlihat utuh selama proses preparing/uploading/error.
-
----
-
-## [v2.6.0] - 2026-04-22
-
-### Added
-- Menu admin baru **Download Rekap** dengan filter `client`, `bulan`, dan `tahun`, plus card cover per client untuk generate file rekap langsung dari dashboard admin.
-- Flow generate khusus Download Rekap yang memakai template cover dan surat existing (`coverPages.js` + `letterPages.js`) lalu merge dengan urutan khusus untuk kebutuhan admin.
-- Validasi request baru untuk generate Download Rekap yang mendukung input `cover_id`, `month`, `year`, dan file PDF hasil render frontend.
-- Feature dan unit test untuk flow Download Rekap admin serta merge rekap fallback di `CoverService`.
-
-### Changed
-- Flow Download Rekap admin kini memakai **surat terbaru** berdasarkan kombinasi `cover` + `periode` dan menandai ketersediaan surat langsung di card daftar cover.
-- Render cover PDF pada Download Rekap disesuaikan ulang agar ukuran teks nama client lebih proporsional untuk nama client yang panjang tanpa merusak layout utama cover.
-- Halaman konversi PDF untuk file gambar di Upload Tambahan disederhanakan agar hanya menampilkan isi gambar tanpa header tambahan.
-- Alignment tombol aksi topbar admin dan aksi sidebar user pada perangkat mobile dirapikan agar tombol logout tetap sejajar dan tidak turun terlalu bawah.
-
-### Fixed
-- Perbaikan bug halaman cover dan surat dobel pada hasil Download Rekap akibat file lampiran/signature legacy ikut ter-merge kembali.
-- Perbaikan fallback `rekap_foto` di `CoverService` saat file period-specific tidak ditemukan: sistem sekarang membuat PDF fallback dari data nyata `FixedImage` dan user cleaning service bulan berjalan.
-- Perbaikan query fallback `FixedImage` agar mengikuti relasi model yang benar dan tidak lagi mengarah ke tabel jabatan yang salah.
-- Perbaikan proses copy hasil fallback rekap ke path period agar error path `rekap_foto/{period}-{client}.pdf` tidak lagi muncul.
-- Perbaikan komponen toast session agar aman dirender walau `$errors` belum tersedia di view tertentu.
-- Perbaikan tampilan cover Download Rekap untuk nama client panjang agar tetap terbaca tanpa terpotong.
-- Perbaikan halaman PDF upload tambahan hasil konversi gambar agar tidak lagi menampilkan judul `UPLOAD TAMBAHAN` dan nama file di bagian atas.
-
----
-
-## [v2.5.1] - 2026-04-21
-
-### Added
-- Menu **Pengaturan** untuk user dengan opsi sederhana: ganti tema website dan toggle splashscreen setelah login.
-- Splashscreen setelah login yang hanya tampil sekali berdasarkan preferensi user.
-- Pengaturan tema admin sederhana (`light` / `dark`) pada halaman admin settings.
-
-### Changed
-- Penyimpanan preferensi user dipusatkan di `user_settings.data_theme` dengan key JSON `theme_mode` dan `splash_on_login`.
-- Layout aplikasi membaca tema aktif secara dinamis dari preferensi user/admin agar seluruh halaman user mengikuti theme yang tersimpan.
-- Dashboard user diperbarui: chart upload per bulan mengikuti bulan Januari-Desember pada tahun berjalan secara dinamis (`now()`), dan visualisasi diubah menjadi line chart.
-- Kartu limit gambar di dashboard user diperbarui agar progress bar terbalik: `0` merah dan limit penuh tetap full bar.
-
-### Fixed
-- Perbaikan theme switch yang sebelumnya tidak benar-benar mengubah tampilan halaman.
-- Perbaikan dark mode admin/user pada card, tabel, panel, dan teks yang masih tertahan di warna light/slate lama.
-- Perbaikan state sidebar settings pada user dan admin agar konsisten dengan route aktif.
-- Perbaikan perhitungan limit dashboard agar nilai tidak turun di bawah `0`.
-
----
-
-## [v2.5.0] - 2026-04-20
-
-### Added
-- Modul **Upload Tambahan** end-to-end: upload multi-item (maks 30) dengan struktur header-item, riwayat upload user, halaman check upload, dan monitoring admin.
-- Pipeline chunk upload khusus upload tambahan (`init/upload/finalize/cancel`) untuk file PDF dan gambar.
-- Sidebar user grouping menu `Upload Tambahan` (dropdown) dengan sub-menu `Tambah File` dan `Riwayat Upload`.
-- Filter dan pencarian pada halaman monitoring admin upload tambahan (`mitra`, `bulan`, `tahun`, `nama_lengkap`).
-
-### Changed
-- Rule scope check upload tambahan untuk viewer **SPV Pusat** berbasis `jabatan.code_jabatan`:
-  - `SPV` menampilkan target `LEADER CS` dan `LEADER` (global lintas mitra).
-  - `SPV-W` menampilkan target `DANRU SECURITY` (global lintas mitra).
-  - Matching target jabatan menggunakan exact match ignore-case.
-- Halaman user/admin upload tambahan di-redesign mengikuti tema SILAB (non-SaaS) dengan perbaikan hierarchy, CTA, dan readability.
-- Kolom `MIME` pada modal detail diubah menjadi `Jenis` (extension file) agar lebih mudah dipahami user non-teknis.
-
-### Fixed
-- Perbaikan bug footer/layout saat jumlah item upload bertambah (hilangkan bentrok `h-screen` vs scroll internal).
-- Perbaikan responsive lintas halaman baru (mobile/tablet/desktop), termasuk tabel, filter bar, tombol aksi, dan ukuran modal.
-- Perbaikan modal detail yang “mendelep” di mobile dengan pendekatan centered modal + internal scroll (`max-h`).
-- Perbaikan deteksi jabatan alias `SPV` vs `Supervisor` pada akses dan scope check upload tambahan.
-
----
-
-## [v2.4.1] - 2026-04-20
-
-### Changed
-- Halaman admin Photo Progress kini mempertahankan filter aktif saat edit, delete single, delete selected, dan pindah halaman pagination.
-- Thumbnail gambar pada tabel Photo Progress menggunakan rasio 1:1, fixed size, lazy loading, async decoding, dan prioritas rendah untuk mengurangi lag saat tabel berisi banyak gambar.
-- Marker form global di layout hanya menampilkan tanda `*` untuk field required dan tidak lagi menampilkan teks `(opsional)`.
-
-### Fixed
-- Memisahkan endpoint detail edit Photo Progress (`admin.upload.show`) dari endpoint index agar response index selalu berupa paginator.
-- Memperbaiki render pagination Photo Progress agar membaca metadata paginator secara konsisten dan tetap dirender meskipun render tabel mengalami error.
-- Memperbaiki marker required agar tidak dobel pada label yang sudah memiliki `*` manual dan tidak muncul pada label error tersembunyi.
-
----
-
-## [v2.4.0] - 2026-04-20
-
-### Added
-- Repository dan Service layer pattern untuk domain Media (Cover, Latters, QrCode, ImageRate) dan Monitoring (Dashboard, FixedImage, HandlerCount, SendImageStatus).
-- 12 repository interfaces dan implementations baru untuk abstraksi data access: CoverRepository, LattersRepository, QrCodeRepository, ImageRateRepository, MonitoringRepository, SettingsRepository, UserSettingsRepository, RoleScopeRepository, AbsensiUserRepository, dll.
-- Request validation classes baru: CalendarModalShowRequest, CoverStorePdfRequest, ImageRateStoreRequest, ImageRateUpdateRequest, QrCodeStoreRequest, SettingsStoreRequest, UserSettingsStoreRequest.
-- Shared services: RoleScopeService, PeriodService untuk reusable business logic.
-- Session toast component untuk menampilkan flash messages dengan styling konsisten.
-- Field marker pada form labels: asterisk (*) untuk required field dan "(opsional)" untuk optional field.
-- Dukungan login dengan email atau username pada form login (fleksibel).
-- Area field requirement pada upload form dengan validasi yang lebih ketat.
-- Unit dan feature tests untuk ImageRateController, QrCodeController, SendImageStatusController, SettingsController, RoleScopeService, SettingsService.
-- Rate limiting (throttle:20,1) pada endpoint rating-pekerjaan untuk mencegah abuse.
-
-### Changed
-- Refactor semua controller domain Media dan Monitoring ke pola thin controller + service pattern.
-- Pemisahan tanggung jawab: controller hanya handle request/response, service handle business logic, repository handle data access.
-- Perubahan struktur UploadImageService dengan metode resolveClientIdForUser untuk validasi client lebih ketat.
-- CalendarService sekarang menggunakan MonitoringRepository dan RoleScopeService untuk query yang lebih efisien.
-- Login request validation mengizinkan field email dan name nullable, mendukung identifier fleksibel.
-- File upload validation lebih ketat: mime types spesifik (jpg, jpeg, png, webp) dan max size per file.
+- Default Photo Progress sekarang menampilkan data yang dibuat hari ini, diurutkan berdasarkan `clients_id`; saat filter aktif, jumlah data per …2359 tokens truncated…d validation lebih ketat: mime types spesifik (jpg, jpeg, png, webp) dan max size per file.
 - Chunk upload validation dengan batasan ukuran dan tipe chunks yang lebih jelas.
 - Penggabungan area dan note pada upload form dengan format yang lebih terstruktur.
 - Blade layout (app.blade.php, guest.blade.php) dengan penambahan Notify.js dan auto-marker untuk label fields.

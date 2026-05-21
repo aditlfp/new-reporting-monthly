@@ -12,3 +12,7 @@ Alpine.start();
 if (document.querySelector('[data-page="send-img-create"]')) {
   import('./pages/user/send-img/create');
 }
+
+if (document.querySelector('[data-page="finding-index"]')) {
+  import('./pages/user/finding/index');
+}

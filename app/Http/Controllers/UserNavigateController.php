@@ -6,6 +6,7 @@ use App\Services\CalendarService;
 use App\Services\HolidayService;
 use App\Services\Settings\UserSettingsService;
 use App\Services\UploadImageService;
+use Illuminate\Support\Facades\Auth;
 
 class UserNavigateController extends Controller
 {
@@ -15,6 +16,13 @@ class UserNavigateController extends Controller
 
     public function toUploadImgLaporan(UploadImageService $service)
     {
+        if (in_array(Auth::user()->jabatan_id, ['10', '12', '13', '19', '20'])) {
+            return redirect()->route('finding.index', [
+                'n' => request('n'),
+                'temuan' => request('temuan'),
+            ]);
+        }
+
         $data = $service->getUploadImageData();
 
         return view('pages.user.send_img.create', $data);
