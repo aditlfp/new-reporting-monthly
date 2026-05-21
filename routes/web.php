@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CoverReportControllers;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FixedImageController;
+use App\Http\Controllers\FindingController;
 use App\Http\Controllers\HandlerCountController;
 use App\Http\Controllers\ImageRateController;
 use App\Http\Controllers\QrCodeController;
@@ -44,6 +45,7 @@ Route::middleware(['auth', 'theme'])->group(function () {
     Route::post('/upload-img-lap/chunk/upload', [UploadImageController::class, 'uploadChunk'])->name('upload-images.chunk.upload');
     Route::post('/upload-img-lap/chunk/finalize', [UploadImageController::class, 'finalizeChunkUpload'])->name('upload-images.chunk.finalize');
     Route::post('/upload-img-lap/chunk/cancel', [UploadImageController::class, 'cancelChunkUpload'])->name('upload-images.chunk.cancel');
+    Route::resource('/finding', FindingController::class)->only(['index', 'store']);
     Route::get('/send-img/laporan', [UserNavigateController::class, 'toUploadImgLaporan'])->name('send.img.laporan');
     Route::get('/upload-file-tambahan', [UploadTambahanController::class, 'index'])->name('upload-tambahan.index');
     Route::post('/upload-file-tambahan', [UploadTambahanController::class, 'store'])->name('upload-tambahan.store');
@@ -103,6 +105,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/admin/upload/get-users', [DataFotoController::class, 'getUsers'])->name('admin.upload.get-users');
 
     Route::resource('/admin-qrcode', QrCodeController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/admin-finding', [FindingController::class, 'adminIndex'])->name('admin.finding.index');
+    Route::delete('/admin-finding/{finding}', [FindingController::class, 'adminDestroy'])->name('admin.finding.destroy');
 
     Route::resource('/admin-rating-image', ImageRateController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::get('/admin-upload-tambahan', [UploadTambahanAdminController::class, 'index'])->name('admin.upload-tambahan.index');
