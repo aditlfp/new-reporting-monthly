@@ -1139,6 +1139,8 @@
                             }
                         }
 
+                        const exportMonth = currentMonth || new Date().toISOString().slice(0, 7);
+
                         // Show loading state
                         const $button = $(this);
                         const originalText = $button.html();
@@ -1153,13 +1155,21 @@
                                     type: 'GET',
                                     data: {
                                         ids: selectedIds,
-                                        month: currentMonth,
+                                        month: exportMonth,
                                     },
                                     dataType: 'json',
                                     success: function(response) {
-                                        if (response.status) {
+                                        if (response.status && Array.isArray(response.data) && response.data.length) {
+                                            const clientIds = [...new Set(response.data.map(item => Number(item.clients_id)).filter(Boolean))];
+                                            if (clientIds.length !== 1) {
+                                                hidePdfProgressOverlay();
+                                                $button.prop('disabled', false).html(originalText);
+                                                Notify('Export harus berisi satu mitra', null, null, 'error');
+                                                return;
+                                            }
+
                                             updatePdfProgress('Generating PDF...');
-                                            generatePdf(response.data, currentMonth, function() {
+                                            generatePdf(response.data, exportMonth, function() {
                                                 // Callback when PDF generation is complete
                                                 hidePdfProgressOverlay();
                                                 $button.prop('disabled', false);
@@ -1169,7 +1179,7 @@
                                             hidePdfProgressOverlay();
                                             $button.prop('disabled', false);
                                             $button.html(originalText);
-                                            Notify('Error generating PDF', null, null, 'error');
+                                            Notify('Tidak ada data untuk diekspor', null, null, 'error');
                                         }
                                     },
                                     error: function(xhr) {
@@ -1274,6 +1284,10 @@
 
                         }).catch(err => {
                             console.error(err);
+                            if (div.isConnected) document.body.removeChild(div);
+                            hidePdfProgressOverlay();
+                            Notify('Gagal merender halaman PDF', null, null, 'error');
+                            if (onComplete) onComplete();
                         });
                     }
 
@@ -1306,6 +1320,9 @@
                             if (e.data.error) {
                                 console.error("Worker Error:", e.data.error);
                                 worker.terminate();
+                                hidePdfProgressOverlay();
+                                Notify('Gagal membuat PDF', null, null, 'error');
+                                if (onComplete) onComplete();
                             }
                         };
 

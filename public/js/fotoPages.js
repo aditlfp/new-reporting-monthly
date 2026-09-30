@@ -17,10 +17,18 @@ function getFotoPageHtml(data, currentMonth) {
     "November",
     "Desember",
   ];
-  const [year, month] = currentMonth.split("-");
-  const monthName = monthNames[parseInt(month) - 1];
-  console.log(monthName);
-  const periodString = `PERIODE BULAN ${monthName.toUpperCase()} ${year}`;
+  const [year, month] = (currentMonth || "").split("-");
+  const monthName = monthNames[parseInt(month, 10) - 1] || "SEMUA BULAN";
+  const periodString = year
+    ? `PERIODE BULAN ${monthName.toUpperCase()} ${year}`
+    : "PERIODE SEMUA DATA";
+
+  const reportTypes = data.map(item => String(
+    item.user?.jabatan?.type_jabatan || item.user?.jabatan?.name_jabatan || ""
+  ).toLowerCase());
+  const reportType = reportTypes.some(type => type.includes("security") || type.includes("satpam"))
+    ? "SECURITY"
+    : "CLEANING SERVICE";
 
   // Split data into chunks with different sizes for first page and subsequent pages
   const chunks = [];
@@ -49,7 +57,7 @@ function getFotoPageHtml(data, currentMonth) {
       html += `
                 <div style="margin-top: 60pt; ${normalizedTextStyle}">
                     <p style="text-align: center; font-weight: bold; font-size: 20pt; text-transform: uppercase; margin: 0;">
-                        FOTO KEGIATAN KEBERSIHAN CLEANING SERVICE <br>
+                        FOTO KEGIATAN {{REPORT_TYPE}} <br>
                         PT SURYA AMANAH CENDIKIA PONOROGO <br>
                         AREA ${data[0].clients.name} <br>
                         ${periodString}
@@ -119,5 +127,5 @@ function getFotoPageHtml(data, currentMonth) {
     pages.push(html);
   });
 
-  return pages;
+  return pages.map(page => page.replaceAll("{{REPORT_TYPE}}", reportType));
 }

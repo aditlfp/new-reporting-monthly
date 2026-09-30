@@ -142,7 +142,7 @@ class EloquentUploadImageRepository implements UploadImageRepositoryInterface
 
     public function getPdfDataset(?array $ids = null, ?string $month = null): Collection
     {
-        $query = UploadImage::query()->with('clients');
+        $query = UploadImage::query()->with(['clients', 'user.jabatan']);
 
         if (!empty($ids)) {
             $query->whereIn('id', $ids);

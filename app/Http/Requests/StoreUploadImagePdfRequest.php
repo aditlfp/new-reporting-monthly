@@ -15,8 +15,8 @@ class StoreUploadImagePdfRequest extends FormRequest
     {
         return [
             'pdf' => ['required', 'file', 'mimetypes:application/pdf', 'max:512000'],
-            'month' => ['required'],
-            'client_ids' => ['required'],
+            'month' => ['required', 'date_format:Y-m'],
+            'client_ids' => ['required', 'integer', 'exists:dbAbsensi.clients,id'],
         ];
     }
 }
