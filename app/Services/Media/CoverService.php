@@ -26,17 +26,20 @@ class CoverService
         private readonly UploadImageStorageService $uploadStorage,
     ) {}
 
-    public function indexData(): array
+    public function indexData(?array $allowedClientIds = null): array
     {
         return [
-            'covers' => $this->covers->paginateWithClient(),
-            'client' => $this->covers->allClients(),
+            'covers' => $this->covers->paginateWithClient($allowedClientIds),
+            'client' => $this->covers->allClients($allowedClientIds),
         ];
     }
 
-    public function downloadRekapIndexData(?int $clientId, int $month, int $year): array
+    public function downloadRekapIndexData(?int $clientId, int $month, int $year, ?array $allowedClientIds = null): array
     {
-        $covers = $this->covers->paginateWithClientForDownload($clientId);
+        $clientId = $allowedClientIds !== null && $clientId !== null && ! in_array($clientId, $allowedClientIds, true)
+            ? null
+            : $clientId;
+        $covers = $this->covers->paginateWithClientForDownload($clientId, $allowedClientIds);
         $period = $this->formatPeriodLabel($month, $year);
 
         $coverIdsWithLetter = Latters::query()
@@ -67,7 +70,7 @@ class CoverService
 
         return [
             'covers' => $covers,
-            'clients' => $this->covers->allClients(),
+            'clients' => $this->covers->allClients($allowedClientIds),
             'selected_client' => $clientId,
             'selected_month' => $month,
             'selected_year' => $year,
@@ -75,9 +78,9 @@ class CoverService
         ];
     }
 
-    public function downloadRekap(int $coverId, int $month, int $year, ?UploadedFile $mainPdf = null): string
+    public function downloadRekap(int $coverId, int $month, int $year, ?UploadedFile $mainPdf = null, ?array $allowedClientIds = null): string
     {
-        $cover = $this->covers->findWithClientOrFail($coverId);
+        $cover = $this->covers->findWithClientOrFail($coverId, $allowedClientIds);
         $period = $this->formatPeriodLabel($month, $year);
 
         $letter = Latters::query()
@@ -125,13 +128,14 @@ class CoverService
         }
     }
 
-    public function showById(int $id)
+    public function showById(int $id, ?array $allowedClientIds = null)
     {
-        return $this->covers->findWithClientOrFail($id);
+        return $this->covers->findWithClientOrFail($id, $allowedClientIds);
     }
 
-    public function store(array $validated, ?UploadedFile $img1, ?UploadedFile $img2)
+    public function store(array $validated, ?UploadedFile $img1, ?UploadedFile $img2, ?array $allowedClientIds = null)
     {
+        $this->assertClientAllowed((int) $validated['clients_id'], $allowedClientIds);
         $validated['img_src_1'] = $this->storage->storeLogo($img1);
         $validated['img_src_2'] = $this->storage->storeLogo($img2);
 
@@ -140,9 +144,10 @@ class CoverService
         return $cover->load('client');
     }
 
-    public function update(int $id, array $validated, ?UploadedFile $img1, bool $img1Changed, ?UploadedFile $img2, bool $img2Changed)
+    public function update(int $id, array $validated, ?UploadedFile $img1, bool $img1Changed, ?UploadedFile $img2, bool $img2Changed, ?array $allowedClientIds = null)
     {
-        $cover = $this->covers->findWithClientOrFail($id);
+        $cover = $this->covers->findWithClientOrFail($id, $allowedClientIds);
+        $this->assertClientAllowed((int) $validated['clients_id'], $allowedClientIds);
 
         if ($img1 && $img1Changed) {
             $validated['img_src_1'] = $this->storage->storeLogo($img1, $cover->img_src_1);
@@ -155,9 +160,9 @@ class CoverService
         return $this->covers->update($cover, $validated);
     }
 
-    public function destroy(int $id): void
+    public function destroy(int $id, ?array $allowedClientIds = null): void
     {
-        $cover = $this->covers->findWithClientOrFail($id);
+        $cover = $this->covers->findWithClientOrFail($id, $allowedClientIds);
         $this->storage->delete($cover->img_src_1);
         $this->storage->delete($cover->img_src_2);
         $this->covers->delete($cover);
@@ -301,6 +306,13 @@ class CoverService
     {
         if (!is_file($path)) {
             throw new \RuntimeException("File wajib untuk merge tidak ditemukan ({$label}): {$path}");
+        }
+    }
+
+    private function assertClientAllowed(int $clientId, ?array $allowedClientIds): void
+    {
+        if ($allowedClientIds !== null && ! in_array($clientId, $allowedClientIds, true)) {
+            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException('Mitra tidak diizinkan.');
         }
     }
 

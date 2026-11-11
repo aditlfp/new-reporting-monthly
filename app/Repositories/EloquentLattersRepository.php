@@ -10,19 +10,29 @@ use Illuminate\Support\Collection;
 
 class EloquentLattersRepository implements LattersRepositoryInterface
 {
-    public function paginateWithCoverClient(int $perPage = 10): LengthAwarePaginator
+    public function paginateWithCoverClient(?array $allowedClientIds = null, int $perPage = 10): LengthAwarePaginator
     {
-        return Latters::query()->with(['cover.client'])->latest()->paginate($perPage);
+        return Latters::query()
+            ->with(['cover.client'])
+            ->when($allowedClientIds !== null, fn ($query) => $query->whereHas('cover', fn ($cover) => $cover->whereIn('clients_id', $allowedClientIds)))
+            ->latest()
+            ->paginate($perPage);
     }
 
-    public function getAllCovers(): Collection
+    public function getAllCovers(?array $allowedClientIds = null): Collection
     {
-        return Cover::query()->get();
+        return Cover::query()
+            ->with('client')
+            ->when($allowedClientIds !== null, fn ($query) => $query->whereIn('clients_id', $allowedClientIds))
+            ->get();
     }
 
-    public function findWithCoverClientOrFail(int $id): Latters
+    public function findWithCoverClientOrFail(int $id, ?array $allowedClientIds = null): Latters
     {
-        return Latters::query()->with(['cover.client'])->findOrFail($id);
+        return Latters::query()
+            ->with(['cover.client'])
+            ->when($allowedClientIds !== null, fn ($query) => $query->whereHas('cover', fn ($cover) => $cover->whereIn('clients_id', $allowedClientIds)))
+            ->findOrFail($id);
     }
 
     public function create(array $attributes): Latters

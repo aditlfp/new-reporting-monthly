@@ -89,10 +89,15 @@ Route::middleware(['auth', 'theme'])->group(function () {
     // END HANDLE
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'limited-admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-covers', CoverReportControllers::class);
-    Route::post('admin-covers/store-pdf', [CoverReportControllers::class, 'store_pdf']);
     Route::resource('/admin-latters', ReportLettersControllers::class);
+    Route::get('/admin-download-rekap', [DownloadRekapController::class, 'index'])->name('admin.download-rekap.index');
+    Route::post('/admin-download-rekap/generate', [DownloadRekapController::class, 'generate'])->name('admin.download-rekap.generate');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::post('admin-covers/store-pdf', [CoverReportControllers::class, 'store_pdf']);
     Route::get('/admin-check-status', [SendImageStatusController::class, 'index'])->name('check.upload');
     Route::get('/admin-check-status/{admin_check_status}/{client}/{month}/{year}', [SendImageStatusController::class, 'show'])->name('check.upload.show');
 
@@ -115,8 +120,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('/admin-rating-image', ImageRateController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::get('/admin-upload-tambahan', [UploadTambahanAdminController::class, 'index'])->name('admin.upload-tambahan.index');
     Route::get('/admin-upload-tambahan/{id}', [UploadTambahanAdminController::class, 'show'])->name('admin.upload-tambahan.show');
-    Route::get('/admin-download-rekap', [DownloadRekapController::class, 'index'])->name('admin.download-rekap.index');
-    Route::post('/admin-download-rekap/generate', [DownloadRekapController::class, 'generate'])->name('admin.download-rekap.generate');
 
     // Route Handle AJAX API GET
     Route::get('/api/v1/admin/admin-check-status/detail/{user_id}/{month}/{year}', [SendImageStatusController::class, 'getDetailFixed'])->name('admin.api.v1.check.detail');

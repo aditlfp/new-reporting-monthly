@@ -24,6 +24,28 @@
             </svg>
             <span class="font-medium">Dashboard</span>
         </a>
+
+        @if ((int) auth()->user()->jabatan_id === 20)
+            <div class="space-y-1">
+                <div class="px-4 mb-2 text-xs font-semibold tracking-wider uppercase text-slate-400">Admin Tools</div>
+                <a href="{{ route('admin-covers.index') }}"
+                    class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('admin-covers.*') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                    <i class="w-5 h-5 ri-file-list-3-line"></i>
+                    <span class="font-medium">Covers</span>
+                </a>
+                <a href="{{ route('admin-latters.index') }}"
+                class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('admin-latters.*') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                    <i class="w-5 h-5 ri-mail-line"></i>
+                    <span class="font-medium">Letters</span>
+                </a>
+                <a href="{{ route('admin.download-rekap.index') }}"
+                    class="flex items-center px-4 py-3 space-x-3 transition-all rounded-lg {{ request()->routeIs('admin.download-rekap.*') ? 'bg-blue-500 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                    <i class="w-5 h-5 ri-download-2-line"></i>
+                    <span class="font-medium">Download Rekap</span>
+                </a>
+            </div>
+        @endif
+
         <div class="space-y-1">
             <div class="px-4 mb-2 text-xs font-semibold tracking-wider uppercase text-slate-400">
                 Master Data

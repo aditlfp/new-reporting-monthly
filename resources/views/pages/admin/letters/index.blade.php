@@ -1,6 +1,11 @@
+@php($limitedAdmin = (int) auth()->user()->jabatan_id === 20 && (int) auth()->user()->role_id !== 2)
 <x-app-layout title="Data Surat" subtitle="Menampilkan Data Surat Yang Sudah Dibuat">
     <div class="admin-shell flex min-h-screen bg-slate-50">
-        @include('components.sidebar-component')
+        @if ($limitedAdmin)
+            <x-user-sidebar />
+        @else
+            @include('components.sidebar-component')
+        @endif
         <div class="admin-content flex-1 p-3 overflow-y-auto md:p-6">
             <div class="admin-toolbar flex items-center justify-end m-4 md:m-6">
                 <button id="btnCreate"

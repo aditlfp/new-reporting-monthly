@@ -10,30 +10,38 @@ use Illuminate\Support\Collection;
 
 class EloquentCoverRepository implements CoverRepositoryInterface
 {
-    public function paginateWithClient(int $perPage = 10): LengthAwarePaginator
-    {
-        return Cover::query()->with('client')->latest()->paginate($perPage);
-    }
-
-    public function paginateWithClientForDownload(?int $clientId = null, int $perPage = 12): LengthAwarePaginator
+    public function paginateWithClient(?array $clientIds = null, int $perPage = 10): LengthAwarePaginator
     {
         return Cover::query()
             ->with('client')
-            ->when($clientId, function ($query) use ($clientId) {
-                $query->where('clients_id', $clientId);
-            })
+            ->when($clientIds !== null, fn ($query) => $query->whereIn('clients_id', $clientIds))
             ->latest()
             ->paginate($perPage);
     }
 
-    public function allClients(): Collection
+    public function paginateWithClientForDownload(?int $clientId = null, ?array $allowedClientIds = null, int $perPage = 12): LengthAwarePaginator
     {
-        return Clients::all();
+        return Cover::query()
+            ->with('client')
+            ->when($allowedClientIds !== null, fn ($query) => $query->whereIn('clients_id', $allowedClientIds))
+            ->when($clientId, fn ($query) => $query->where('clients_id', $clientId))
+            ->latest()
+            ->paginate($perPage);
     }
 
-    public function findWithClientOrFail(int $id): Cover
+    public function allClients(?array $clientIds = null): Collection
     {
-        return Cover::query()->with('client')->findOrFail($id);
+        return Clients::query()
+            ->when($clientIds !== null, fn ($query) => $query->whereIn('id', $clientIds))
+            ->get();
+    }
+
+    public function findWithClientOrFail(int $id, ?array $allowedClientIds = null): Cover
+    {
+        return Cover::query()
+            ->with('client')
+            ->when($allowedClientIds !== null, fn ($query) => $query->whereIn('clients_id', $allowedClientIds))
+            ->findOrFail($id);
     }
 
     public function create(array $attributes): Cover

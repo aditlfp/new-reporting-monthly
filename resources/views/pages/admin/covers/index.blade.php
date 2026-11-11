@@ -1,6 +1,11 @@
+@php($limitedAdmin = (int) auth()->user()->jabatan_id === 20 && (int) auth()->user()->role_id !== 2)
 <x-app-layout title="Data Cover" subtitle="Menampilkan Data Cover Yang Sudah Dibuat">
     <div class="admin-shell flex min-h-screen bg-slate-50">
-        @include('components.sidebar-component')
+        @if ($limitedAdmin)
+            <x-user-sidebar />
+        @else
+            @include('components.sidebar-component')
+        @endif
         <div class="admin-content flex-1 p-6 overflow-y-auto">
             <div class="admin-toolbar flex items-center justify-end my-8">
                 <button id="openCoverModal"
@@ -61,10 +66,10 @@
                         <div class="grid grid-cols-1 col-span-2 gap-4 md:grid-cols-5 md:gap-6">
                             <div class="md:col-span-3">
                                 <label class="label">
-                                    <span class="label-text">Client <span class="text-error">*</span></span>
+                                    <span class="label-text">Mitra <span class="text-error">*</span></span>
                                 </label>
                                 <select id="clientSelect" class="w-full select select-bordered" required>
-                                    <option value="" disabled selected>Select a client</option>
+                                    <option value="" disabled {{ count($client) !== 1 ? 'selected' : '' }}>Pilih mitra</option>
                                     @foreach ($client as $cli)
                                         <option value="{{ $cli->id }}" data-name="{{ ucwords(strtolower($cli->name)) }}">
                                             {{ ucwords(strtolower($cli->name)) }}
@@ -273,7 +278,7 @@
                     <tr>
                         <td class="px-3 py-2">${index + 1}.</td>
                         <td class="px-3 py-2">
-                            <span class="text-sm font-semibold">${item.client ? item.client.panggilan : '-'}</span>
+                            <span class="text-sm font-semibold">${item.client ? item.client.name : '-'}</span>
                             <span class="badge badge-sm ${badgeClass} w-full whitespace-nowrap">${item.jenis_rekap}</span>
                         </td>
                         <td class="hidden px-3 py-2 md:block">

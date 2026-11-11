@@ -6,17 +6,19 @@ use App\Http\Requests\CoverRequest;
 use App\Http\Requests\CoverStorePdfRequest;
 use App\Services\Media\CoverService;
 use Illuminate\Http\Request;
+use App\Services\Shared\RoleScopeService;
 use Illuminate\Support\Facades\Log;
 
 class CoverReportControllers extends Controller
 {
     public function __construct(
         private readonly CoverService $service,
+        private readonly RoleScopeService $roleScope,
     ) {}
 
     public function index(Request $request)
     {
-        $data = $this->service->indexData();
+        $data = $this->service->indexData($this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -35,7 +37,7 @@ class CoverReportControllers extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $cover = $this->service->showById((int) $id);
+            $cover = $this->service->showById((int) $id, $this->allowedClientIds());
 
             if ($request->ajax()) {
                 return response()->json([
@@ -61,6 +63,7 @@ class CoverReportControllers extends Controller
                 $request->validated(),
                 $request->file('img_src_1'),
                 $request->file('img_src_2'),
+                $this->allowedClientIds(),
             );
 
             return response()->json([
@@ -85,6 +88,7 @@ class CoverReportControllers extends Controller
                 (bool) $request->img1_changed,
                 $request->file('img_src_2'),
                 (bool) $request->img2_changed,
+                $this->allowedClientIds(),
             );
 
             return response()->json([
@@ -103,7 +107,7 @@ class CoverReportControllers extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $this->service->destroy((int) $id);
+            $this->service->destroy((int) $id, $this->allowedClientIds());
 
             return response()->json([
                 'success' => true,
@@ -126,6 +130,17 @@ class CoverReportControllers extends Controller
             'message' => 'PDF successfully to merge and Saved Into Server!',
             'url' => $url,
         ]);
+    }
+
+    private function allowedClientIds(): ?array
+    {
+        $user = request()->user();
+
+        if (! $user || (int) $user->role_id === 2) {
+            return null;
+        }
+
+        return $this->roleScope->allowedClientIds($user);
     }
 
     private function getErrorResponse(\Throwable $e, string $message)

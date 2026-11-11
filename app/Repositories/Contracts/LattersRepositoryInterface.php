@@ -8,11 +8,11 @@ use Illuminate\Support\Collection;
 
 interface LattersRepositoryInterface
 {
-    public function paginateWithCoverClient(int $perPage = 10): LengthAwarePaginator;
+    public function paginateWithCoverClient(?array $allowedClientIds = null, int $perPage = 10): LengthAwarePaginator;
 
-    public function getAllCovers(): Collection;
+    public function getAllCovers(?array $allowedClientIds = null): Collection;
 
-    public function findWithCoverClientOrFail(int $id): Latters;
+    public function findWithCoverClientOrFail(int $id, ?array $allowedClientIds = null): Latters;
 
     public function create(array $attributes): Latters;
 

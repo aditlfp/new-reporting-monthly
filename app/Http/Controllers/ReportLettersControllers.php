@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LattersRequest;
 use App\Services\Media\LattersService;
+use App\Services\Shared\RoleScopeService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -11,11 +12,12 @@ class ReportLettersControllers extends Controller
 {
     public function __construct(
         private readonly LattersService $service,
+        private readonly RoleScopeService $roleScope,
     ) {}
 
     public function index(Request $request)
     {
-        $data = $this->service->indexData();
+        $data = $this->service->indexData($this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -32,14 +34,14 @@ class ReportLettersControllers extends Controller
 
     public function create()
     {
-        $covers = $this->service->indexData()['covers']->pluck('id', 'id');
+        $covers = $this->service->indexData($this->allowedClientIds())['covers']->pluck('id', 'id');
 
         return view('latters.create', compact('covers'));
     }
 
     public function store(LattersRequest $request)
     {
-        $latter = $this->service->store($request->validated(), $request->file('signature'));
+        $latter = $this->service->store($request->validated(), $request->file('signature'), $this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -54,7 +56,7 @@ class ReportLettersControllers extends Controller
 
     public function edit(Request $request, $id)
     {
-        $latter = $this->service->showById((int) $id);
+        $latter = $this->service->showById((int) $id, $this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -67,7 +69,7 @@ class ReportLettersControllers extends Controller
 
     public function show(Request $request, $id)
     {
-        $latter = $this->service->showById((int) $id);
+        $latter = $this->service->showById((int) $id, $this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -83,7 +85,7 @@ class ReportLettersControllers extends Controller
         $validated = $request->validated();
         unset($validated['signature']);
 
-        $latter = $this->service->update((int) $id, $validated, $request->file('signature'));
+        $latter = $this->service->update((int) $id, $validated, $request->file('signature'), $this->allowedClientIds());
 
         if ($request->ajax()) {
             return response()->json([
@@ -99,7 +101,7 @@ class ReportLettersControllers extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $this->service->destroy((int) $id);
+            $this->service->destroy((int) $id, $this->allowedClientIds());
 
             if ($request->ajax()) {
                 return response()->json([
@@ -117,5 +119,16 @@ class ReportLettersControllers extends Controller
         }
 
         return to_route('latters.index')->with('success', 'Latter deleted successfully.');
+    }
+
+    private function allowedClientIds(): ?array
+    {
+        $user = request()->user();
+
+        if (! $user || (int) $user->role_id === 2) {
+            return null;
+        }
+
+        return $this->roleScope->allowedClientIds($user);
     }
 }

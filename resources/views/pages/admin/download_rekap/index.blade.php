@@ -1,6 +1,11 @@
+@php($limitedAdmin = (int) auth()->user()->jabatan_id === 20 && (int) auth()->user()->role_id !== 2)
 <x-app-layout title="Download Rekap" subtitle="Generate dan download rekap khusus admin">
-    <div class="flex min-h-screen pb-10 admin-shell bg-slate-50">
-        @include('components.sidebar-component')
+    <div class="flex min-h-screen admin-shell bg-slate-50">
+        @if ($limitedAdmin)
+            <x-user-sidebar />
+        @else
+            @include('components.sidebar-component')
+        @endif
 
         <div class="flex-1 min-w-0 p-2 overflow-y-auto sm:p-3 admin-content md:p-6">
             <div class="container px-3 py-6 mx-auto space-y-5 md:px-4 md:py-8">
@@ -29,32 +34,32 @@
                 <section class="p-4 bg-white shadow-xl rounded-2xl admin-panel md:p-5">
                     <form method="GET" action="{{ route('admin.download-rekap.index') }}" class="grid gap-3 md:grid-cols-5">
                         <div>
-                            <label class="text-xs font-medium text-slate-600">Client</label>
+                            <label class="text-xs font-medium text-slate-600">Mitra</label>
                             <select name="client" class="w-full rounded-md select select-bordered select-sm">
-                                <option value="">Semua Client</option>
-                                @foreach ($clients as $client)
+                                <option value="">Semua Mitra</option>
+                                <?php foreach ($clients as $client): ?>
                                     <option value="{{ $client->id }}" {{ (string) $selected_client === (string) $client->id ? 'selected' : '' }}>
                                         {{ $client->name }}
                                     </option>
-                                @endforeach
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label class="text-xs font-medium text-slate-600">Bulan</label>
                             <select name="month" class="w-full rounded-md select select-bordered select-sm" required>
-                                @foreach (range(1, 12) as $month)
+                                <?php foreach (range(1, 12) as $month): ?>
                                     <option value="{{ $month }}" {{ (int) $selected_month === $month ? 'selected' : '' }}>
                                         {{ \Carbon\Carbon::createFromDate(null, $month, 1)->locale('id')->translatedFormat('F') }}
                                     </option>
-                                @endforeach
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label class="text-xs font-medium text-slate-600">Tahun</label>
                             <select name="year" class="w-full rounded-md select select-bordered select-sm" required>
-                                @foreach (range(now()->year - 3, now()->year + 1) as $year)
+                                <?php foreach (range(now()->year - 3, now()->year + 1) as $year): ?>
                                     <option value="{{ $year }}" {{ (int) $selected_year === $year ? 'selected' : '' }}>{{ $year }}</option>
-                                @endforeach
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="flex items-end">
@@ -66,46 +71,46 @@
                 </section>
 
                 <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    @forelse ($covers as $cover)
-                        <article class="overflow-hidden bg-white border shadow rounded-2xl border-slate-200">
-                            <div class="relative h-48 bg-slate-100">
-                                @php
-                                    $preview = $cover->img_src_1 ?: $cover->img_src_2;
-                                @endphp
-                                @if ($preview)
-                                    <img src="{{ asset('storage/' . ltrim($preview, '/')) }}" alt="Cover {{ $cover->client?->name }}"
-                                        class="object-cover w-full h-full">
-                                @else
-                                    <div class="flex items-center justify-center w-full h-full text-slate-400">No Cover Image</div>
-                                @endif
-                            </div>
-                            <div class="p-4 space-y-3">
-                                <div>
-                                    <p class="text-xs font-semibold tracking-wide text-blue-600 uppercase">{{ $cover->jenis_rekap }}</p>
-                                    <h3 class="text-base font-bold text-slate-900">{{ $cover->client?->name ?? '-' }}</h3>
+                    <?php if ($covers->isNotEmpty()): ?>
+                        <?php foreach ($covers as $cover): ?>
+                            <article class="overflow-hidden bg-white border shadow rounded-2xl border-slate-200">
+                                <div class="relative h-48 bg-slate-100">
+                                    <?php $preview = $cover->img_src_1 ?: $cover->img_src_2; ?>
+                                    <?php if ($preview): ?>
+                                        <img src="{{ asset('storage/' . ltrim($preview, '/')) }}" alt="Cover {{ $cover->client?->name }}"
+                                            class="object-cover w-full h-full">
+                                    <?php else: ?>
+                                        <div class="flex items-center justify-center w-full h-full text-slate-400">No Cover Image</div>
+                                    <?php endif; ?>
                                 </div>
+                                <div class="p-4 space-y-3">
+                                    <div>
+                                        <p class="text-xs font-semibold tracking-wide text-blue-600 uppercase">{{ $cover->jenis_rekap }}</p>
+                                        <h3 class="text-base font-bold text-slate-900">{{ $cover->client?->name ?? '-' }}</h3>
+                                    </div>
 
-                                @if ($cover->has_letter_for_period)
-                                    <button type="button"
-                                        class="w-full text-white border-none btn btn-sm bg-blue-600 hover:bg-blue-700 generate-rekap-btn"
-                                        data-cover-id="{{ $cover->id }}"
-                                        data-letter-id="{{ $cover->latest_letter_id ?? '' }}"
-                                        data-month="{{ $selected_month }}"
-                                        data-year="{{ $selected_year }}">
-                                        Generate & Download
-                                    </button>
-                                @else
-                                    <button type="button" class="w-full btn btn-sm btn-disabled" disabled>
-                                        Surat periode ini belum tersedia
-                                    </button>
-                                @endif
-                            </div>
-                        </article>
-                    @empty
+                                    <?php if ($cover->has_letter_for_period): ?>
+                                        <button type="button"
+                                            class="w-full text-white border-none btn btn-sm bg-blue-600 hover:bg-blue-700 generate-rekap-btn"
+                                            data-cover-id="{{ $cover->id }}"
+                                            data-letter-id="{{ $cover->latest_letter_id ?? '' }}"
+                                            data-month="{{ $selected_month }}"
+                                            data-year="{{ $selected_year }}">
+                                            Generate & Download
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button" class="w-full btn btn-sm btn-disabled" disabled>
+                                            Surat periode ini belum tersedia
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <div class="p-8 text-center bg-white border md:col-span-2 xl:col-span-3 rounded-2xl border-slate-200 text-slate-500">
                             Data cover tidak ditemukan untuk filter saat ini.
                         </div>
-                    @endforelse
+                    <?php endif; ?>
                 </section>
 
                 <div class="pt-2">

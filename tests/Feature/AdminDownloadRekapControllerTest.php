@@ -14,6 +14,7 @@ function makeAdminAuthUser(): User
         'id' => 99,
         'name' => 'Admin',
         'email' => 'admin-download-rekap@test.local',
+        'role_id' => 2,
     ]);
 
     return $user;
@@ -55,7 +56,7 @@ it('renders admin download rekap page', function () {
     $service = Mockery::mock(CoverService::class, function (MockInterface $mock) use ($covers) {
         $mock->shouldReceive('downloadRekapIndexData')
             ->once()
-            ->with(null, now()->month, now()->year)
+            ->with(null, now()->month, now()->year, null)
             ->andReturn([
                 'covers' => $covers,
                 'clients' => new Collection([(object) ['id' => 1, 'name' => 'Client A']]),
@@ -82,7 +83,7 @@ it('generates download rekap url', function () {
     $service = Mockery::mock(CoverService::class, function (MockInterface $mock) use ($coverId) {
         $mock->shouldReceive('downloadRekap')
             ->once()
-            ->with($coverId, 4, 2026, null)
+            ->with($coverId, 4, 2026, null, null)
             ->andReturn('http://localhost/storage/pdf/laporan-client-a-2026-04.pdf');
     });
 
@@ -136,4 +137,83 @@ it('returns 422 when service cannot find letter for selected period', function (
             'success' => false,
             'message' => 'Data surat untuk client dan periode yang dipilih tidak ditemukan.',
         ]);
+});
+
+it('allows jabatan 20 to access the download rekap page', function () {
+    $user = new User();
+    $user->forceFill([
+        'id' => 100,
+        'name' => 'Limited Admin',
+        'email' => 'limited-admin@test.local',
+        'role_id' => 1,
+        'jabatan_id' => 20,
+    ]);
+    $user->setRelation('kerjasama', (object) ['client_id' => 1]);
+
+    $this->actingAs($user);
+    $covers = new LengthAwarePaginator([], 0, 12, 1, ['path' => route('admin.download-rekap.index')]);
+    $service = Mockery::mock(CoverService::class, function (MockInterface $mock) use ($covers) {
+        $mock->shouldReceive('downloadRekapIndexData')
+            ->once()
+            ->with(null, now()->month, now()->year, [1])
+            ->andReturn([
+            'covers' => $covers,
+            'clients' => new Collection(),
+            'selected_client' => null,
+            'selected_month' => now()->month,
+            'selected_year' => now()->year,
+            'period_label' => 'April ' . now()->year,
+        ]);
+    });
+
+    app()->instance(CoverService::class, $service);
+
+    $this->get(route('admin.download-rekap.index'))->assertOk();
+});
+
+it('allows jabatan 20 to access the letters page', function () {
+    $user = new User();
+    $user->forceFill([
+        'id' => 102,
+        'name' => 'Limited Admin Letters',
+        'email' => 'limited-letters@test.local',
+        'role_id' => 1,
+        'jabatan_id' => 20,
+    ]);
+    $user->setRelation('kerjasama', (object) ['client_id' => 1]);
+
+    $this->actingAs($user);
+    $letters = new LengthAwarePaginator([], 0, 10, 1, ['path' => route('admin-latters.index')]);
+    $service = Mockery::mock(\App\Services\Media\LattersService::class, function (MockInterface $mock) use ($letters) {
+        $mock->shouldReceive('indexData')
+            ->once()
+            ->with([1])
+            ->andReturn([
+                'letters' => $letters,
+                'covers' => collect(),
+            ]);
+    });
+
+    app()->instance(\App\Services\Media\LattersService::class, $service);
+
+    $this->get(route('admin-latters.index'))->assertOk();
+});
+
+it('denies users without admin role or jabatan 20 from limited admin routes', function () {
+    $user = new User();
+    $user->forceFill([
+        'id' => 101,
+        'name' => 'Regular User',
+        'email' => 'regular-user@test.local',
+        'role_id' => 1,
+        'jabatan_id' => 1,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('admin.download-rekap.index'))
+        ->assertForbidden();
+
+    $this->actingAs($user)
+        ->get(route('admin-latters.index'))
+        ->assertForbidden();
 });

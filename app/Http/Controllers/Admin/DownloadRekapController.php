@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminDownloadRekapGenerateRequest;
 use App\Services\Media\CoverService;
+use App\Services\Shared\RoleScopeService;
 use Illuminate\Http\Request;
 
 class DownloadRekapController extends Controller
 {
     public function __construct(
         private readonly CoverService $service,
+        private readonly RoleScopeService $roleScope,
     ) {}
 
     public function index(Request $request)
@@ -18,8 +20,9 @@ class DownloadRekapController extends Controller
         $month = $request->filled('month') ? (int) $request->input('month') : (int) now()->month;
         $year = $request->filled('year') ? (int) $request->input('year') : (int) now()->year;
         $clientId = $request->filled('client') ? (int) $request->input('client') : null;
+        $allowedClientIds = $this->allowedClientIds();
 
-        $data = $this->service->downloadRekapIndexData($clientId, $month, $year);
+        $data = $this->service->downloadRekapIndexData($clientId, $month, $year, $allowedClientIds);
 
         if ($request->ajax()) {
             return response()->json([
@@ -40,6 +43,7 @@ class DownloadRekapController extends Controller
                 (int) $validated['month'],
                 (int) $validated['year'],
                 $request->file('pdf'),
+                $this->allowedClientIds(),
             );
 
             return response()->json([
@@ -58,5 +62,16 @@ class DownloadRekapController extends Controller
                 'message' => 'Gagal membuat download rekap.',
             ], 500);
         }
+    }
+
+    private function allowedClientIds(): ?array
+    {
+        $user = request()->user();
+
+        if (! $user || (int) $user->role_id === 2) {
+            return null;
+        }
+
+        return $this->roleScope->allowedClientIds($user);
     }
 }
